@@ -1,0 +1,42 @@
+/*登录页面的输入框 start*/
+.login_field .ivu-input{
+  border-radius: 0;
+  border: none;
+  border-bottom: 1px solid #e6e6e6;
+  width: 245px;
+}
+
+.login_field .ivu-input:focus{
+  box-shadow: none;
+}
+
+.login_field .ivu-btn-success{
+  background-color: #63b802;
+  border-color: #63b802;
+}
+
+.login_field .ivu-btn{
+  font-size: 16px;
+}
+
+.login_field .ivu-btn-success.active,.login_field .ivu-btn-success:hover{
+  background-color: #3fab23;
+  border-color: #3fab23;
+}
+/*登录页面的输入框 end*/
+
+/*header*/
+.ivu-layout-header{
+  background: #fff;
+  padding: 0;
+}
+
+/*左边菜单栏*/
+.ivu-menu-light.ivu-menu-vertical .ivu-menu-item-active:not(.ivu-menu-submenu){
+  color: #51b213;
+}
+.ivu-menu-light.ivu-menu-vertical .ivu-menu-item-active:not(.ivu-menu-submenu):after{
+  background: #51b213;
+}
+
+

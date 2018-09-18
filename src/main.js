@@ -8,6 +8,8 @@ import {commonTools} from '../static/js/common';
 import iView from 'iview'
 import 'iview/dist/styles/iview.css'
 import '../static/css/common.css'
+// 引入图标样式
+import '../static/icons/iconfont.css'
 
 Vue.config.productionTip = false;
 Vue.prototype.$http = axios;

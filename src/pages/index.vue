@@ -1,38 +1,45 @@
 <template>
   <div class="layout" :style="{height:fullHeight+'px'}">
     <Layout>
-
-        <Header>
-          <div ref="header">
-          <Menu mode="horizontal" theme="dark" active-name="1">
-            <div class="layout-logo"></div>
-            <div class="layout-nav">
-              <MenuItem name="1" class="menuA">
-                <Dropdown>
-                  <a href="javascript:void(0)">
-                    <Icon type="md-person" size="16"/>
-                    王五
-                    <Icon type="ios-arrow-down"></Icon>
-                  </a>
-                  <DropdownMenu slot="list">
-                    <DropdownItem>个人中心</DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
-              </MenuItem>
-              <MenuItem name="2">
-                <Icon type="ios-log-out" size="16"/>
-                退出
-              </MenuItem>
-            </div>
-          </Menu>
+      <Header>
+        <div ref="header">
+        <Menu mode="horizontal" theme="light" active-name="1">
+          <div class="layout-logo">
+            <img src="../../static/images/indexLogo.png"/>
           </div>
-        </Header>
+          <div class="layout-nav">
+            <MenuItem name="1" class="menuA">
+              <Dropdown>
+                <a href="javascript:void(0)">
+                  <Icon type="md-person" size="16"/>
+                  王五
+                  <Icon type="ios-arrow-down"></Icon>
+                </a>
+                <DropdownMenu slot="list">
+                  <DropdownItem>个人中心</DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            </MenuItem>
+            <MenuItem name="2">
+              <Icon type="ios-log-out" size="16"/>
+              退出
+            </MenuItem>
+          </div>
+        </Menu>
+        </div>
+      </Header>
       <Layout  :style="{height:mainHeight+'px'}">
         <Sider hide-trigger :style="{background: '#fff'}">
-          <Menu active-name="1-1" theme="light" width="auto" :open-names="['1']">
+          <Menu active-name="doctor" theme="light" width="auto" :open-names="['1']">
+            <MenuItem name="doctor">
+              <div @click="changeRouter('Doctor')">
+                <Icon custom="icon iconfont icon-yisheng"></Icon>
+                <span>医生管理</span>
+              </div>
+            </MenuItem>
             <Submenu name="1">
               <template slot="title">
-                <Icon type="ios-navigate"></Icon>
+                <Icon custom="icon iconfont icon-yisheng"></Icon>
                 医生管理
               </template>
               <MenuItem name="1-1">
@@ -42,12 +49,6 @@
                 <div @click="changeRouter('demo03')">单个医生</div>
               </MenuItem>
             </Submenu>
-            <MenuItem name="4">
-              <div @click="changeRouter('demo01')">
-                <Icon type="ios-settings"></Icon>
-                <span>标签</span>
-              </div>
-            </MenuItem>
           </Menu>
         </Sider>
         <Layout>
@@ -85,7 +86,6 @@
 </script>
 
 <style scoped>
-
   .layout{
     border: 1px solid #d7dde4;
     background: #f5f7f9;
@@ -94,14 +94,14 @@
     overflow: hidden;
   }
   .layout-logo{
-    width: 100px;
-    height: 30px;
-    background: #5b6270;
-    border-radius: 3px;
     float: left;
     position: relative;
-    top: 15px;
     left: 20px;
+  }
+
+  .layout-logo img{
+    height: 54px;
+    padding: 5px 25px;
   }
   .layout-nav{
     width: 420px;
@@ -111,7 +111,7 @@
 
   .contentBg{
     padding: 24px;
-    background-color: #d3ef9b;
+    background-color: #f5fbfa;
     overflow-x: hidden;
     overflow-y: auto;
   }
