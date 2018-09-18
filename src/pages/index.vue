@@ -1,0 +1,118 @@
+<template>
+  <div class="layout" :style="{height:fullHeight+'px'}">
+    <Layout>
+
+        <Header>
+          <div ref="header">
+          <Menu mode="horizontal" theme="dark" active-name="1">
+            <div class="layout-logo"></div>
+            <div class="layout-nav">
+              <MenuItem name="1" class="menuA">
+                <Dropdown>
+                  <a href="javascript:void(0)">
+                    <Icon type="md-person" size="16"/>
+                    王五
+                    <Icon type="ios-arrow-down"></Icon>
+                  </a>
+                  <DropdownMenu slot="list">
+                    <DropdownItem>个人中心</DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
+              </MenuItem>
+              <MenuItem name="2">
+                <Icon type="ios-log-out" size="16"/>
+                退出
+              </MenuItem>
+            </div>
+          </Menu>
+          </div>
+        </Header>
+      <Layout  :style="{height:mainHeight+'px'}">
+        <Sider hide-trigger :style="{background: '#fff'}">
+          <Menu active-name="1-1" theme="light" width="auto" :open-names="['1']">
+            <Submenu name="1">
+              <template slot="title">
+                <Icon type="ios-navigate"></Icon>
+                医生管理
+              </template>
+              <MenuItem name="1-1">
+                <div @click="changeRouter('demo02')">医生N</div>
+              </MenuItem>
+              <MenuItem name="1-2">
+                <div @click="changeRouter('demo03')">单个医生</div>
+              </MenuItem>
+            </Submenu>
+            <MenuItem name="4">
+              <div @click="changeRouter('demo01')">
+                <Icon type="ios-settings"></Icon>
+                <span>标签</span>
+              </div>
+            </MenuItem>
+          </Menu>
+        </Sider>
+        <Layout>
+          <Content class="contentBg">
+            <router-view></router-view>
+          </Content>
+        </Layout>
+      </Layout>
+    </Layout>
+  </div>
+</template>
+
+<script>
+    export default {
+      name: "index",
+      data(){
+        return{
+          fullHeight:document.documentElement.clientHeight,
+          mainHeight:''
+        }
+      },
+      mounted(){
+        this.getMainHeight();
+      },
+      methods:{
+        getMainHeight(){
+          let headerHeight= this.$refs.header.offsetHeight;
+          this.mainHeight = this.fullHeight - headerHeight - 6;
+        },
+        changeRouter(routerName){
+          this.$router.push({ name: routerName})
+        }
+      }
+    }
+</script>
+
+<style scoped>
+
+  .layout{
+    border: 1px solid #d7dde4;
+    background: #f5f7f9;
+    position: relative;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .layout-logo{
+    width: 100px;
+    height: 30px;
+    background: #5b6270;
+    border-radius: 3px;
+    float: left;
+    position: relative;
+    top: 15px;
+    left: 20px;
+  }
+  .layout-nav{
+    width: 420px;
+    margin: 0 auto;
+    margin-right: 0px;
+  }
+
+  .contentBg{
+    padding: 24px;
+    background-color: #d3ef9b;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+</style>
