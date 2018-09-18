@@ -11,8 +11,8 @@
             <MenuItem name="1" class="menuA">
               <Dropdown>
                 <a href="javascript:void(0)">
-                  <Icon type="md-person" size="16"/>
-                  王五
+                  <Avatar src="../../static/images/1.jpg"/>
+                  <span>王五</span>
                   <Icon type="ios-arrow-down"></Icon>
                 </a>
                 <DropdownMenu slot="list">
