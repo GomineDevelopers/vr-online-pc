@@ -90,6 +90,10 @@
   border-color: #3fab23;
   color:#3fab23;
 }
+.ivu-btn-text:hover{
+  color:#51b213;
+  border-color: #51b213;
+}
 /*Model样式修改end按钮type=primary*/
 
 /*重置按钮start 按钮type=warning*/
@@ -119,10 +123,12 @@
 .ivu-btn:focus{
   box-shadow: 0 0 0 2px rgba(63,171,35,.2);
 }
-.ivu-btn.active, .ivu-btn:active {
+.ivu-btn.active,.tableDiv .ivu-btn:active {
   color: #3fab23;
   border-color: #3fab23;
 }
-.ivu-btn:hover {
-  border-color: #3fab23;
+
+.tableDiv .ivu-btn:hover{
+  color:#51b213;
+  border-color: #51b213;
 }
