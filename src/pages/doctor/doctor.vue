@@ -155,7 +155,7 @@ export default {
                 },
                 style: {
                   marginLeft: "5px",
-                  color:"#4fb115"
+                  color: "#4fb115"
                 }
               }),
               h("Icon", {
@@ -164,7 +164,7 @@ export default {
                 },
                 style: {
                   marginLeft: "5px",
-                  color:"#4fb115"
+                  color: "#4fb115"
                 },
                 click: () => {
                   this.show(params.index);
@@ -178,7 +178,7 @@ export default {
                   },
                   style: {
                     marginLeft: "5px",
-                    color:"#4fb115"
+                    color: "#4fb115"
                   },
                   on: {
                     click: () => {
@@ -252,10 +252,16 @@ export default {
     tagValidate() {
       let vm = this;
       let msg = "";
-      if (vm.selections.length !== 0) {
+      if (vm.selections.length == 0) {
         msg = "未选择医生";
-      }
-      if (msg) {
+        this.$Message.warning(msg);
+        return false;
+      } else if (!vm.tag) {
+        msg = "未选择一级标签";
+        this.$Message.warning(msg);
+        return false;
+      } else if (!vm.subtag) {
+        msg = "未选择二级标签";
         this.$Message.warning(msg);
         return false;
       } else {
@@ -266,6 +272,7 @@ export default {
       let vm = this;
       if (vm.tagValidate()) {
         this.$Message.success("添加标签成功");
+        // ajax请求发送
       }
     },
     remove(index) {
