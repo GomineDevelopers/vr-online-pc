@@ -1,3 +1,9 @@
+/*公共样式*/
+.necessary{
+  color:#d12723;
+  font-weight: 600;
+}
+
 /*登录页面的输入框 start*/
 .login_field .ivu-input{
   border-radius: 0;
@@ -8,11 +14,6 @@
 
 .login_field .ivu-input:focus{
   box-shadow: none;
-}
-
-.login_field .ivu-btn-success{
-  background-color: #63b802;
-  border-color: #63b802;
 }
 
 .login_field .ivu-btn{
@@ -50,3 +51,78 @@
   color: #51b213;
 }
 
+/*全部的type为success的按钮样式*/
+.ivu-btn-success{
+  background: -webkit-linear-gradient(left bottom, #65b901 , #3fab23); /* Safari 5.1 - 6.0 */
+  background: -o-linear-gradient(top right, #65b901, #3fab23); /* Opera 11.1 - 12.0 */
+  background: -moz-linear-gradient(top right, #65b901, #3fab23); /* Firefox 3.6 - 15 */
+  background: linear-gradient(to top right, #65b901 , #3fab23); /* 标准的语法（必须放在最后） */
+  border-color: #63b802;
+}
+
+.ivu-btn-success.active, .ivu-btn-success:active{
+  background-color: #3fab23;
+  border-color: #3fab23;
+}
+
+/*icon鼠标手势*/
+.ivu-icon{
+  cursor: pointer;
+}
+
+/*Model样式修改start 按钮type=primary*/
+.ivu-modal-header p, .ivu-modal-header-inner{
+  height: 34px;
+  line-height: 34px;
+  font-size: 18px;
+  text-align: center;
+}
+
+.ivu-btn-primary{
+  background: -webkit-linear-gradient(left bottom, #65b901 , #3fab23); /* Safari 5.1 - 6.0 */
+  background: -o-linear-gradient(top right, #65b901, #3fab23); /* Opera 11.1 - 12.0 */
+  background: -moz-linear-gradient(top right, #65b901, #3fab23); /* Firefox 3.6 - 15 */
+  background: linear-gradient(to top right, #65b901 , #3fab23); /* 标准的语法（必须放在最后） */
+  border-color: #63b802;
+}
+
+.ivu-btn-text{
+  border-color: #3fab23;
+  color:#3fab23;
+}
+/*Model样式修改end按钮type=primary*/
+
+/*重置按钮start 按钮type=warning*/
+.ivu-btn-warning{
+  border-color: #3fab23;
+  background-color:#fff;
+  color: #3fab23;
+}
+
+.ivu-btn-warning:focus{
+  box-shadow: 0 0 0 2px rgba(63,171,35,.2);
+}
+
+.ivu-btn-warning.active, .ivu-btn-warning:active{
+  background-color: #fff;
+  border-color: #3fab23;
+  color:#3fab23
+}
+.ivu-btn-warning:hover{
+  background-color: #fff;
+  border-color: #51b213;
+  color:#51b213
+}
+
+/*重置按钮end 按钮type=warning*/
+
+.ivu-btn:focus{
+  box-shadow: 0 0 0 2px rgba(63,171,35,.2);
+}
+.ivu-btn.active, .ivu-btn:active {
+  color: #3fab23;
+  border-color: #3fab23;
+}
+.ivu-btn:hover {
+  border-color: #3fab23;
+}

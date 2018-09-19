@@ -8,7 +8,7 @@
         医生编号：<Input v-model="name" clearable class="inputStyle"/>
         医生手机：<Input v-model="name" clearable class="inputStyle"/>
         <Button type="success">搜索</Button>
-        <Button type="success" ghost>重置</Button>
+        <Button type="warning">重置</Button>
       </div>
       <div class="tableDiv" :style="{height:tableBgH+'px'}">
         <div class="buttonDiv" ref="buttonDiv">
@@ -154,7 +154,8 @@ export default {
                   size: "20"
                 },
                 style: {
-                  marginLeft: "5px"
+                  marginLeft: "5px",
+                  color:"#4fb115"
                 }
               }),
               h("Icon", {
@@ -162,7 +163,8 @@ export default {
                   type: " icon iconfont icon-ziliao"
                 },
                 style: {
-                  marginLeft: "5px"
+                  marginLeft: "5px",
+                  color:"#4fb115"
                 },
                 click: () => {
                   this.show(params.index);
@@ -175,7 +177,8 @@ export default {
                     custom: "icon iconfont icon-shanchu"
                   },
                   style: {
-                    marginLeft: "5px"
+                    marginLeft: "5px",
+                    color:"#4fb115"
                   },
                   on: {
                     click: () => {

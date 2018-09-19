@@ -11,7 +11,7 @@
             <MenuItem name="1" class="menuA">
               <Dropdown>
                 <a href="javascript:void(0)">
-                  <Avatar src="../../static/images/1.jpg"/>
+                  <Avatar src="../../static/images/1.jpg" />
                   <span>王五</span>
                   <Icon type="ios-arrow-down"></Icon>
                 </a>
@@ -37,7 +37,7 @@
                 <span>医生管理</span>
               </div>
             </MenuItem>
-            <Submenu name="1">
+            <!--<Submenu name="1">
               <template slot="title">
                 <Icon custom="icon iconfont icon-yisheng"></Icon>
                 医生管理
@@ -48,7 +48,13 @@
               <MenuItem name="1-2">
                 <div @click="changeRouter('demo03')">单个医生</div>
               </MenuItem>
-            </Submenu>
+            </Submenu>-->
+            <MenuItem name="tag">
+              <div @click="changeRouter('Tag')">
+                <Icon custom="icon iconfont icon-common-xiangmubiaoqian-copy"></Icon>
+                <span>标签管理</span>
+              </div>
+            </MenuItem>
           </Menu>
         </Sider>
         <Layout>

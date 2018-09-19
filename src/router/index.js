@@ -4,6 +4,7 @@ import HelloWorld from '@/components/HelloWorld'
 import Login from '@/pages/login'
 import Index from '@/pages/index'
 import Doctor from '@/pages/doctor/doctor'
+import Tag from '@/pages/tag/tag'
 import demo01 from '@/pages/demo/demo01'
 import demo02 from '@/pages/demo/demo02'
 import demo03 from '@/pages/demo/demo03'
@@ -30,6 +31,10 @@ export default new Router({
           path: 'doctor',
           component: Doctor,
           name:'Doctor'
+        },{
+          path: 'tag',
+          component: Tag,
+          name:'Tag'
         },
         {
           path: 'demo01',
