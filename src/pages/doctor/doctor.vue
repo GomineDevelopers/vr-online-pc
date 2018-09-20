@@ -271,8 +271,23 @@ export default {
     addLabel() {
       let vm = this;
       if (vm.tagValidate()) {
+        console.log(vm.selections);
         this.$Message.success("添加标签成功");
         // ajax请求发送
+        let postData = {};
+        dataIds = [];
+        postData.tag = vm.tag;
+        postData.subtag = vm.subtag;
+        vm.axois.post(vm.$commonTools.g_restUrl, {
+          params: {
+            i: "8",
+            c: "entry",
+            p: "article",
+            do: "shop",
+            m: "ewei_shop"
+          },
+          data: vm.$qs.stringify(postData)
+        });
       }
     },
     remove(index) {
