@@ -150,17 +150,21 @@ export default {
             return h("div", [
               h("Icon", {
                 props: {
-                  type: "ios-information-circle",
-                  size: "20"
+                  type: "icon iconfont icon-ziliao",
                 },
                 style: {
                   marginLeft: "5px",
                   color: "#4fb115"
+                },
+                on: {
+                  click: () => {
+                    this.goDetail();
+                  }
                 }
               }),
               h("Icon", {
                 props: {
-                  type: " icon iconfont icon-ziliao"
+                  type: "icon iconfont icon-bianji"
                 },
                 style: {
                   marginLeft: "5px",
@@ -292,6 +296,9 @@ export default {
     },
     remove(index) {
       this.data2.splice(index, 1);
+    },
+    goDetail(){
+      this.$router.push({name:'DoctorDetail'});
     }
   }
 };
@@ -300,8 +307,8 @@ export default {
 
 <style scoped>
 .title {
-  font-size: 1rem;
-  color: #908e8e;
+  font-size: 1.25rem;
+  color: #adb3a8;
   margin-bottom: 10px;
 }
 
