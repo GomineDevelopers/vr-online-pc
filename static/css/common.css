@@ -132,3 +132,16 @@
   color:#51b213;
   border-color: #51b213;
 }
+
+/*tab悬停和激活状态的样式*/
+.ivu-tabs-nav .ivu-tabs-tab:hover {
+  color: #51b213;
+}
+.ivu-tabs-nav .ivu-tabs-tab-active {
+  color: #51b213;
+}
+
+.ivu-tabs-ink-bar{
+  background-color: #51b213;
+}
+

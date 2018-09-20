@@ -103,6 +103,7 @@
   .tag_title{
     font-size: 1.25rem;
     margin-bottom: 2vh;
+    color: #adb3a8;
   }
 
   .tag_button{
