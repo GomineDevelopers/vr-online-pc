@@ -36,13 +36,13 @@
       </Row>
     </div>
     <div class="doctor_detail_tab">
-      <Tabs value="name1">
-        <TabPane label="拜访记录" name="name1">
-          <visit-record :postCommonH="commonHeight" v-if="commonHeight"></visit-record>
+      <Tabs value="1" @on-click="tabChange">
+        <TabPane label="拜访记录" name="1">
+          <visit-record :postCommonH="commonHeight" :tabType="type" v-if="commonHeight"></visit-record>
         </TabPane>
-        <TabPane label="微课记录" name="name2">微课记录</TabPane>
-        <TabPane label="互动记录" name="name3">互动记录</TabPane>
-        <TabPane label="积分记录" name="name4">积分记录</TabPane>
+        <TabPane label="微课记录" name="2">微课记录</TabPane>
+        <TabPane label="互动记录" name="3">互动记录</TabPane>
+        <TabPane label="积分记录" name="4">积分记录</TabPane>
       </Tabs>
     </div>
   </div>
@@ -54,7 +54,8 @@
       name: "doctorDetail",
       data(){
         return {
-          commonHeight:''
+          commonHeight:'',
+          type:1
         }
       },
       components: {
@@ -67,6 +68,10 @@
         getCommonHeight(){
           let vm = this;
           vm.commonHeight = (vm.$refs.title.offsetHeight+10) + (vm.$refs.card.offsetHeight+30+10) + 36;
+        },
+        tabChange(name){
+          let vm = this;
+          vm.type = name;
         }
       }
     }

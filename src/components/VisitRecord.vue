@@ -54,10 +54,12 @@
           }
       },
       props:{
-        postCommonH:''
+        postCommonH:'',
+        tabType:''
       },
       mounted(){
         this.getTableH();
+        console.info(this.tabType)
       },
       methods:{
         getTableH(){

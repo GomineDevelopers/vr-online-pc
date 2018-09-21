@@ -79,25 +79,11 @@ export default {
       data2: [],
       curPage: 1,
       columns2: [
-        { type: "selection", width: 60, align: "center" },
-        { title: "编号", key: "title" },
-        {
-          title: "微信号",
-          key: "id",
-          filterMultiple: false,
-          filterMethod(value, row) {
-            if (value === 1) {
-              return row.id >= 10;
-            } else if (value === 2) {
-              return row.id < 10;
-            }
-          }
-        },
-        { title: "姓名", key: "contents" },
-        { title: "浏览次数", key: "total" },
-        {
-          title: "妇科专家",
-          key: "action",
+        { title:"序号",type: "selection", width: 60, align: "center" },
+        { title: "编号", key: "numbers",width:117},
+        { title: "姓名", key: "realname" },
+        { title: "浏览次数", key: "click" },
+        { title: "标签",key: "action",
           filters: [
             {
               label: "大量门诊",
@@ -121,33 +107,58 @@ export default {
             }
           }
         },
-        {
-          title: "医院",
-          key: "hospitalName"
-        },
-        {
-          title: "科室",
-          key: "unit"
-        },
-        {
-          title: "职称",
-          key: "title"
-        },
-        {
-          title: "手机号",
-          key: "phoneNumber"
-        },
-        {
-          title: "邮箱",
-          key: "Email"
-        },
-        {
-          title: "操作",
-          key: "action",
-          width: 150,
-          align: "center",
+        {title: "医院",key: "hospital"},
+        {title: "科室",key: "department"},
+        {title: "职称",key: "job"},
+        {title: "手机号",key: "mobile",width: 110,},
+        {title: "邮箱",key: "email",width: 180,},
+        {title: "状态",key: "is_registered",
+          render:(h,params)=>{
+            let texts = "";
+            if(params.row.is_registered == 1){
+              texts = "待审核";
+            }else if(params.row.is_registered == 2){
+              texts = "通过";
+            }else if(params.row.is_registered == 3){
+              texts = "未通过";
+            }
+            return h('span',{
+              props:{},
+            },texts)
+          }},
+        {title: "操作",key: "action",width: 150,align: "center",
           render: (h, params) => {
             return h("div", [
+              h("Icon", {
+                props: {
+                  type: "md-checkmark-circle",
+                  size:"16"
+                },
+                style: {
+                  color: "#4fb115",
+                  display:(params.row.is_registered == 2 || params.row.is_registered == 3)?"none":"inline"
+                },
+                on: {
+                  click: () => {
+                    this.isPass(params.row.id,2);
+                  }
+                }
+              }),
+              h("Icon", {
+                props: {
+                  type: "md-close-circle",
+                  size:"16"
+                },
+                style: {
+                  color: "red",
+                  display:(params.row.is_registered == 2 || params.row.is_registered == 3)?"none":"inline"
+                },
+                on: {
+                  click: () => {
+                    this.isPass(params.row.id,3);
+                  }
+                }
+              }),
               h("Icon", {
                 props: {
                   type: "icon iconfont icon-ziliao",
@@ -189,9 +200,7 @@ export default {
                       this.remove(params.index);
                     }
                   }
-                },
-                "Delete"
-              )
+                })
             ]);
           }
         }
@@ -205,35 +214,15 @@ export default {
   methods: {
     getBgHeight() {
       let vm = this;
-      vm.tableBgH =
-        document.documentElement.clientHeight -
-        64 -
-        24 * 2 -
-        (vm.$refs.title.offsetHeight + 10) -
-        (vm.$refs.searchCard.offsetHeight + 26) -
-        2;
-      vm.tableH =
-        vm.tableBgH -
-        (vm.$refs.buttonDiv.offsetHeight + 10 * 2) -
-        (vm.$refs.pageDiv.offsetHeight + 10 * 2) -
-        10;
+      vm.tableBgH = document.documentElement.clientHeight -64 -24 * 2 -(vm.$refs.title.offsetHeight + 10) -(vm.$refs.searchCard.offsetHeight + 26) -2;
+      vm.tableH = vm.tableBgH - (vm.$refs.buttonDiv.offsetHeight + 10 * 2) - (vm.$refs.pageDiv.offsetHeight + 10 * 2) -10;
     },
     getData2() {
       let vm = this;
       this.$http
-        .get(vm.$commonTools.g_restUrl, {
-          params: {
-            i: "8",
-            c: "entry",
-            p: "article",
-            do: "shop",
-            m: "ewei_shop",
-            ccate: 35, //分类
-            page: vm.curPage
-          }
-        })
+        .get('http://icampaign.com.cn/customers/noob_system/admin/doctors/doctors_list')
         .then(function(response) {
-          vm.data2 = response.data.result.list;
+          vm.data2 = response.data.list;
         })
         .catch(function(error) {
           console.log(error);
@@ -299,6 +288,23 @@ export default {
     },
     goDetail(){
       this.$router.push({name:'DoctorDetail'});
+    },
+    isPass(id,status){
+      let vm = this;
+      vm.$http.get('http://icampaign.com.cn/customers/noob_system/admin/doctors/dectors_check', {
+        params: {
+          id: id,
+          status: status
+        }
+      })
+        .then(function(response) {
+          if(response.data.code == 200){
+            vm.getData2();
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
     }
   }
 };
