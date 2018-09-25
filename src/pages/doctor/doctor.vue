@@ -129,6 +129,14 @@ export default {
         {title: "操作",key: "action",width: 150,align: "center",
           render: (h, params) => {
             return h("div", [
+              h(
+                "Tooltip",{
+                  props:{
+                  trigger:"hover",
+                  content:"同意",
+                  placement:"top"
+                  }
+                },[
               h("Icon", {
                 props: {
                   type: "md-checkmark-circle",
@@ -143,7 +151,15 @@ export default {
                     this.isPass(params.row.id,2);
                   }
                 }
-              }),
+              })]),
+              h(
+                "Tooltip",{
+                  props:{
+                  trigger:"hover",
+                  content:"拒绝",
+                  placement:"top"
+                  }
+                },[
               h("Icon", {
                 props: {
                   type: "md-close-circle",
@@ -158,8 +174,16 @@ export default {
                     this.isPass(params.row.id,3);
                   }
                 }
-              }),
-              h("Icon", {
+              })]),
+              h(
+                "Tooltip",{
+                  props:{
+                  trigger:"hover",
+                  content:"医生资料",
+                  placement:"top"
+                  }
+                },[
+                h("Icon", {
                 props: {
                   type: "icon iconfont icon-ziliao",
                 },
@@ -172,7 +196,17 @@ export default {
                     this.goDetail();
                   }
                 }
-              }),
+              })
+              ]
+              ),
+              h(
+                "Tooltip",{
+                  props:{
+                  trigger:"hover",
+                  content:"医生编辑",
+                  placement:"top"
+                  }
+                },[
               h("Icon", {
                 props: {
                   type: "icon iconfont icon-bianji"
@@ -184,7 +218,16 @@ export default {
                 click: () => {
                   this.show(params.index);
                 }
-              }),
+              })
+              ]),
+              h(
+                "Tooltip",{
+                  props:{
+                  trigger:"hover",
+                  content:"删除",
+                  placement:"top"
+                  }
+                },[
               h(
                 "Icon",
                 {
@@ -201,6 +244,7 @@ export default {
                     }
                   }
                 })
+                ])
             ]);
           }
         }
@@ -313,70 +357,70 @@ export default {
 
 <style scoped>
 .title {
-  font-size: 1.25rem;
-  color: #adb3a8;
-  margin-bottom: 10px;
+	font-size: 1.25rem;
+	color: #adb3a8;
+	margin-bottom: 10px;
 }
 
 .searchCard {
-  background-color: #fff;
-  height: 8vh;
-  line-height: 8vh;
-  padding: 0 3vh;
-  white-space: nowrap;
+	background-color: #fff;
+	height: 8vh;
+	line-height: 8vh;
+	padding: 0 3vh;
+	white-space: nowrap;
 }
 
 .tableDiv {
-  background-color: #fff;
-  margin-top: 26px;
-  padding: 2vh;
+	background-color: #fff;
+	margin-top: 26px;
+	padding: 2vh;
 }
 
 .pageDiv {
-  margin: 10px;
-  text-align: right;
+	margin: 10px;
+	text-align: right;
 }
 
 .inputStyle {
-  width: 10vw;
+	width: 10vw;
 }
 
 .buttonDiv {
-  text-align: right;
-  margin-bottom: 10px;
+	text-align: right;
+	margin-bottom: 10px;
 }
 
 .activeitem::before {
-  font-style: normal;
-  font-weight: bold;
-  -webkit-font-smoothing: antialiased;
-  content: "\2713";
-  position: absolute;
-  top: 0px;
-  right: 2px;
-  color: #ffffff;
-  z-index: 1;
-  font-size: 12px;
+	font-style: normal;
+	font-weight: bold;
+	-webkit-font-smoothing: antialiased;
+	content: '\2713';
+	position: absolute;
+	top: 0px;
+	right: 2px;
+	color: #ffffff;
+	z-index: 1;
+	font-size: 12px;
 }
 
 .activeitem::after {
-  content: "";
-  position: absolute;
-  top: 1px;
-  right: 0;
-  width: 0;
-  height: 0;
-  border-top: 20px solid #65b81b;
-  border-left: 24px solid transparent;
+	content: '';
+	position: absolute;
+	top: 1px;
+	right: 0;
+	width: 0;
+	height: 0;
+	border-top: 20px solid #65b81b;
+	border-left: 24px solid transparent;
 }
 
 .tagDiv {
-  position: relative;
-  display: inline-block;
-  margin: 5px;
+	position: relative;
+	display: inline-block;
+	margin: 5px;
 }
 .tag-row {
-  margin: 0.5vh 0;
+	margin: 0.5vh 0;
 }
 </style>
 
