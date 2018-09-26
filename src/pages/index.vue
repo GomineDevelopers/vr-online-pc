@@ -55,6 +55,12 @@
                 <span>标签管理</span>
               </div>
             </MenuItem>
+            <MenuItem name="databaselist">
+              <div @click="changeRouter('DataBaseList')">
+                <Icon custom="icon iconfont icon-common-xiangmubiaoqian-copy"></Icon>
+                <span>资料库</span>
+              </div>
+            </MenuItem>
           </Menu>
         </Sider>
         <Layout>
