@@ -126,5 +126,6 @@
     background-color: #f5fbfa;
     overflow-x: hidden;
     overflow-y: auto;
+    height: 100%;
   }
 </style>
