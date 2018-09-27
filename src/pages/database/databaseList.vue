@@ -1,119 +1,114 @@
 <template>
-<div class="database-list">
-  <Row>
-  <div class="title" ref="title">资料库</div>
-  </Row>
-
+  <div>
     <Row>
-      <Col span="24" class="search-row">
-        <Button icon="md-add" class="add-content" @click="gotoDetail('DataBaseAdd')">添加资料</Button>
-      </Col>
+      <div class="title" ref="title">资料库</div>
     </Row>
-  <div class="rapper" >
-    <Row type="flex" justify="space-between">
-      <div  class="card-wrapper">
-        <Card>
-          <div class="card-img">
-            <img src="static/images/ExampleCard.png">
-            <p class="img-descriptin" v-text="">img-descriptin</p>
-          </div>
-          <div class="card-footer">
-            <Row>
-              <Col span="6">
-                <div class="icon-wrapper">
-                  <Icon type="ios-redo" size="18" color="#8d8d8d"/>
-                  <span class="number">20</span>
-                </div>
-              </Col>
-              <Col span="6">
-                <div class="icon-wrapper">
-                  <Icon type="md-eye" size="18" color="#8d8d8d"/>
-                  <span class="number">22</span>
-                </div>
-              </Col>
-            </Row>
-            <Row>
-              <Col span="18" class="update-wrapper">更新于
-                <span class="update-time">2018-6-2</span>
-              </Col>
-            </Row>
-            <Row>
-              <Col span="6">
-                <div class="icon-wrapper">
-                  <Icon type="icon iconfont icon-bianji" size="14" color="#3fab23"/>
-                  <span class="number">编辑</span>
-                </div>
-              </Col>
-              <Col span="6">
-                <div class="icon-wrapper">
-                  <Icon type="icon iconfont icon-shanchu" size="14" color="#3fab23"/>
-                  <span class="number">删除</span>
-                </div>
-              </Col>
-            </Row>
 
+    <div class="database-list" :style="{height: conH + 'px' }">
+      <Row>
+        <Col span="24" class="search-row">
+          <Button icon="md-add" class="add-content" @click="goDetail">添加资料</Button>
+        </Col>
+      </Row>
+      <div class="rapper">
+        <Row>
+          <div class="card-wrapper" v-for="item in listData" :key="item.id">
+            <Card>
+              <div class="card-img">
+                <img src="static/images/ExampleCard.png">
+                <p class="img-descriptin" v-text="item.title"></p>
+              </div>
+              <div class="card-footer">
+                <Row>
+                  <Col span="6">
+                    <div class="icon-wrapper">
+                      <Icon type="ios-redo" size="18" color="#8d8d8d"/>
+                      <span class="number" v-text="item.forward"></span>
+                    </div>
+                  </Col>
+                  <Col span="6">
+                    <div class="icon-wrapper">
+                      <Icon type="md-eye" size="18" color="#8d8d8d"/>
+                      <span class="number" v-text="item.click"></span>
+                    </div>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col span="18" class="update-wrapper">更新于
+                    <span class="update-time" v-text="$commonTools.formatDate2(item.update_time)"></span>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col span="9">
+                    <div class="icon-wrapper">
+                      <Icon type="icon iconfont icon-bianji" size="14" color="#3fab23"/>
+                      <span class="number">编辑</span>
+                    </div>
+                  </Col>
+                  <Col span="9">
+                    <div class="icon-wrapper">
+                      <Icon type="icon iconfont icon-shanchu" size="14" color="#3fab23"/>
+                      <span class="number">删除</span>
+                    </div>
+                  </Col>
+                </Row>
+              </div>
+            </Card>
           </div>
 
-          <div>
-
-          </div>
-        </Card>
+        </Row>
+        <div class="page-wrapper">
+          <Page :total="totalPage" show-elevator @on-change="changePage"/>
+        </div>
       </div>
-      <div  class="card-wrapper">
-        <Card >
-          <div style="text-align:center">
-            <img src="static/images/indexLogo.png">
-          </div>
-        </Card>
-      </div>
-      <div  class="card-wrapper">
-        <Card >
-          <div style="text-align:center">
-            <img src="static/images/indexLogo.png">
-            <h3>A high quality UI Toolkit based on Vue.js</h3>
-          </div>
-        </Card>
-      </div>
-      <div  class="card-wrapper">
-        <Card >
-          <div style="text-align:center">
-            <img src="static/images/indexLogo.png">
-            <h3>A high quality UI Toolkit based on Vue.js</h3>
-          </div>
-        </Card>
-      </div>
-      <div  class="card-wrapper">
-        <Card >
-          <div style="text-align:center">
-            <img src="static/images/indexLogo.png">
-            <h3>A high quality UI Toolkit based on Vue.js</h3>
-          </div>
-        </Card>
-      </div>
-    </Row>
-    <div class="page-wrapper" ref="pageDiv">
-      <Page :total="100" show-elevator @on-change=""/>
     </div>
   </div>
-</div>
 </template>
 
 <script>
     export default {
-        name: "databaseList",
+      name: "databaseList",
       data(){
           return{
-            contentHeight:''
+            curPage:'',
+            listData:[],
+            conH:'',
+            totalPage:0
           }
-
       },
       mounted(){
-
+        this.getBgHeight();
+        this.getListData();
       },
       methods:{
-        gotoDetail(routerName){
-          this.$router.push({ name: routerName})
-      }
+        getBgHeight() {
+          let vm = this;
+          vm.conH = document.documentElement.clientHeight -64 -24 * 2 -(vm.$refs.title.offsetHeight + 10)-2;
+        },
+        getListData(){
+          let vm = this;
+          this.$http.get('http://icampaign.com.cn/customers/noob_system/admin/database/database_list',{
+            params: {
+              page : vm.curPage
+            }
+          })
+            .then(function(response) {
+              if(response.data.code == 200){
+                vm.listData = response.data.list.data;
+                vm.totalPage = response.data.list.total;
+              }
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        },
+        changePage(curPage) {
+          this.curPage = curPage;
+          this.getListData();
+        },
+        goDetail(){
+          this.$router.push({ name: 'DataBaseAdd'});
+        }
       }
     }
 </script>
@@ -121,8 +116,6 @@
 <style scoped>
   .database-list{
     background-color: white;
-    height: 100%;
-
     position: relative;
   }
   .title {
@@ -141,13 +134,12 @@
     color: #ffffff;
   }
   .rapper{
-    padding: 0 1%;
-
+    padding: 0 1vh;
   }
   .card-wrapper{
     width: 19%;
     float: left;
-    margin-left: 1%;
+    margin: 1vh;
   }
   .card-img{
     text-align: center;
@@ -189,6 +181,7 @@
   }
   .update-wrapper{
     margin: 1vh 0;
+    color:#8d8d8d;
   }
   .update-time{
     margin-left: 5px;

@@ -57,7 +57,7 @@
             </MenuItem>
             <MenuItem name="databaselist">
               <div @click="changeRouter('DataBaseList')">
-                <Icon custom="icon iconfont icon-common-xiangmubiaoqian-copy"></Icon>
+                <Icon custom="icon iconfont icon-ziliao"></Icon>
                 <span>资料库</span>
               </div>
             </MenuItem>

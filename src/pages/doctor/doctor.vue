@@ -17,7 +17,7 @@
         </div>
         <Table ref="selection" :columns="columns2" :data="data2"  @on-select="selected" @on-select-cancel="unSelected" :height="tableH"></Table>
         <div class="pageDiv" ref="pageDiv">
-          <Page :total="100" show-elevator @on-change="changePage"/>
+          <Page :total="totalPage" show-elevator @on-change="changePage"/>
         </div>
       </div>
 
@@ -78,6 +78,7 @@ export default {
       ],
       data2: [],
       curPage: 1,
+      totalPage:0,
       columns2: [
         { title:"序号",type: "selection", width: 60, align: "center" },
         { title: "编号", key: "numbers",width:117},
@@ -152,15 +153,8 @@ export default {
                   }
                 }
               })]),
-              h(
-                "Tooltip",{
-                  props:{
-                  trigger:"hover",
-                  content:"拒绝",
-                  placement:"top"
-                  }
-                },[
-              h("Icon", {
+              h("Tooltip",{props:{trigger:"hover",content:"拒绝",placement:"top"}},
+                [h("Icon", {
                 props: {
                   type: "md-close-circle",
                   size:"16"
@@ -175,15 +169,8 @@ export default {
                   }
                 }
               })]),
-              h(
-                "Tooltip",{
-                  props:{
-                  trigger:"hover",
-                  content:"医生资料",
-                  placement:"top"
-                  }
-                },[
-                h("Icon", {
+              h("Tooltip",{props:{trigger:"hover",content:"医生资料",placement:"top"}},
+                [h("Icon", {
                 props: {
                   type: "icon iconfont icon-ziliao",
                 },
@@ -199,15 +186,9 @@ export default {
               })
               ]
               ),
-              h(
-                "Tooltip",{
-                  props:{
-                  trigger:"hover",
-                  content:"医生编辑",
-                  placement:"top"
-                  }
-                },[
-              h("Icon", {
+              h("Tooltip",
+                {props:{trigger:"hover",content:"医生编辑",placement:"top"}},
+                [h("Icon", {
                 props: {
                   type: "icon iconfont icon-bianji"
                 },
@@ -220,17 +201,8 @@ export default {
                 }
               })
               ]),
-              h(
-                "Tooltip",{
-                  props:{
-                  trigger:"hover",
-                  content:"删除",
-                  placement:"top"
-                  }
-                },[
-              h(
-                "Icon",
-                {
+              h("Tooltip",{props:{trigger:"hover",content:"删除",placement:"top"}},
+                [h("Icon",{
                   props: {
                     custom: "icon iconfont icon-shanchu"
                   },
@@ -263,10 +235,16 @@ export default {
     },
     getData2() {
       let vm = this;
-      this.$http
-        .get('http://icampaign.com.cn/customers/noob_system/admin/doctors/doctors_list')
+      this.$http.get('http://icampaign.com.cn/customers/noob_system/admin/doctors/doctors_list',{
+        params: {
+          page : vm.curPage
+        }
+      })
         .then(function(response) {
-          vm.data2 = response.data.list;
+          if(response.data.code == 200){
+            vm.data2 = response.data.list.data;
+            vm.totalPage = parseInt(response.data.list.total);
+          }
         })
         .catch(function(error) {
           console.log(error);
