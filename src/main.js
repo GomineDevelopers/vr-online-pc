@@ -4,6 +4,7 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import axios from 'axios';
+import qs from 'qs';
 import {commonTools} from '../static/js/common';
 import iView from 'iview'
 import 'iview/dist/styles/iview.css'
@@ -14,10 +15,8 @@ import '../static/icons/iconfont.css'
 Vue.config.productionTip = false;
 Vue.prototype.$http = axios;
 Vue.prototype.$commonTools = commonTools;
+Vue.prototype.$qs = qs;
 Vue.use(iView);
-// 引入
-
-
 
 /* eslint-disable no-new */
 new Vue({
