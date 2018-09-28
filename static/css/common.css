@@ -144,4 +144,8 @@
 .ivu-tabs-ink-bar{
   background-color: #51b213;
 }
+/*富文本编辑器*/
 
+.smeditor .input-area {
+  width: 100% !important;
+}

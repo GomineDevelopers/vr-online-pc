@@ -15,6 +15,9 @@ Vue.config.productionTip = false;
 Vue.prototype.$http = axios;
 Vue.prototype.$commonTools = commonTools;
 Vue.use(iView);
+// 引入
+
+
 
 /* eslint-disable no-new */
 new Vue({
