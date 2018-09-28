@@ -1,5 +1,9 @@
 <template>
-  <div class="databaseAdd">
+  <div>
+    <Row>
+      <div class="title" ref="title">添加资料</div>
+    </Row>
+    <div class="databaseAdd" >
     <Row>
       <Col span="12">
       <Form :model="formItem" :label-width="80">
@@ -49,16 +53,17 @@
         </FormItem>
         <FormItem label="内容：">
           <div id="app">
-            <VueUEditor @ready="editorReady" style="height: 400px"></VueUEditor>
+            <VueUEditor @ready="editorReady" style="height: 350px"></VueUEditor>
           </div>
         </FormItem>
         <FormItem>
           <Button type="primary" class="submit-button" @click="addData()">提交</Button>
-          <Button class="cancel-button">取消</Button>
+          <!--<Button class="cancel-button">取消</Button>-->
         </FormItem>
       </Form>
       </Col>
     </Row>
+    </div>
   </div>
 </template>
 <script>
@@ -79,29 +84,27 @@
         serverImgUrl:'http://icampaign.com.cn/customers/noob_system/admin/images/add_images',
         visible: false,
       //  富文本编辑器
-        postContent:''
+        postContent:'',
+        imgName:''
       }
 
     },
     mounted(){
 
     },
-
+    watch:{
+      postContent(curVal,oldVal){
+        this.postContent=curVal;
+      }
+    },
     methods:{
-      gotoDetail(routerName){
-        this.$router.push({ name: routerName})
-      },
-      //图片上传插件
-      handleView (name) {
-        this.imgName = name;
-        this.visible = true;
-      },
       handleRemove () {
         this.postImgUrl='';
       },
       handleSuccess (res, file) {
         file.url = res.path;
         file.name = res.filename;
+        this.imgName= res.filename;
         this.postImgUrl=res.path;
       },
       handleFormatError (file) {
@@ -118,33 +121,64 @@
       },
       handleBeforeUpload () {
 
+      },//图片上传插件
+      validator: function () {
+        let vm = this;
+        let msg = "";
+        if (!vm.formItem.title) {
+          msg = "未填写标题";
+        } else if (!vm.formItem.keyWords) {
+          msg = "未填写关键字";
+        } else if (!vm.postImgUrl) {
+          msg = "未上传图片";
+        } else if (!vm.postContent) {
+          msg = "未填写富文本内容";
+        }
+
+        if (msg) {
+          vm.$Message.warning(msg);
+          return false;
+        } else {
+          return true;
+        }
       },
-      //图片上传插件
       addData(){
-       let vm=this;
-        vm.$http.post(vm.$commonTools.g_restUrl+'admin/database/database_edit',{
-          params:{
-           title:vm.formItem.title,
-           auth:vm.formItem.author,
-           keywords:vm.formItem.keyWord,
-           description:vm.formItem.description,
-           cover:vm.imgName,
+          let vm=this;
+          let postData = {};
+          postData.title=vm.formItem.title,
+          postData.auth=vm.formItem.author,
+          postData.keywords=vm.formItem.keyWords,
+          postData.description=vm.formItem.description,
+          postData.cover=vm.imgName
+          postData.content=vm.postContent
 
-         }
-       }) .then(function(response) {
+       if(vm.validator()) {
+         vm.$http({
+           method: "post",
+           url:vm.$commonTools.g_restUrl+"admin/database/database_edit",
+           data:vm.$qs.stringify(postData),
 
-       })
-         .catch(function(error) {
-           console.log(error);
-         });
+         }).then(function (response) {
+           console.log(response)
+           if (response.data.code=="200"){
+             vm.$router.push({name: "DataBaseList"})
+             console.log("添加成功")
+           }
+         }).catch(function (error) {
+           console.log(error)
+
+         })
+       }else {
+
+       }
       },
       //富文本编辑
       editorReady (editorInstance) {
-        let vm=this;
-        editorInstance.setContent('Hello world!<br>你可以在这里初始化编辑器的初始内容。');
-        vm.postContent= editorInstance.getContent()
+
+        // editorInstance.setContent('Hello world!<br>你可以在这里初始化编辑器的初始内容。');
+
         editorInstance.addListener('contentChange', () => {
-          console.log('编辑器内容发生了变化：', editorInstance.getContent());
+          this.postContent= editorInstance.getContent();
         });
       }
     }
@@ -152,6 +186,18 @@
 </script>
 
 <style scoped>
+  .title {
+    font-size: 1.25rem;
+    color: #adb3a8;
+    margin-bottom: 10px;
+    background-color: #f5fbfa;
+  }
+  .databaseAdd{
+    height: fit-content;
+    background-color: #FFFFFF;
+    padding: 2vh 2vw;
+
+  }
 .thumb{
   max-width: 100%;
   max-height: 400px;
@@ -163,6 +209,9 @@
 .submit-button{
   width: 100px;
 
+}
+.ivu-form-item {
+  margin-bottom: 14px;
 }
 .cancel-button{
   width: 100px;

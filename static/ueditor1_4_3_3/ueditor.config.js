@@ -20,7 +20,7 @@
      */
   var URL = '/static/ueditor1_4_3_3/' || getUEBasePath();
 
-    /**
+  /**
      * 配置项主体。注意，此处所有涉及到路径的配置别遗漏URL变量。
      */
   window.UEDITOR_CONFIG = {
@@ -32,17 +32,29 @@
          serverUrl: URL + 'php/controller.php',
 
         //工具栏上的所有的功能按钮和下拉框，可以在new编辑器的实例时选择自己需要的重新定义
-         toolbars: [[
-            'undo', 'redo', '|',
-          'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', 'removeformat', 'formatmatch', 'autotypeset', 'blockquote', 'pasteplain', '|', 'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', 'selectall', 'cleardoc', '|',
-          'rowspacingtop', 'rowspacingbottom', 'lineheight', '|',
-           'fontfamily', 'fontsize', '|',
-          'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|', 'touppercase', 'tolowercase', '|',
-          'link', 'unlink', 'anchor', '|', 'imagenone', 'imageleft', 'imageright', 'imagecenter', '|',
-          'simpleupload', 'insertimage', 'template', 'background', '|',
-          'horizontal', '|',
-           'preview'
-        ]],
+    toolbars: [[
+     'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', 'removeformat', 'formatmatch', 'autotypeset', 'blockquote', 'pasteplain', '|', 'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', 'selectall', 'cleardoc',
+     'justifyleft', //居左对齐
+        'justifyright', //居右对齐
+        'justifycenter', //居中对齐
+        'justifyjustify', //两端对齐
+        'forecolor', //字体颜色
+        'backcolor', //背景色]
+        'emotion', //表情
+        'simpleupload', //单图上传
+        'imagenone', //默认
+        'imageleft', //左浮动
+        'imageright', //右浮动
+        'imagecenter', //居中
+        'cleardoc', //清空文档
+        'link', //超链接
+        'unlink', //取消链接
+        'fontsize', //字号
+        'fontfamily', //字体
+      'fullscreen',//全屏幕
+
+    ]
+   ],
 
 
 
@@ -73,8 +85,8 @@
 
         //语言配置项,默认是zh-cn。有需要的话也可以使用如下这样的方式来自动多语言切换，当然，前提条件是lang文件夹下存在对应的语言文件：
         //lang值也可以通过自动获取 (navigator.language||navigator.browserLanguage ||navigator.userLanguage).toLowerCase()
-        //,lang:"zh-cn"
-        //,langPath:URL +"lang/"
+        //  lang:"zh-cn"
+        // ,langPath: URL +"lang/zh-cn",
 
         //主题配置项,默认是default。有需要的话也可以使用如下这样的方式来自动多主题切换，当然，前提条件是themes文件夹下存在对应的主题文件：
         //现有如下皮肤:default

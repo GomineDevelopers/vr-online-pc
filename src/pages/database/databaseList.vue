@@ -4,7 +4,7 @@
       <div class="title" ref="title">资料库</div>
     </Row>
 
-    <div class="database-list" :style="{height: conH + 'px' }">
+    <div class="database-list" :style="{minheight: conH + 'px' }">
       <Row>
         <Col span="24" class="search-row">
           <Button icon="md-add" class="add-content" @click="goDetail">添加资料</Button>
@@ -15,7 +15,7 @@
           <div class="card-wrapper" v-for="item in listData" :key="item.id">
             <Card>
               <div class="card-img">
-                <img src="static/images/ExampleCard.png">
+                <img :src="item.cover">
                 <p class="img-descriptin" v-text="item.title"></p>
               </div>
               <div class="card-footer">
@@ -95,6 +95,7 @@
             .then(function(response) {
               if(response.data.code == 200){
                 vm.listData = response.data.list.data;
+                console.log(vm.listData)
                 vm.totalPage = response.data.list.total;
               }
             })
@@ -117,6 +118,7 @@
   .database-list{
     background-color: white;
     position: relative;
+    height: 100%;
   }
   .title {
     font-size: 1.25rem;
@@ -135,9 +137,10 @@
   }
   .rapper{
     padding: 0 1vh;
+    padding-bottom: 13vh;
   }
   .card-wrapper{
-    width: 19%;
+    width: 18%;
     float: left;
     margin: 1vh;
   }
@@ -170,6 +173,7 @@
     position: absolute;
     right: 5vh;
     bottom: 1vw;
+
   }
   .icon-wrapper{
     display: flex;
