@@ -15,42 +15,94 @@
           tableH:'',
           columns: [
             {title:'序号',type: 'index',width: 60,align: 'center'},
-            {title: '拜访方式',key: 'type',align: 'center'},
-            {title: '日期',key: 'date',align: 'center'},
-            {title: '目的',key: 'purpose',align: 'center'},
-            {title: '销售',key: 'name',align: 'center'},
-            {title: '操作',key: 'action',width: 150,align: 'center',
+            {title: '咨询人',key: 'realname',width: 100,align: 'center'},
+            {title: '疑难详情',key: 'problem',align: 'center'},
+            {title: '状态', key: 'status',width: 100, align: 'center',
               render: (h, params) => {
+                let texts = "";
+                if(params.row.status == 1){
+                  texts = "已回答";
+                }
                 return h('div', [
-                  h('Icon', {
+                  h('Tag', {
                     props: {
-                      type: "icon iconfont icon-ziliao",
+                      color: "green",
                     },
-                    style: {
-                      color: "#4fb115"
-                    },
+
                     on: {
                       click: () => {
                         this.show(params.index)
                       }
                     }
-                  })
+                  },texts)
+                ]);
+              }
+            },
+            {title: '咨询时间',key: 'askTime',align: 'center',
+              render:(h,params)=>{
+                let texts = this.$commonTools.formatDate(params.row.create_time);
+                return h('span',{
+                  props:{},
+                },texts)
+              }
+            },
+            {title: '回答人',key: 'reply_username',width: 100,align: 'center'},
+            {title: '回答时间',key: 'replyTime',width: 150,align: 'center',
+              render:(h,params)=>{
+                let texts = this.$commonTools.formatDate(params.row.reply_time);
+                return h('span',{
+                  props:{},
+                },texts)
+              }
+
+            },
+            {title: '操作',key: 'action',width: 200,align: 'center',
+              render: (h, params) => {
+                let texts = "";
+                if(params.row.status == 1){
+                  texts = "已回答";
+                }
+                return h('div', [
+
+                  h("Tooltip",{props:{trigger:"hover",content:"详情",placement:"top"}},
+                    [h("Icon",{
+                      props: {
+                        custom: "icon iconfont icon-ziliao"
+                      },
+                      style: {
+                        marginLeft: "5px",
+                        color: "#4fb115"
+                      },
+                      on: {
+                        click: () => {
+                          this.goDetail(params.row.id);
+                        }
+                      }
+                    })
+                    ]),
+                  h("Tooltip",{props:{trigger:"hover",content:"删除",placement:"top"}},
+                    [h("Icon",{
+                      props: {
+                        custom: "icon iconfont icon-shanchu"
+                      },
+                      style: {
+                        marginLeft: "5px",
+                        color: "#4fb115"
+                      },
+                      on: {
+                        click: () => {
+                          this.del(params.row.id);
+                        }
+                      }
+                    })
+                    ])
                 ]);
               }
             }
           ],
-          data: [{type: 'John Brown',date: 18,purpose: 'New York No. 1 Lake Park',name:'王五'},
-            {type: 'Jim Green',date: 24,purpose: 'London No. 1 Lake Park',name:'王五王五王五王五'},
-            {type: 'Joe Black',date: 30,purpose: 'Sydney No. 1 Lake Park',name:'王五'},
-            {type: 'Joe Black',date: 30,purpose: 'Sydney No. 1 Lake Park',name:'王五'},
-            {type: 'Joe Black',date: 30,purpose: 'Sydney No. 1 Lake Park',name:'王五'},
-            {type: 'Joe Black',date: 30,purpose: 'Sydney No. 1 Lake Park',name:'王五'},
-            {type: 'Joe Black',date: 30,purpose: 'Sydney No. 1 Lake Park',name:'王五'},
-            {type: 'Joe Black',date: 30,purpose: 'Sydney No. 1 Lake Park',name:'王五'},
-            {type: 'Joe Black',date: 30,purpose: 'Sydney No. 1 Lake Park',name:'王五'},
-            {type: 'Joe Black',date: 30,purpose: 'Sydney No. 1 Lake Park',name:'王五'},
-            {type: 'Joe Black',date: 30,purpose: 'Sydney No. 1 Lake Park',name:'王五'},
-            {type: 'Jon Snow',date: 26,purpose: 'Ottawa No. 2 Lake Park',name:'王五'}]
+          data: [],
+          totalPage:0,
+          type:"1"
         }
       },
       props:{
@@ -59,6 +111,7 @@
       },
       mounted(){
         this.getTableH();
+        this.handleExistedData();
       },
       methods:{
         getTableH(){
@@ -67,7 +120,52 @@
         },
         changePage(curPage){
           console.info(curPage)
-        }
+        },
+        goDetail(id){
+          this.getDetailData(id);
+          this.detailModel = true;
+        },
+        handleExistedData(type){
+          let vm=this;
+            vm.$http({
+              method: "get",
+              url:vm.$commonTools.g_restUrl+"admin/advisory/advisory_list",
+              params:{
+              type: vm.type
+              },
+            }).then(function (response) {
+              if (response.data.code=="200"){
+                vm.data=response.data.list.data;
+                vm.totalPage = response.data.list.total;
+              }
+            }).catch(function (error) {
+              console.log(error)
+
+            })
+        },
+        getDetailData(id){
+
+        },
+        del(id){
+          let vm = this;
+          this.$http.get(vm.$commonTools.g_restUrl+'',{
+            params: {
+              id : id
+            }
+          })
+            .then(function(response) {
+              if(response.data.code == 200){
+                vm.$Notice.success({
+                  title: '删除成功！'
+                });
+                vm.handleExistedData(1);
+              }
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        },
+
       }
     }
 </script>
