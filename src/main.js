@@ -18,6 +18,19 @@ Vue.prototype.$commonTools = commonTools;
 Vue.prototype.$qs = qs;
 Vue.use(iView);
 
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    let token = window.localStorage.getItem('token');
+    if (token) {
+      next();
+    } else {
+      next({name:'Login'});
+    }
+  } else {
+    next(); // 确保一定要调用 next()
+  }
+})
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

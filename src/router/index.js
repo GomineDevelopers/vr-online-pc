@@ -33,27 +33,42 @@ export default new Router({
         {
           path: 'doctor',
           component: Doctor,
-          name:'Doctor'
+          name:'Doctor',
+          meta:{
+            requiresAuth:true
+          }
         },
         {
           path: 'doctordetail',
           component: DoctorDetail,
-          name:'DoctorDetail'
+          name:'DoctorDetail',
+          meta:{
+            requiresAuth:true
+          }
         },
         {
           path: 'tag',
           component: Tag,
-          name:'Tag'
+          name:'Tag',
+          meta:{
+            requiresAuth:true
+          }
         },
         {
           path: 'databaselist',
           component: DataBaseList,
-          name:'DataBaseList'
+          name:'DataBaseList',
+          meta:{
+            requiresAuth:true
+          }
         },
         {
           path: 'databaseadd',
           component: DataBaseAdd,
-          name:'DataBaseAdd'
+          name:'DataBaseAdd',
+          meta:{
+            requiresAuth:true
+          }
         },
         {
           path: 'demo01',

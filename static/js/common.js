@@ -1,8 +1,7 @@
 const commonTools = {};
 
-/*commonTools.g_restUrl = 'http://icampaign.com.cn/customers/minge/ming/app/index.php';*/
 //线上地址
-commonTools.g_restUrl = 'http://icampaign.com.cn/customers/noob_system/';
+commonTools.g_restUrl = 'http://icampaign.com.cn/customers/vrOnlinePc/backend/';
 
 commonTools.formatDate = function (date, showDetail) {
   var isShow = showDetail || false;
@@ -37,6 +36,7 @@ commonTools.formatDate2 = function (date) {
 
   return year + "年" + month + "月" + date1 + "日";
 }
+
 export {
   commonTools
 }

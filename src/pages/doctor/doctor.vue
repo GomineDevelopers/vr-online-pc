@@ -2,13 +2,12 @@
       <div>
       <div class="title" ref="title">医生管理</div>
       <div class="searchCard" ref="searchCard">
-        所属医院：<Input v-model="name" clearable class="inputStyle"/>
-        医生姓名：<Input v-model="name" clearable class="inputStyle"/>
-        负责销售：<Input v-model="name" clearable class="inputStyle"/>
-        医生编号：<Input v-model="name" clearable class="inputStyle"/>
-        医生手机：<Input v-model="name" clearable class="inputStyle"/>
-        <Button type="success">搜索</Button>
-        <Button type="warning">重置</Button>
+        所属医院：<Input v-model="hospitalName" clearable class="inputStyle"/>
+        医生姓名：<Input v-model="doctorName" clearable class="inputStyle"/>
+        医生编号：<Input v-model="doctorNum" clearable class="inputStyle"/>
+        医生手机：<Input v-model="doctorMobile" clearable class="inputStyle"/>
+        <Button type="success" @click="search">搜索</Button>
+        <Button type="warning" @click="clear">重置</Button>
       </div>
       <div class="tableDiv" :style="{height:tableBgH+'px'}">
         <div class="buttonDiv" ref="buttonDiv">
@@ -17,7 +16,7 @@
         </div>
         <Table ref="selection" :columns="columns2" :data="data2"  @on-select="selected" @on-select-cancel="unSelected" :height="tableH"></Table>
         <div class="pageDiv" ref="pageDiv">
-          <Page :total="totalPage" show-elevator @on-change="changePage"/>
+          <Page :total="totalPage" show-elevator :current="curPage" @on-change="changePage"/>
         </div>
       </div>
 
@@ -39,6 +38,141 @@
           </Row>
          </div>
       </Modal>
+
+      <Modal v-model="detailEditModel" @on-ok="save(detailData)" @on-cancel="cancel">
+        <Row class="detail_row">
+          <Col span="12">
+            <span class="detail_title">编号：</span>
+            <span class="detail_text" v-text="detailData.numbers"></span>
+          </Col>
+          <Col span="12">
+            <span class="detail_title">姓名：</span>
+            <span class="detail_text" v-text="detailData.realname"></span>
+          </Col>
+        </Row>
+        <Row class="detail_row">
+          <Col span="12">
+            <span class="detail_title">医院：</span>
+            <Input v-model="detailData.hospital" class="inputStyle"/>
+          </Col>
+          <Col span="12">
+            <span class="detail_title">科室：</span>
+            <Input v-model="detailData.department" class="inputStyle"/>
+          </Col>
+        </Row>
+        <Row class="detail_row">
+          <Col span="12">
+            <span class="detail_title">职称：</span>
+            <Input v-model="detailData.job" class="inputStyle"/>
+          </Col>
+          <Col span="12">
+            <span class="detail_title">注册时间：</span>
+            <span class="detail_text" v-text="$commonTools.formatDate(detailData.reg_time)"></span>
+          </Col>
+        </Row>
+        <Row class="detail_row">
+          <Col span="12">
+            <span class="detail_title">手机：</span>
+            <Input v-model="detailData.mobile"class="inputStyle"/>
+          </Col>
+          <Col span="12">
+            <span class="detail_title">邮箱：</span>
+            <Input v-model="detailData.email" class="inputStyle"/>
+          </Col>
+        </Row>
+        <Row class="detail_row">
+          <Col span="12">
+            <span class="detail_title">微信号：</span>
+            <span class="detail_text" v-text="detailData.wechat"></span>
+          </Col>
+          <Col span="12">
+            <span class="detail_title">昵称：</span>
+            <span class="detail_text" v-text="detailData.nickname"></span>
+          </Col>
+        </Row>
+        <Row class="detail_row">
+          <Col span="24">
+            <span class="detail_title">所在城市：</span>
+            <span class="detail_text" v-text="detailData.citys"></span>
+          </Col>
+        </Row>
+        <Row class="detail_row">
+          <Col span="24">
+            <span class="detail_title">状态：</span>
+            <span class="detail_text" v-text="detailData.is_registered"></span>
+          </Col>
+        </Row>
+        <!--<Row>
+          <Col span="24">
+            <span class="detail_title">标签：</span>
+            <span></span>
+          </Col>
+        </Row>-->
+      </Modal>
+      <Modal v-model="detailModel" :footer-hide="true">
+        <Row class="detail_row">
+          <Col span="8" class="detail_img"><img :src="detailData.avatar"></Col>
+          <Col span="12">
+            <div class="detail_row">
+              <span class="detail_title">姓名：</span>
+              <span class="detail_text" v-text="detailData.realname"></span>
+            </div>
+            <div class="detail_row">
+              <span class="detail_title">昵称：</span>
+              <span class="detail_text" v-text="detailData.nickname"></span>
+            </div>
+            <div class="detail_row">
+              <span class="detail_title">医院：</span>
+              <span class="detail_text" v-text="detailData.hospital"></span>
+            </div>
+            <div class="detail_row">
+              <span class="detail_title">科室：</span>
+              <span class="detail_text" v-text="detailData.department"></span>
+            </div>
+            <div class="detail_row">
+              <span class="detail_title">职称：</span>
+              <span class="detail_text" v-text="detailData.job"></span>
+            </div>
+          </Col>
+        </Row>
+        <Row class="detail_row">
+          <Col span="12">
+            <span class="detail_title">编号：</span>
+            <span class="detail_text" v-text="detailData.numbers"></span>
+          </Col>
+          <Col span="12">
+            <span class="detail_title">注册时间：</span>
+            <span class="detail_text" v-text="$commonTools.formatDate(detailData.reg_time)"></span>
+          </Col>
+        </Row>
+        <Row class="detail_row">
+          <Col span="12">
+            <span class="detail_title">状态：</span>
+            <span class="detail_text" v-text="detailData.is_registered"></span>
+          </Col>
+          <Col span="12">
+            <span class="detail_title">微信号：</span>
+            <span class="detail_text" v-text="detailData.wechat"></span>
+          </Col>
+        </Row>
+        <Row class="detail_row">
+          <Col span="12">
+            <span class="detail_title">手机号：</span>
+            <span class="detail_text" v-text="detailData.mobile"></span>
+          </Col>
+          <Col span="12">
+            <span class="detail_title">邮箱：</span>
+            <span class="detail_text" v-text="detailData.email"></span>
+          </Col>
+        </Row>
+        <Row>
+          <Col span="24">
+            <span class="detail_title">所在城市：</span>
+            <span class="detail_text" v-text="detailData.citys"></span>
+          </Col>
+        </Row>
+
+      </Modal>
     </div>
 </template>
 
@@ -47,10 +181,20 @@ export default {
   name: "doctor",
   data() {
     return {
-      name: "",
+      hospitalName:'',
+      doctorName:'',
+      doctorNum:'',
+      doctorMobile:'',
       tableBgH: "",
       tableH: "",
+      curPage:1,
+      data2: [],
+      totalPage:0,
       labelModel: false,
+      detailModel:false,
+      detailEditModel:false,
+      detailData:"",
+
       selections: [],
       tag: "",
       subtag: "",
@@ -76,14 +220,27 @@ export default {
         { name: "全国十佳" },
         { name: "老中医" }
       ],
-      data2: [],
-      curPage: 1,
-      totalPage:0,
       columns2: [
-        { title:"序号",type: "selection", width: 60, align: "center" },
+        { title:"序号",type: "selection", width: 50, align: "center" },
+        {title: "头像", key: "avatar",width:60,
+          render:(h,params)=>{
+            return h("img",{
+              props:{},
+              attrs:{
+                src:params.row.avatar
+              },
+              style:{
+                width:"32px",
+              }
+            })
+          }
+        },
         { title: "编号", key: "numbers",width:117},
         { title: "姓名", key: "realname" },
-        { title: "浏览次数", key: "click" },
+        { title: "昵称", key: "nickname" },
+        {title: "医院",key: "hospital"},
+        {title: "科室",key: "department"},
+        {title:"城市",key:"citys"},
         { title: "标签",key: "action",
           filters: [
             {
@@ -108,11 +265,14 @@ export default {
             }
           }
         },
-        {title: "医院",key: "hospital"},
-        {title: "科室",key: "department"},
-        {title: "职称",key: "job"},
-        {title: "手机号",key: "mobile",width: 110,},
-        {title: "邮箱",key: "email",width: 180,},
+        { title: "注册时间", key: "reg_time",width:140,
+          render:(h,params)=>{
+            let texts = this.$commonTools.formatDate(params.row.reg_time);
+            return h('span',{
+              props:{},
+            },texts)
+          }
+        },
         {title: "状态",key: "is_registered",
           render:(h,params)=>{
             let texts = "";
@@ -122,23 +282,19 @@ export default {
               texts = "通过";
             }else if(params.row.is_registered == 3){
               texts = "未通过";
+            }else if(params.row.is_registered == 0){
+              texts = "未注册";
             }
             return h('span',{
               props:{},
             },texts)
-          }},
+          }
+        },
         {title: "操作",key: "action",width: 150,align: "center",
           render: (h, params) => {
             return h("div", [
-              h(
-                "Tooltip",{
-                  props:{
-                  trigger:"hover",
-                  content:"同意",
-                  placement:"top"
-                  }
-                },[
-              h("Icon", {
+              h("Tooltip",{props:{trigger:"hover",content:"同意", placement:"top"}},
+                [h("Icon", {
                 props: {
                   type: "md-checkmark-circle",
                   size:"16"
@@ -169,7 +325,7 @@ export default {
                   }
                 }
               })]),
-              h("Tooltip",{props:{trigger:"hover",content:"医生资料",placement:"top"}},
+              h("Tooltip",{props:{trigger:"hover",content:"资料",placement:"top"}},
                 [h("Icon", {
                 props: {
                   type: "icon iconfont icon-ziliao",
@@ -180,14 +336,14 @@ export default {
                 },
                 on: {
                   click: () => {
-                    this.goDetail();
+                    this.goDetail(params.row.id);
                   }
                 }
               })
               ]
               ),
               h("Tooltip",
-                {props:{trigger:"hover",content:"医生编辑",placement:"top"}},
+                {props:{trigger:"hover",content:"编辑",placement:"top"}},
                 [h("Icon", {
                 props: {
                   type: "icon iconfont icon-bianji"
@@ -196,8 +352,10 @@ export default {
                   marginLeft: "5px",
                   color: "#4fb115"
                 },
-                click: () => {
-                  this.show(params.index);
+                on: {
+                  click: () => {
+                    this.editDetail(params.row.id);
+                  }
                 }
               })
               ]),
@@ -212,7 +370,7 @@ export default {
                   },
                   on: {
                     click: () => {
-                      this.remove(params.index);
+                      this.del(params.row.id);
                     }
                   }
                 })
@@ -225,7 +383,7 @@ export default {
   },
   mounted() {
     this.getBgHeight();
-    this.getData2();
+    this.getData2(1);
   },
   methods: {
     getBgHeight() {
@@ -235,30 +393,150 @@ export default {
     },
     getData2() {
       let vm = this;
-      this.$http.get('http://icampaign.com.cn/customers/noob_system/admin/doctors/doctors_list',{
-        params: {
-          page : vm.curPage
-        }
+      let postData = {};
+      postData.page = vm.curPage ;
+      postData.hospital = vm.hospitalName;
+      postData.numbers = vm.doctorNum;
+      postData.mobile = vm.doctorMobile;
+      postData.realname = vm.doctorName;
+      this.$http({
+        method:"post",
+        url:vm.$commonTools.g_restUrl+'admin/doctors/doctors_list',
+        data:vm.$qs.stringify(postData)
       })
         .then(function(response) {
           if(response.data.code == 200){
             vm.data2 = response.data.list.data;
-            vm.totalPage = parseInt(response.data.list.total);
+            vm.totalPage = response.data.list.total;
           }
         })
         .catch(function(error) {
           console.log(error);
         });
     },
+    search(){
+      /*搜索从第一页开始*/
+      this.curPage = 1;
+      this.getData2();
+    },
+    clear(){
+      let vm = this;
+      vm.hospitalName = "";
+      vm.doctorNum = "";
+      vm.doctorMobile = "";
+      vm.doctorName = "";
+    },
+    isPass(id,status){//通过or拒绝
+      let vm = this;
+      vm.$http.get(vm.$commonTools.g_restUrl+'admin/doctors/dectors_check', {
+        params: {
+          id: id,
+          status: status
+        }
+      })
+        .then(function(response) {
+          if(response.data.code == 200){
+            vm.getData2();
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
+    getDetailData(id){
+      let vm = this;
+      this.$http.get(vm.$commonTools.g_restUrl+'admin/doctors/dectors_detail',{
+        params: {
+          id : id
+        }
+      })
+        .then(function(response) {
+          if(response.data.code == 200){
+            vm.detailData = response.data.data;
+            if(response.data.data.is_registered == '0'){
+              vm.detailData.is_registered = "未注册";
+            }else if(response.data.data.is_registered == '1'){
+              vm.detailData.is_registered = "待审核";
+            }else if(response.data.data.is_registered == '2'){
+              vm.detailData.is_registered = "通过";
+            }else if(response.data.data.is_registered == '3'){
+              vm.detailData.is_registered = "未通过";
+            }
+
+            vm.detailData.id = id;
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
+    goDetail(id){
+      this.getDetailData(id);
+      this.detailModel = true;
+    },
+    del(id){
+      let vm = this;
+      this.$http.get(vm.$commonTools.g_restUrl+'admin/doctors/doctors_del',{
+        params: {
+          id : id
+        }
+      })
+        .then(function(response) {
+          if(response.data.code == 200){
+            vm.$Notice.success({
+              title: '删除成功！'
+            });
+            vm.getData2(1);
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
+    changePage(curPage) {
+      this.curPage = curPage;
+      this.getData2();
+    },
+    editDetail(id){
+      this.getDetailData(id);
+      this.detailEditModel =true;
+    },
+    save(newDetailData){
+      if(newDetailData.is_registered == "未注册"){
+        newDetailData.is_registered = 0;
+      }else if(newDetailData.is_registered == "待审核"){
+        newDetailData.is_registered = 1;
+      }else if(newDetailData.is_registered == "通过"){
+        newDetailData.is_registered = 2;
+      }else if(newDetailData.is_registered == "未通过"){
+        newDetailData.is_registered = 3;
+      }
+      let vm = this;
+      this.$http({
+        method:"post",
+        url:vm.$commonTools.g_restUrl+'admin/doctors/doctors_edit',
+        data:vm.$qs.stringify(newDetailData)
+      })
+        .then(function(response) {
+          if(response.data.code == 200){
+            vm.$Notice.success({
+              title: '编辑成功！'
+            });
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
+    cancel(){
+      this.detailEditModel = false;
+    },
+
     selected(selection, row) {
       this.selections = selection;
     },
     unSelected(selection, row) {
       this.selections = selection;
-    },
-    changePage(curPage) {
-      this.curPage = curPage;
-      this.getData2();
     },
     showLabel() {
       let vm = this;
@@ -287,46 +565,13 @@ export default {
       let vm = this;
       if (vm.tagValidate()) {
         console.log(vm.selections);
-        this.$Message.success("添加标签成功");
-        // ajax请求发送
-        let postData = {};
-        dataIds = [];
-        postData.tag = vm.tag;
-        postData.subtag = vm.subtag;
-        vm.axois.post(vm.$commonTools.g_restUrl, {
-          params: {
-            i: "8",
-            c: "entry",
-            p: "article",
-            do: "shop",
-            m: "ewei_shop"
-          },
-          data: vm.$qs.stringify(postData)
-        });
       }
     },
-    remove(index) {
-      this.data2.splice(index, 1);
-    },
-    goDetail(){
-      this.$router.push({name:'DoctorDetail'});
-    },
-    isPass(id,status){
-      let vm = this;
-      vm.$http.get('http://icampaign.com.cn/customers/noob_system/admin/doctors/dectors_check', {
-        params: {
-          id: id,
-          status: status
-        }
-      })
-        .then(function(response) {
-          if(response.data.code == 200){
-            vm.getData2();
-          }
-        })
-        .catch(function(error) {
-          console.log(error);
-        });
+
+    tip(){
+      this.$Notice.info({
+        title: '功能待完善'
+      });
     }
   }
 };
@@ -368,37 +613,21 @@ export default {
 	margin-bottom: 10px;
 }
 
-.activeitem::before {
-	font-style: normal;
-	font-weight: bold;
-	-webkit-font-smoothing: antialiased;
-	content: '\2713';
-	position: absolute;
-	top: 0px;
-	right: 2px;
-	color: #ffffff;
-	z-index: 1;
-	font-size: 12px;
-}
-
-.activeitem::after {
-	content: '';
-	position: absolute;
-	top: 1px;
-	right: 0;
-	width: 0;
-	height: 0;
-	border-top: 20px solid #65b81b;
-	border-left: 24px solid transparent;
-}
-
-.tagDiv {
-	position: relative;
-	display: inline-block;
-	margin: 5px;
-}
 .tag-row {
 	margin: 0.5vh 0;
 }
+
+  .detail_row{
+    padding: 3px;
+    font-size: 14px;
+  }
+
+  .detail_title{
+    color:#8d8d8d;
+  }
+
+  .detail_text{
+    font-weight: 600;
+  }
 </style>
 
