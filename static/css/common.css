@@ -13,7 +13,7 @@
 }
 
 .login_field .ivu-input:focus{
-  box-shadow: none;
+  box-shadow: none !important;
 }
 
 .login_field .ivu-btn{
@@ -148,4 +148,30 @@
 
 .smeditor .input-area {
   width: 100% !important;
+}
+/*疑难求助输入框颜色*/
+.solveProblems .ivu-input-search {
+  background: #51b213!important;
+  color: #fff!important;
+  border-color: #51b213!important;
+  height: 5vh;
+  font-size: 1.2rem;
+}
+.solveProblems .ivu-input{
+  border-color: #51b213;
+}
+.solveProblems .ivu-input:hover {
+  border-color: #51b213;
+
+}
+.solveProblems .ivu-input:focus {
+  border-color: #51b213;
+  outline: 0;
+  box-shadow: 0 0 0 1px #51b213;
+}
+.solveProblems .ivu-input-group-large .ivu-input{
+  height: 5vh;
+}
+.solveProblems .ivu-menu-light {
+   background: none;
 }
