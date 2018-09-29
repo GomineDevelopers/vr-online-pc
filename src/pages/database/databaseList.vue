@@ -4,7 +4,7 @@
       <div class="title" ref="title">资料库</div>
     </Row>
 
-    <div class="database-list" :style="{minheight: conH + 'px' }">
+    <div class="database-list" :style="{minHeight: conH + 'px' }">
       <Row>
         <Col span="24" class="search-row">
           <Button icon="md-add" class="add-content" @click="goDetail">添加资料</Button>
@@ -40,13 +40,13 @@
                 </Row>
                 <Row>
                   <Col span="9">
-                    <div class="icon-wrapper">
+                    <div class="icon-wrapper" @click="goEdit(item.id)">
                       <Icon type="icon iconfont icon-bianji" size="14" color="#3fab23"/>
                       <span class="number">编辑</span>
                     </div>
                   </Col>
                   <Col span="9">
-                    <div class="icon-wrapper">
+                    <div class="icon-wrapper" @click="deleteListData(item.id)">
                       <Icon type="icon iconfont icon-shanchu" size="14" color="#3fab23"/>
                       <span class="number">删除</span>
                     </div>
@@ -68,12 +68,18 @@
 <script>
     export default {
       name: "databaseList",
+      provide: function () {
+        return {
+          reload: this.reload
+        }
+      },
       data(){
           return{
             curPage:'',
             listData:[],
             conH:'',
-            totalPage:0
+            totalPage:0,
+            isRouterAlive: true
           }
       },
       mounted(){
@@ -81,13 +87,18 @@
         this.getListData();
       },
       methods:{
+        reload: function () {
+          this.isRouterAlive = false;
+          // 该方法会在dom更新后执行
+          this.$nextTick(function () { this.isRouterAlive = true })
+        },
         getBgHeight() {
           let vm = this;
           vm.conH = document.documentElement.clientHeight -64 -24 * 2 -(vm.$refs.title.offsetHeight + 10)-2;
         },
         getListData(){
           let vm = this;
-          this.$http.get('http://icampaign.com.cn/customers/noob_system/admin/database/database_list',{
+          this.$http.get('http://icampaign.com.cn/customers/vrOnlinePc/backend/admin/database/database_list',{
             params: {
               page : vm.curPage
             }
@@ -103,12 +114,37 @@
               console.log(error);
             });
         },
+        deleteListData(id){
+
+          let vm = this;
+          this.$http.get(vm.$commonTools.g_restUrl+"admin/database/database_del",{
+            params: {
+              id : id
+            }
+          })
+            .then(function(response) {
+              if(response.data.code == 200){
+                vm.$Message.success("该条信息删除成功");
+                vm.getListData();
+              }
+
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        },
         changePage(curPage) {
           this.curPage = curPage;
           this.getListData();
         },
         goDetail(){
           this.$router.push({ name: 'DataBaseAdd'});
+        },
+        goEdit(id){
+          this.$router.push({
+            name: 'DataBaseEdit',
+            params: { editId: id }
+          })
         }
       }
     }
@@ -179,6 +215,7 @@
     display: flex;
     align-content: center;
     align-items: center;
+    cursor: pointer;
   }
   .icon-wrapper .number{
     margin-left: 2px;

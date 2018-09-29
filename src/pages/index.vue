@@ -11,7 +11,7 @@
             <MenuItem name="1" class="menuA">
               <Dropdown>
                 <a href="javascript:void(0)">
-                  <Avatar src="../../static/images/1.jpg" />
+                  <Avatar src="../../static/images/1.png" />
                   <span>王五</span>
                   <Icon type="ios-arrow-down"></Icon>
                 </a>

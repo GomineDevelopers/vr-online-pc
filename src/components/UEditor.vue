@@ -9,7 +9,7 @@
       ueditorPath: {
         // UEditor 代码的路径
         type: String,
-        default: '../../ueditor1_4_3_3/'
+        default: '/vrOnlinePc/frontend/static/ueditor1_4_3_3/'
       },
       ueditorConfig: {
         // UEditor 配置项

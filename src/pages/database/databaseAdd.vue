@@ -81,16 +81,18 @@
         },
 
         postImgUrl:"",
-        serverImgUrl:'http://icampaign.com.cn/customers/noob_system/admin/images/add_images',
+        serverImgUrl:'http://icampaign.com.cn/customers/vrOnlinePc/backend/admin/images/add_images',
         visible: false,
       //  富文本编辑器
         postContent:'',
-        imgName:''
+        imgName:'',
+        existedUrl:''
       }
 
     },
     mounted(){
-
+      console.log()
+      this.handleExistedData()
     },
     watch:{
       postContent(curVal,oldVal){
@@ -134,7 +136,6 @@
         } else if (!vm.postContent) {
           msg = "未填写富文本内容";
         }
-
         if (msg) {
           vm.$Message.warning(msg);
           return false;
@@ -157,16 +158,13 @@
            method: "post",
            url:vm.$commonTools.g_restUrl+"admin/database/database_edit",
            data:vm.$qs.stringify(postData),
-
          }).then(function (response) {
-           console.log(response)
            if (response.data.code=="200"){
              vm.$router.push({name: "DataBaseList"})
-             console.log("添加成功")
+             vm.$Message.success("添加成功");
            }
          }).catch(function (error) {
            console.log(error)
-
          })
        }else {
 
@@ -175,11 +173,41 @@
       //富文本编辑
       editorReady (editorInstance) {
 
-        // editorInstance.setContent('Hello world!<br>你可以在这里初始化编辑器的初始内容。');
+        editorInstance.setContent(this.postContent);
 
         editorInstance.addListener('contentChange', () => {
           this.postContent= editorInstance.getContent();
         });
+      },
+
+      handleExistedData(){
+        var vm=this;
+        console.log()
+        if(vm.$route.params.editId){
+        vm.$http({
+          method: "get",
+          url:vm.$commonTools.g_restUrl+"admin/database/database_detail",
+          params:{
+           id: vm.$route.params.editId
+          },
+
+        }).then(function (response) {
+          if (response.data.code=="200"){
+            let temp=response.data.data
+            console.log(temp)
+            vm.formItem.title=temp.title,
+            vm.formItem.author=temp.auth,
+            vm.formItem.keyWords=temp.keywords,
+            vm.formItem.description=temp.description,
+            vm.postImgUrl=temp.path_cover,
+            vm.imgName=temp.cover
+            vm.postContent=temp.content
+          }
+        }).catch(function (error) {
+          console.log(error)
+
+        })
+    }
       }
     }
   }

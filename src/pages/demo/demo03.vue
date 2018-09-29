@@ -32,7 +32,7 @@
               <Col span="8">标签：<span class="spanFont">老中医 全国十佳 省医院</span></Col>
             </Row>
           </Col>
-          <Col span="6"><img src="../../../static/images/1.jpg" style="height: 20vh;"></Col>
+          <Col span="6"><img src="../../../static/images/1.png" style="height: 20vh;"></Col>
         </Row>
       </div>
       <div class="tabDiv">
