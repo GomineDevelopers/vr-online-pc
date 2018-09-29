@@ -8,6 +8,7 @@ import DoctorDetail from '@/pages/doctor/doctorDetail'
 import Tag from '@/pages/tag/tag'
 import DataBaseList from '@/pages/database/databaseList'
 import DataBaseAdd from '@/pages/database/databaseAdd'
+import ProblemList from '@/pages/problem/problemlist'
 import demo01 from '@/pages/demo/demo01'
 import demo02 from '@/pages/demo/demo02'
 import demo03 from '@/pages/demo/demo03'
@@ -66,6 +67,14 @@ export default new Router({
           path: 'databaseadd',
           component: DataBaseAdd,
           name:'DataBaseAdd',
+          meta:{
+            requiresAuth:true
+          }
+        },
+        {
+          path: 'problemlist',
+          component: ProblemList,
+          name:'ProblemList',
           meta:{
             requiresAuth:true
           }

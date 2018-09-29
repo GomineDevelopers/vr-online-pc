@@ -64,7 +64,7 @@
       methods:{
         getTableH(){
           let vm = this;
-          vm.tableH = document.documentElement.clientHeight - 64-24*2 - vm.postCommonH - (vm.$refs.pageDiv.offsetHeight + 10);
+          vm.tableH = document.documentElement.clientHeight - 60-24*2 - vm.postCommonH - (vm.$refs.pageDiv.offsetHeight + 10);
         },
         changePage(curPage){
           console.info(curPage)

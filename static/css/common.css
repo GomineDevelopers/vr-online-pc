@@ -150,28 +150,28 @@
   width: 100% !important;
 }
 /*疑难求助输入框颜色*/
-.solveProblems .ivu-input-search {
+.problem .ivu-input-search {
   background: #51b213!important;
   color: #fff!important;
   border-color: #51b213!important;
-  height: 5vh;
+  height: 45px;
   font-size: 1.2rem;
 }
-.solveProblems .ivu-input{
+.problem .ivu-input{
   border-color: #51b213;
 }
-.solveProblems .ivu-input:hover {
+.problem .ivu-input:hover {
   border-color: #51b213;
 
 }
-.solveProblems .ivu-input:focus {
+.problem .ivu-input:focus {
   border-color: #51b213;
   outline: 0;
   box-shadow: 0 0 0 1px #51b213;
 }
-.solveProblems .ivu-input-group-large .ivu-input{
-  height: 5vh;
+.problem .ivu-input-group-large .ivu-input{
+  height:45px;
 }
-.solveProblems .ivu-menu-light {
+.problem .ivu-menu-light {
    background: none;
 }
