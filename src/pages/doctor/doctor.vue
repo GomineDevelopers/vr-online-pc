@@ -142,7 +142,7 @@
           </Col>
           <Col span="12">
             <span class="detail_title">注册时间：</span>
-            <span class="detail_text" v-text="$commonTools.formatDate(detailData.reg_time)"></span>
+            <span class="detail_text" v-text="detailData.reg_time == null ? '-':$commonTools.formatDate(detailData.reg_time)"></span>
           </Col>
         </Row>
         <Row class="detail_row">
@@ -267,7 +267,12 @@ export default {
         },
         { title: "注册时间", key: "reg_time",width:140,
           render:(h,params)=>{
-            let texts = this.$commonTools.formatDate(params.row.reg_time);
+            let texts = '';
+            if(params.row.reg_time == null){
+              texts = '-';
+            }else{
+              texts = this.$commonTools.formatDate(params.row.reg_time);
+            }
             return h('span',{
               props:{},
             },texts)
@@ -301,7 +306,7 @@ export default {
                 },
                 style: {
                   color: "#4fb115",
-                  display:(params.row.is_registered == 2 || params.row.is_registered == 3)?"none":"inline"
+                  display:(params.row.is_registered == 0 || params.row.is_registered == 2 || params.row.is_registered == 3)?"none":"inline"
                 },
                 on: {
                   click: () => {
@@ -317,7 +322,7 @@ export default {
                 },
                 style: {
                   color: "red",
-                  display:(params.row.is_registered == 2 || params.row.is_registered == 3)?"none":"inline"
+                  display:(params.row.is_registered == 0 ||params.row.is_registered == 2 || params.row.is_registered == 3)?"none":"inline"
                 },
                 on: {
                   click: () => {
@@ -350,7 +355,8 @@ export default {
                 },
                 style: {
                   marginLeft: "5px",
-                  color: "#4fb115"
+                  color: "#4fb115",
+                  display:(params.row.is_registered == 0)?"none":"inline"
                 },
                 on: {
                   click: () => {

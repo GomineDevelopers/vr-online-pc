@@ -11,9 +11,11 @@
     <div class="problem_tab">
       <Tabs value="1" @on-click="tabChange">
         <TabPane label="已回答" name="1">
-          <problem-answered :postCommonH="commonHeight" :tabType="type" v-if="commonHeight"></problem-answered>
+          <problem-answered :postCommonH="commonHeight" :tabType="type" v-if="type == 1"></problem-answered>
         </TabPane>
-        <TabPane label="未回答" name="2">未回答</TabPane>
+        <TabPane label="未回答" name="0">
+          <problem-no-answer :postCommonH="commonHeight" :tabType="type" v-if="type == 0"></problem-no-answer>
+        </TabPane>
       </Tabs>
     </div>
   </div>
@@ -21,6 +23,7 @@
 
 <script>
   import ProblemAnswered from '@/components/ProblemAnswered.vue'
+  import ProblemNoAnswer from '@/components/ProblemNoAnswer.vue'
     export default {
       name: "problemList",
       data(){
@@ -30,7 +33,8 @@
         }
       },
       components: {
-        'problem-answered': ProblemAnswered
+        'problem-answered': ProblemAnswered,
+        'problem-no-answer':ProblemNoAnswer
       },
       mounted(){
         this.getCommonHeight();
