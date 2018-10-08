@@ -175,3 +175,7 @@
 .problem .ivu-menu-light {
    background: none;
 }
+/*全屏modal*/
+.fullModal .ivu-modal-content{
+  background-color: #f5fbfa;
+}

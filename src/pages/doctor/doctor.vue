@@ -1,182 +1,188 @@
 <template>
-      <div>
-      <div class="title" ref="title">医生管理</div>
-      <div class="searchCard" ref="searchCard">
-        所属医院：<Input v-model="hospitalName" clearable class="inputStyle"/>
-        医生姓名：<Input v-model="doctorName" clearable class="inputStyle"/>
-        医生编号：<Input v-model="doctorNum" clearable class="inputStyle"/>
-        医生手机：<Input v-model="doctorMobile" clearable class="inputStyle"/>
-        <Button type="success" @click="search">搜索</Button>
-        <Button type="warning" @click="clear">重置</Button>
-      </div>
-      <div class="tableDiv" :style="{height:tableBgH+'px'}">
-        <div class="buttonDiv" ref="buttonDiv">
-          <Button icon="md-add" @click="showLabel">添加标签</Button>
-          <Button icon="md-albums">新增互动记录</Button>
+      <div class="doctor">
+        <div class="title" ref="title">医生管理</div>
+        <div class="searchCard" ref="searchCard">
+          所属医院：<Input v-model="hospitalName" clearable class="inputStyle"/>
+          医生姓名：<Input v-model="doctorName" clearable class="inputStyle"/>
+          医生编号：<Input v-model="doctorNum" clearable class="inputStyle"/>
+          医生手机：<Input v-model="doctorMobile" clearable class="inputStyle"/>
+          <Button type="success" @click="search">搜索</Button>
+          <Button type="warning" @click="clear">重置</Button>
         </div>
-        <Table ref="selection" :columns="columns2" :data="data2"  @on-select="selected" @on-select-cancel="unSelected" :height="tableH"></Table>
-        <div class="pageDiv" ref="pageDiv">
-          <Page :total="totalPage" show-elevator :current="curPage" @on-change="changePage"/>
+        <div class="tableDiv" :style="{height:tableBgH+'px'}">
+          <div class="buttonDiv" ref="buttonDiv">
+            <Button icon="md-add" @click="showLabel">添加标签</Button>
+            <Button icon="md-albums" @click="addRecord">新增记录</Button>
+          </div>
+          <Table ref="selection" :columns="columns2" :data="data2"  @on-select="selected" @on-select-cancel="unSelected" :height="tableH"></Table>
+          <div class="pageDiv" ref="pageDiv">
+            <Page :total="totalPage" show-elevator :current="curPage" @on-change="changePage"/>
+          </div>
         </div>
-      </div>
 
-      <Modal v-model="labelModel" draggable scrollable title="请输入您需要添加的标签" @on-ok="addLabel" >
-        <div class="labelDiv">
-          <Row type="flex" justify="center">
-         <i-col span="15" class="tag-row">
-            <label >请选择一级标签：</label>
-            <Select v-model="tag" clearable style="width:200px">
+        <Modal v-model="labelModel" draggable title="请输入您需要添加的标签" @on-ok="addLabel" >
+          <div class="labelDiv">
+            <Row type="flex" justify="center">
+             <i-col span="15" class="tag-row">
+                <label >请选择一级标签：</label>
+                <Select v-model="tag" style="width:200px">
+                    <Option v-for="(item,index) in tagData" :value="item.name" :key="index">{{ item.name }}</Option>
+                </Select>
+             </i-col>
+             <i-col span="15" class="tag-row">
+              <label >请选择二级标签：</label>
+              <Select v-model="subtag" style="width:200px">
                   <Option v-for="(item,index) in tagData" :value="item.name" :key="index">{{ item.name }}</Option>
-            </Select>
-         </i-col>
-        <i-col span="15" class="tag-row">
-          <label >请选择二级标签：</label>
-          <Select v-model="subtag" clearable style="width:200px">
-                <Option v-for="(item,index) in tagData" :value="item.name" :key="index">{{ item.name }}</Option>
-          </Select>
-          </i-col>
-          </Row>
-         </div>
-      </Modal>
-
-      <Modal v-model="detailEditModel" @on-ok="save(detailData)" @on-cancel="cancel">
-        <Row class="detail_row">
-          <Col span="12">
-            <span class="detail_title">编号：</span>
-            <span class="detail_text" v-text="detailData.numbers"></span>
-          </Col>
-          <Col span="12">
-            <span class="detail_title">姓名：</span>
-            <span class="detail_text" v-text="detailData.realname"></span>
-          </Col>
-        </Row>
-        <Row class="detail_row">
-          <Col span="12">
-            <span class="detail_title">医院：</span>
-            <Input v-model="detailData.hospital" class="inputStyle"/>
-          </Col>
-          <Col span="12">
-            <span class="detail_title">科室：</span>
-            <Input v-model="detailData.department" class="inputStyle"/>
-          </Col>
-        </Row>
-        <Row class="detail_row">
-          <Col span="12">
-            <span class="detail_title">职称：</span>
-            <Input v-model="detailData.job" class="inputStyle"/>
-          </Col>
-          <Col span="12">
-            <span class="detail_title">注册时间：</span>
-            <span class="detail_text" v-text="$commonTools.formatDate(detailData.reg_time)"></span>
-          </Col>
-        </Row>
-        <Row class="detail_row">
-          <Col span="12">
-            <span class="detail_title">手机：</span>
-            <Input v-model="detailData.mobile"class="inputStyle"/>
-          </Col>
-          <Col span="12">
-            <span class="detail_title">邮箱：</span>
-            <Input v-model="detailData.email" class="inputStyle"/>
-          </Col>
-        </Row>
-        <Row class="detail_row">
-          <Col span="12">
-            <span class="detail_title">微信号：</span>
-            <span class="detail_text" v-text="detailData.wechat"></span>
-          </Col>
-          <Col span="12">
-            <span class="detail_title">昵称：</span>
-            <span class="detail_text" v-text="detailData.nickname"></span>
-          </Col>
-        </Row>
-        <Row class="detail_row">
-          <Col span="24">
-            <span class="detail_title">所在城市：</span>
-            <span class="detail_text" v-text="detailData.citys"></span>
-          </Col>
-        </Row>
-        <Row class="detail_row">
-          <Col span="24">
-            <span class="detail_title">状态：</span>
-            <span class="detail_text" v-text="detailData.is_registered"></span>
-          </Col>
-        </Row>
-        <!--<Row>
-          <Col span="24">
-            <span class="detail_title">标签：</span>
-            <span></span>
-          </Col>
-        </Row>-->
-      </Modal>
-      <Modal v-model="detailModel" :footer-hide="true">
-        <Row class="detail_row">
-          <Col span="8" class="detail_img"><img :src="detailData.avatar"></Col>
-          <Col span="12">
-            <div class="detail_row">
+              </Select>
+             </i-col>
+            </Row>
+           </div>
+        </Modal>
+        <Modal v-model="detailEditModel" @on-ok="save(detailData)">
+          <Row class="detail_row">
+            <Col span="12">
+              <span class="detail_title">编号：</span>
+              <span class="detail_text" v-text="detailData.numbers"></span>
+            </Col>
+            <Col span="12">
               <span class="detail_title">姓名：</span>
               <span class="detail_text" v-text="detailData.realname"></span>
-            </div>
-            <div class="detail_row">
+            </Col>
+          </Row>
+          <Row class="detail_row">
+            <Col span="12">
+              <span class="detail_title">医院：</span>
+              <Input v-model="detailData.hospital" class="inputStyle"/>
+            </Col>
+            <Col span="12">
+              <span class="detail_title">科室：</span>
+              <Input v-model="detailData.department" class="inputStyle"/>
+            </Col>
+          </Row>
+          <Row class="detail_row">
+            <Col span="12">
+              <span class="detail_title">职称：</span>
+              <Input v-model="detailData.job" class="inputStyle"/>
+            </Col>
+            <Col span="12">
+              <span class="detail_title">注册时间：</span>
+              <span class="detail_text" v-text="$commonTools.formatDate(detailData.reg_time)"></span>
+            </Col>
+          </Row>
+          <Row class="detail_row">
+            <Col span="12">
+              <span class="detail_title">手机：</span>
+              <Input v-model="detailData.mobile"class="inputStyle"/>
+            </Col>
+            <Col span="12">
+              <span class="detail_title">邮箱：</span>
+              <Input v-model="detailData.email" class="inputStyle"/>
+            </Col>
+          </Row>
+          <Row class="detail_row">
+            <Col span="12">
+              <span class="detail_title">微信号：</span>
+              <span class="detail_text" v-text="detailData.wechat"></span>
+            </Col>
+            <Col span="12">
               <span class="detail_title">昵称：</span>
               <span class="detail_text" v-text="detailData.nickname"></span>
-            </div>
-            <div class="detail_row">
-              <span class="detail_title">医院：</span>
-              <span class="detail_text" v-text="detailData.hospital"></span>
-            </div>
-            <div class="detail_row">
-              <span class="detail_title">科室：</span>
-              <span class="detail_text" v-text="detailData.department"></span>
-            </div>
-            <div class="detail_row">
-              <span class="detail_title">职称：</span>
-              <span class="detail_text" v-text="detailData.job"></span>
-            </div>
-          </Col>
-        </Row>
-        <Row class="detail_row">
-          <Col span="12">
-            <span class="detail_title">编号：</span>
-            <span class="detail_text" v-text="detailData.numbers"></span>
-          </Col>
-          <Col span="12">
-            <span class="detail_title">注册时间：</span>
-            <span class="detail_text" v-text="detailData.reg_time == null ? '-':$commonTools.formatDate(detailData.reg_time)"></span>
-          </Col>
-        </Row>
-        <Row class="detail_row">
-          <Col span="12">
-            <span class="detail_title">状态：</span>
-            <span class="detail_text" v-text="detailData.is_registered"></span>
-          </Col>
-          <Col span="12">
-            <span class="detail_title">微信号：</span>
-            <span class="detail_text" v-text="detailData.wechat"></span>
-          </Col>
-        </Row>
-        <Row class="detail_row">
-          <Col span="12">
-            <span class="detail_title">手机号：</span>
-            <span class="detail_text" v-text="detailData.mobile"></span>
-          </Col>
-          <Col span="12">
-            <span class="detail_title">邮箱：</span>
-            <span class="detail_text" v-text="detailData.email"></span>
-          </Col>
-        </Row>
-        <Row>
-          <Col span="24">
-            <span class="detail_title">所在城市：</span>
-            <span class="detail_text" v-text="detailData.citys"></span>
-          </Col>
-        </Row>
+            </Col>
+          </Row>
+          <Row class="detail_row">
+            <Col span="24">
+              <span class="detail_title">所在城市：</span>
+              <span class="detail_text" v-text="detailData.citys"></span>
+            </Col>
+          </Row>
+          <Row class="detail_row">
+            <Col span="24">
+              <span class="detail_title">状态：</span>
+              <span class="detail_text" v-text="detailData.is_registered"></span>
+            </Col>
+          </Row>
+          <!--<Row>
+            <Col span="24">
+              <span class="detail_title">标签：</span>
+              <span></span>
+            </Col>
+          </Row>-->
+        </Modal>
+        <Modal v-model="detailModel" :footer-hide="true">
+          <Row class="detail_row">
+            <Col span="8" class="detail_img"><img :src="detailData.avatar"></Col>
+            <Col span="12">
+              <div class="detail_row">
+                <span class="detail_title">姓名：</span>
+                <span class="detail_text" v-text="detailData.realname"></span>
+              </div>
+              <div class="detail_row">
+                <span class="detail_title">昵称：</span>
+                <span class="detail_text" v-text="detailData.nickname"></span>
+              </div>
+              <div class="detail_row">
+                <span class="detail_title">医院：</span>
+                <span class="detail_text" v-text="detailData.hospital"></span>
+              </div>
+              <div class="detail_row">
+                <span class="detail_title">科室：</span>
+                <span class="detail_text" v-text="detailData.department"></span>
+              </div>
+              <div class="detail_row">
+                <span class="detail_title">职称：</span>
+                <span class="detail_text" v-text="detailData.job"></span>
+              </div>
+            </Col>
+          </Row>
+          <Row class="detail_row">
+            <Col span="12">
+              <span class="detail_title">编号：</span>
+              <span class="detail_text" v-text="detailData.numbers"></span>
+            </Col>
+            <Col span="12">
+              <span class="detail_title">注册时间：</span>
+              <span class="detail_text" v-text="detailData.reg_time == null ? '-':$commonTools.formatDate(detailData.reg_time)"></span>
+            </Col>
+          </Row>
+          <Row class="detail_row">
+            <Col span="12">
+              <span class="detail_title">状态：</span>
+              <span class="detail_text" v-text="detailData.is_registered"></span>
+            </Col>
+            <Col span="12">
+              <span class="detail_title">微信号：</span>
+              <span class="detail_text" v-text="detailData.wechat"></span>
+            </Col>
+          </Row>
+          <Row class="detail_row">
+            <Col span="12">
+              <span class="detail_title">手机号：</span>
+              <span class="detail_text" v-text="detailData.mobile"></span>
+            </Col>
+            <Col span="12">
+              <span class="detail_title">邮箱：</span>
+              <span class="detail_text" v-text="detailData.email"></span>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="24">
+              <span class="detail_title">所在城市：</span>
+              <span class="detail_text" v-text="detailData.citys"></span>
+            </Col>
+          </Row>
 
-      </Modal>
+        </Modal>
+        <Modal v-model="detailPassModel" :footer-hide="true" fullscreen class="fullModal">
+          <doctor-pass-detail ref="c1"></doctor-pass-detail>
+        </Modal>
+        <Modal v-model="addRecordModal" title="添加记录" draggable>
+          添加记录
+        </Modal>
     </div>
 </template>
 
 <script>
+  import DoctorPassDetail from '@/components/DoctorPassDetail.vue'
 export default {
   name: "doctor",
   data() {
@@ -194,6 +200,8 @@ export default {
       detailModel:false,
       detailEditModel:false,
       detailData:"",
+      detailPassModel:false,
+      addRecordModal:false,
 
       selections: [],
       tag: "",
@@ -202,23 +210,13 @@ export default {
         { name: "老中医" },
         { name: "省医" },
         { name: "县医" },
-        { name: "全国十佳" },
-        { name: "老中医" },
-        { name: "省医" },
-        { name: "县医" },
-        { name: "全国十佳" },
-        { name: "老中医" }
+        { name: "全国十佳" }
       ],
       subTagData: [
         { name: "老中医" },
         { name: "省医" },
         { name: "县医" },
-        { name: "全国十佳" },
-        { name: "老中医" },
-        { name: "省医" },
-        { name: "县医" },
-        { name: "全国十佳" },
-        { name: "老中医" }
+        { name: "全国十佳" }
       ],
       columns2: [
         { title:"序号",type: "selection", width: 50, align: "center" },
@@ -352,7 +350,11 @@ export default {
                 },
                 on: {
                   click: () => {
-                    this.goDetail(params.row.id);
+                    if(params.row.is_registered == 2){
+                      this.goDetailPass(params.row.id);
+                    }else{
+                      this.goDetail(params.row.id);
+                    }
                   }
                 }
               })
@@ -397,6 +399,9 @@ export default {
         }
       ]
     };
+  },
+  components: {
+    'doctor-pass-detail': DoctorPassDetail
   },
   mounted() {
     this.getBgHeight();
@@ -491,6 +496,10 @@ export default {
       this.getDetailData(id);
       this.detailModel = true;
     },
+    goDetailPass(id){
+      this.detailPassModel = true;
+      this.$refs.c1.getPassDetailData(id);
+    },
     del(id){
       let vm = this;
       this.$http.get(vm.$commonTools.g_restUrl+'admin/doctors/doctors_del',{
@@ -546,8 +555,8 @@ export default {
           console.log(error);
         });
     },
-    cancel(){
-      this.detailEditModel = false;
+    addRecord(){
+      this.addRecordModal = true;
     },
 
     selected(selection, row) {

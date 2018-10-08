@@ -4,7 +4,7 @@ import HelloWorld from '@/components/HelloWorld'
 import Login from '@/pages/login'
 import Index from '@/pages/index'
 import Doctor from '@/pages/doctor/doctor'
-import DoctorDetail from '@/pages/doctor/doctorDetail'
+/*import DoctorDetail from '@/pages/doctor/doctorDetail'*/
 import Tag from '@/pages/tag/tag'
 import DataBaseList from '@/pages/database/databaseList'
 import DataBaseAdd from '@/pages/database/databaseAdd'
@@ -30,6 +30,7 @@ export default new Router({
     {
       path: '/index/',
       component: Index,
+      redirect: '/index/doctor',
       children: [
         {
           path: 'doctor',
@@ -39,14 +40,14 @@ export default new Router({
             requiresAuth:true
           }
         },
-        {
+        /*{
           path: 'doctordetail',
           component: DoctorDetail,
           name:'DoctorDetail',
           meta:{
             requiresAuth:true
           }
-        },
+        },*/
         {
           path: 'tag',
           component: Tag,

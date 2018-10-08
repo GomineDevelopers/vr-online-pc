@@ -13,6 +13,7 @@
       data(){
           return{
             tableH:'',
+            data:[],
             columns: [
               {title:'序号',type: 'index',width: 60,align: 'center'},
               {title: '拜访方式',key: 'type',align: 'center'},
@@ -39,7 +40,7 @@
                 }
               }
             ],
-            data: [{type: 'John Brown',date: 18,purpose: 'New York No. 1 Lake Park',name:'王五'},
+            data1: [{type: 'John Brown',date: 18,purpose: 'New York No. 1 Lake Park',name:'王五'},
               {type: 'Jim Green',date: 24,purpose: 'London No. 1 Lake Park',name:'王五王五王五王五'},
               {type: 'Joe Black',date: 30,purpose: 'Sydney No. 1 Lake Park',name:'王五'},
               {type: 'Joe Black',date: 30,purpose: 'Sydney No. 1 Lake Park',name:'王五'},
@@ -50,7 +51,19 @@
               {type: 'Joe Black',date: 30,purpose: 'Sydney No. 1 Lake Park',name:'王五'},
               {type: 'Joe Black',date: 30,purpose: 'Sydney No. 1 Lake Park',name:'王五'},
               {type: 'Joe Black',date: 30,purpose: 'Sydney No. 1 Lake Park',name:'王五'},
-              {type: 'Jon Snow',date: 26,purpose: 'Ottawa No. 2 Lake Park',name:'王五'}]
+              {type: 'Jon Snow',date: 26,purpose: 'Ottawa No. 2 Lake Park',name:'王五'}],
+            data2: [{type: 'John Brown1',date: 18,purpose: 'New York No. 1 Lake Park',name:'王五'},
+              {type: 'Jim Green1',date: 24,purpose: 'London No. 1 Lake Park',name:'王五王五王五王五'},
+              {type: 'Joe Black1',date: 30,purpose: 'Sydney No. 1 Lake Park',name:'王五'},
+              {type: 'Joe Black',date: 30,purpose: 'Sydney No. 1 Lake Park',name:'王五'},
+              {type: 'Joe Black',date: 30,purpose: 'Sydney No. 1 Lake Park',name:'王五'},
+              {type: 'Joe Black',date: 30,purpose: 'Sydney No. 1 Lake Park',name:'王五'},
+              {type: 'Joe Black',date: 30,purpose: 'Sydney No. 1 Lake Park',name:'王五'},
+              {type: 'Joe Black',date: 30,purpose: 'Sydney No. 1 Lake Park',name:'王五'},
+              {type: 'Joe Black',date: 30,purpose: 'Sydney No. 1 Lake Park',name:'王五'},
+              {type: 'Joe Black',date: 30,purpose: 'Sydney No. 1 Lake Park',name:'王五'},
+              {type: 'Joe Black',date: 30,purpose: 'Sydney No. 1 Lake Park',name:'王五'},
+              {type: 'Jon Snow',date: 26,purpose: 'Ottawa No. 2 Lake Park',name:'王五'}],
           }
       },
       props:{
@@ -58,8 +71,13 @@
         tabType:''
       },
       mounted(){
-        this.getTableH();
-        console.info(this.tabType)
+        let vm = this;
+        if(vm.tabType == 1){
+          vm.data = vm.data1;
+        }else if(vm.tabType == 2){
+          vm.data = vm.data2;
+        }
+        vm.getTableH();
       },
       methods:{
         getTableH(){
