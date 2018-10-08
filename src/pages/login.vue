@@ -13,7 +13,7 @@
             <div class="userName">用户名</div>
             <Input prefix="md-person" class="login_input" v-model="userName"/>
             <div class="password">密码</div>
-            <Input prefix="md-lock" class="login_input" v-model="password" type="password"/>
+            <Input prefix="md-lock" class="login_input" v-model="password" type="password" @keyup.enter.native="login"/>
             <Row class="login_row">
               <Col span="12"><div class="login_rem"><Checkbox v-model="remUserName" @on-change="changeStatus">记住用户名</Checkbox></div></Col>
               <Col span="12"><div class="login_for">忘记密码？</div></Col>

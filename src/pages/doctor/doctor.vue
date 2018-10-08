@@ -235,10 +235,21 @@ export default {
             })
           }
         },
-        { title: "编号", key: "numbers",width:117},
-        { title: "姓名", key: "realname" },
+        { title: "编号", key: "numbers",width:118},
+        { title: "姓名", key: "realname"},
         { title: "昵称", key: "nickname" },
-        {title: "医院",key: "hospital"},
+        {title: "医院",key: "hospital",
+          render:(h,params) => {
+            let texts = params.row.hospital;
+            return h('div',{
+              style:{
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap"
+              }
+            },texts)
+          }
+        },
         {title: "科室",key: "department"},
         {title:"城市",key:"citys"},
         { title: "标签",key: "action",
@@ -492,7 +503,8 @@ export default {
             vm.$Notice.success({
               title: '删除成功！'
             });
-            vm.getData2(1);
+            vm.curPage = 1;
+            vm.getData2();
           }
         })
         .catch(function(error) {
