@@ -12,10 +12,10 @@
     <div class="problem_tab">
       <Tabs value="1" @on-click="tabChange" :animated="false">
         <TabPane label="已回答" name="1">
-          <problem-answered :postCommonH="commonHeight" :tabType="type" v-if="type == 1" ref="tab1"></problem-answered>
+          <problem-answered :postCommonH="commonHeight" :tabType="type" v-if="type == 1 && commonHeight != '' " ref="tab1"></problem-answered>
         </TabPane>
         <TabPane label="未回答" name="0">
-          <problem-no-answer :postCommonH="commonHeight" :tabType="type" v-if="type == 0" ref="tab0"></problem-no-answer>
+          <problem-no-answer :postCommonH="commonHeight" :tabType="type" v-if="type == 0 && commonHeight != ''" ref="tab0"></problem-no-answer>
         </TabPane>
       </Tabs>
     </div>
