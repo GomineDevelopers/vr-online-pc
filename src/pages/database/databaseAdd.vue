@@ -52,9 +52,7 @@
           <img :src="postImgUrl" class="thumb" />
         </FormItem>
         <FormItem label="内容：">
-          <div id="app">
-            <VueUEditor @ready="editorReady" style="height: 350px"></VueUEditor>
-          </div>
+          <vue-ueditor-wrap v-model="postContent" :config="myConfig"></vue-ueditor-wrap>
         </FormItem>
         <FormItem>
           <Button type="primary" class="submit-button" @click="addData()">提交</Button>
@@ -67,10 +65,10 @@
   </div>
 </template>
 <script>
-  import VueUEditor from '@/components/UEditor';
+  import VueUeditorWrap from 'vue-ueditor-wrap'
   export default {
     name: "databaseAdd",
-    components: { VueUEditor },
+    components: { VueUeditorWrap},
     data(){
       return{
         formItem: {
@@ -78,27 +76,37 @@
           author: '',
           keyWords: '',
           description: '',
+
         },
 
         postImgUrl:"",
         serverImgUrl:'http://icampaign.com.cn/customers/vrOnlinePc/backend/admin/images/add_images',
         visible: false,
       //  富文本编辑器
-        postContent:'',
         imgName:'',
-        existedUrl:''
+        existedUrl:'',
+        postContent:'',
+        myConfig: {
+          // 如果需要上传功能,找后端小伙伴要服务器接口地址
+           serverUrl: 'http://icampaign.com.cn/customers/vrOnlinePc/frontend/static/ueditor/php/controller.php',
+          // 你的UEditor资源存放的路径,相对于打包后的index.html
+          UEDITOR_HOME_URL: './static/UEditor/',
+          // 编辑器不自动被内容撑高
+          autoHeightEnabled: true,
+          // 初始容器高度
+          initialFrameHeight: 340,
+          // 初始容器宽度
+          initialFrameWidth: '100%',
+          // 关闭自动保存
+          enableAutoSave: false
+        }
       }
 
     },
     mounted(){
-      console.log()
       this.handleExistedData()
     },
-    watch:{
-      postContent(curVal,oldVal){
-        this.postContent=curVal;
-      }
-    },
+
     methods:{
       handleRemove () {
         this.postImgUrl='';
@@ -171,18 +179,10 @@
        }
       },
       //富文本编辑
-      editorReady (editorInstance) {
 
-        editorInstance.setContent(this.postContent);
-
-        editorInstance.addListener('contentChange', () => {
-          this.postContent= editorInstance.getContent();
-        });
-      },
 
       handleExistedData(){
         var vm=this;
-        console.log()
         if(vm.$route.params.editId){
         vm.$http({
           method: "get",
@@ -194,7 +194,6 @@
         }).then(function (response) {
           if (response.data.code=="200"){
             let temp=response.data.data
-            console.log(temp)
             vm.formItem.title=temp.title,
             vm.formItem.author=temp.auth,
             vm.formItem.keyWords=temp.keywords,

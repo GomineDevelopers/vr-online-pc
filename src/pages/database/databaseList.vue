@@ -106,7 +106,6 @@
             .then(function(response) {
               if(response.data.code == 200){
                 vm.listData = response.data.list.data;
-                console.log(vm.listData)
                 vm.totalPage = response.data.list.total;
               }
             })

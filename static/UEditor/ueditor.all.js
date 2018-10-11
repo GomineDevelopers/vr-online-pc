@@ -1,7 +1,7 @@
 /*!
  * UEditor
  * version: ueditor
- * build: Wed Aug 10 2016 11:06:02 GMT+0800 (CST)
+ * build: Sun Jul 15 2018 23:32:59 GMT+0800 (中国标准时间)
  */
 
 (function(){
@@ -3935,6 +3935,10 @@ var domUtils = dom.domUtils = {
      * @return { Boolean } 是否是空元素
      */
     isEmptyBlock:function (node,reg) {
+        // HaoChuan9421
+        if(!node){
+            return;
+        }
         if(node.nodeType != 1)
             return 0;
         reg = reg || new RegExp('[ \xa0\t\r\n' + domUtils.fillChar + ']', 'g');
@@ -7890,6 +7894,10 @@ var fillCharReg = new RegExp(domUtils.fillChar, 'g');
          * ```
          */
         getLang: function (path) {
+            // HaoChuan9421
+            if(!this.options){
+                return '';
+            }
             var lang = UE.I18N[this.options.lang];
             if (!lang) {
                 throw Error("not import language file");
@@ -23954,7 +23962,8 @@ UE.plugin.register('autosave', function (){
     return {
         defaultOptions: {
             //默认间隔时间
-            saveInterval: 500
+            saveInterval: 500,
+            enableAutoSave: true // HaoChuan9421
         },
         bindEvents:{
             'ready':function(){
@@ -23974,6 +23983,10 @@ UE.plugin.register('autosave', function (){
             },
 
             'contentchange': function () {
+                // HaoChuan9421
+                if (!me.getOpt('enableAutoSave')) {
+                    return;
+                }
 
                 if ( !saveKey ) {
                     return;
@@ -24530,6 +24543,7 @@ UE.plugin.register('simpleupload', function (){
                             loader.setAttribute('alt', json.original || '');
                             loader.removeAttribute('id');
                             domUtils.removeClasses(loader, 'loadingclass');
+                            me.fireEvent("contentchange"); // HaoChuan9421
                         } else {
                             showErrorLoader && showErrorLoader(json.state);
                         }
@@ -29494,9 +29508,10 @@ UE.registerUI('message', function(editor) {
     me.addListener('ready', function(){
         holder = document.getElementById(me.ui.id + '_message_holder');
         updateHolderPos();
-        setTimeout(function(){
-            updateHolderPos();
-        }, 500);
+        // HaoChuan9421
+        // setTimeout(function(){
+        //     updateHolderPos();
+        // }, 500);
     });
 
     me.addListener('showmessage', function(type, opt){
