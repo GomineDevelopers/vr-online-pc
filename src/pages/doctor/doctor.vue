@@ -12,7 +12,6 @@
         <div class="tableDiv" :style="{height:tableBgH+'px'}">
           <div class="buttonDiv" ref="buttonDiv">
             <Button icon="md-add" @click="showLabel">添加标签</Button>
-            <Button icon="md-albums" @click="addRecord">新增记录</Button>
           </div>
           <Table ref="selection" :columns="columns2" :data="data2"  @on-select="selected" @on-select-cancel="unSelected" :height="tableH"></Table>
           <div class="pageDiv" ref="pageDiv">
@@ -20,7 +19,7 @@
           </div>
         </div>
 
-        <Modal v-model="labelModel" draggable title="请输入您需要添加的标签" @on-ok="addLabel" >
+        <Modal v-model="labelModel" title="请输入您需要添加的标签" @on-ok="addLabel" >
           <div class="labelDiv">
             <Row type="flex" justify="center">
              <i-col span="15" class="tag-row">
@@ -175,9 +174,6 @@
         <Modal v-model="detailPassModel" :footer-hide="true" fullscreen class="fullModal">
           <doctor-pass-detail ref="c1"></doctor-pass-detail>
         </Modal>
-        <Modal v-model="addRecordModal" title="添加记录" draggable>
-          添加记录
-        </Modal>
     </div>
 </template>
 
@@ -201,7 +197,6 @@ export default {
       detailEditModel:false,
       detailData:"",
       detailPassModel:false,
-      addRecordModal:false,
 
       selections: [],
       tag: "",
@@ -358,8 +353,7 @@ export default {
                   }
                 }
               })
-              ]
-              ),
+              ]),
               h("Tooltip",
                 {props:{trigger:"hover",content:"编辑",placement:"top"}},
                 [h("Icon", {
@@ -405,7 +399,7 @@ export default {
   },
   mounted() {
     this.getBgHeight();
-    this.getData2(1);
+    this.getData2();
   },
   methods: {
     getBgHeight() {
@@ -555,9 +549,10 @@ export default {
           console.log(error);
         });
     },
-    addRecord(){
-      this.addRecordModal = true;
-    },
+
+
+
+
 
     selected(selection, row) {
       this.selections = selection;
