@@ -13,10 +13,12 @@
       data(){
           return{
             tableH:'',
-            data:[],
             totalPages:0,
             curPage:1,
-            columns: [
+            data:[],
+            columns:[],
+            url:'',
+            columns1: [
               {title:'序号',type: 'index',width: 60,align: 'center'},
               {title: '拜访方式',key: 'visiting',align: 'center'},
               {title: '时间',key: 'visit_time',
@@ -44,7 +46,7 @@
                         },
                         on: {
                           click: () => {
-                            this.goDetail(params.row.id,'view');
+                            this.goDetail(params.row.id,'visit','view');
                           }
                         }
                       })
@@ -61,7 +63,7 @@
                         },
                         on: {
                           click: () => {
-                            this.editDetail(params.row.id,'edit');
+                            this.goDetail(params.row.id,'visit','edit');
                           }
                         }
                       })
@@ -77,7 +79,77 @@
                         },
                         on: {
                           click: () => {
-                            this.del(params.row.id);
+                            this.del(params.row.id,'visit');
+                          }
+                        }
+                      })
+                    ])
+                  ]);
+                }
+              }
+            ],
+            columns2: [
+              {title:'序号',type: 'index',width: 60,align: 'center'},
+              {title: '微课标题',key: 'lesson_title',align: 'center'},
+              {title: '时间',key: 'lesson_time',
+                render:(h,params)=>{
+                  let texts = '';
+                  texts = this.$commonTools.formatDate(params.row.lesson_time);
+                  return h('span',{
+                    props:{},
+                  },texts)
+                }
+              },
+              {title: '参与人数',key: 'people_number',align: 'center'},
+              {title: 'VR',key: 'vr',align: 'center'},
+              {title: '操作',key: 'action',width: 150,align: 'center',
+                render: (h, params) => {
+                  return h('div', [
+                    h("Tooltip",{props:{trigger:"hover",content:"资料",placement:"top"}},
+                      [h("Icon", {
+                        props: {
+                          type: "icon iconfont icon-ziliao",
+                        },
+                        style: {
+                          marginLeft: "5px",
+                          color: "#4fb115"
+                        },
+                        on: {
+                          click: () => {
+                            this.goDetail(params.row.id,'wk','view');
+                          }
+                        }
+                      })
+                    ]),
+                    h("Tooltip",
+                      {props:{trigger:"hover",content:"编辑",placement:"top"}},
+                      [h("Icon", {
+                        props: {
+                          type: "icon iconfont icon-bianji"
+                        },
+                        style: {
+                          marginLeft: "5px",
+                          color: "#4fb115"
+                        },
+                        on: {
+                          click: () => {
+                            this.goDetail(params.row.id,'wk','edit');
+                          }
+                        }
+                      })
+                    ]),
+                    h("Tooltip",{props:{trigger:"hover",content:"删除",placement:"top"}},
+                      [h("Icon",{
+                        props: {
+                          custom: "icon iconfont icon-shanchu"
+                        },
+                        style: {
+                          marginLeft: "5px",
+                          color: "#4fb115"
+                        },
+                        on: {
+                          click: () => {
+                            this.del(params.row.id,'wk');
                           }
                         }
                       })
@@ -108,7 +180,14 @@
         },
         getRecordList(){
           let vm = this;
-          this.$http.get(vm.$commonTools.g_restUrl+'admin/visit/visit_list',{
+          if(vm.tabType == 1){
+            vm.columns = vm.columns1;
+            vm.url = 'admin/visit/visit_list';
+          }else if(vm.tabType == 2){
+            vm.columns = vm.columns2;
+            vm.url = 'admin/lesson/lesson_list';
+          }
+          this.$http.get(vm.$commonTools.g_restUrl + vm.url,{
             params: {
               doctors_id : vm.doctorId,
               current_page:vm.curPage
@@ -124,15 +203,18 @@
               console.log(error);
             });
         },
-        goDetail(id,temp){
-          this.$emit('getRecordDetailC', id,temp);
+        goDetail(id,temp1,temp2){
+          this.$emit('getRecordDetailC', id,temp1,temp2);
         },
-        editDetail(id,temp){
-          this.$emit('getRecordDetailC', id,temp);
-        },
-        del(id){
+        del(id,temp){
           let vm = this;
-          this.$http.get(vm.$commonTools.g_restUrl+'admin/visit/visit_del',{
+          let url = "";
+          if(temp == 'visit'){
+            url = 'admin/visit/visit_del';
+          }else if(temp == 'wk'){
+            url = 'admin/lesson/lesson_del';
+          }
+          this.$http.get(vm.$commonTools.g_restUrl+ url,{
             params: {
               id : id
             }
