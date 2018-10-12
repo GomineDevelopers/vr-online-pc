@@ -179,3 +179,7 @@
 .fullModal .ivu-modal-content{
   background-color: #f5fbfa;
 }
+
+.ivu-notice{
+ z-index: 9999;
+}
