@@ -43,7 +43,6 @@
             :on-format-error="handleFormatError"
             :on-exceeded-size="handleMaxSize"
             :before-upload="handleBeforeUpload"
-
           >
             <Button icon="md-image">上传图片</Button> <Button v-if="postImgUrl" icon="md-trash" type="text" @click.stop="handleRemove">删除图片</Button>
           </Upload>
@@ -88,7 +87,7 @@
         postContent:'',
         myConfig: {
           // 如果需要上传功能,找后端小伙伴要服务器接口地址
-           serverUrl: 'http://icampaign.com.cn/customers/vrOnlinePc/frontend/static/ueditor/php/controller.php',
+           serverUrl: 'http://icampaign.com.cn/customers/vrOnlinePc/backend/ueditor/php/controller.php',
           // 你的UEditor资源存放的路径,相对于打包后的index.html
           UEDITOR_HOME_URL: './static/UEditor/',
           // 编辑器不自动被内容撑高
