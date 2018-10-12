@@ -6,7 +6,7 @@
     <div class="databaseAdd" >
     <Row>
       <Col span="12">
-      <Form :model="formItem" :label-width="80">
+      <Form :model="formItem" class="form-style" :label-width="80">
 
         <FormItem class="form-label" label="标题：">
           <Row>
@@ -252,4 +252,7 @@
   position: relative;
   z-index: 2;
 }
+  .form-style{
+    min-width: 700px;
+  }
 </style>

@@ -141,7 +141,7 @@
         },
         goEdit(id){
           this.$router.push({
-            name: 'DataBaseEdit',
+            name: 'DataBaseAdd',
             params: { editId: id }
           })
         }
