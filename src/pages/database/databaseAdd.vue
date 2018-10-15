@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="database-add">
     <Row>
       <div class="title" ref="title">添加资料</div>
     </Row>
@@ -255,4 +255,13 @@
   .form-style{
     min-width: 700px;
   }
+  .edui-default .edui-toolbar .edui-combox .edui-combox-body {
+    border: 1px solid #CCC;
+    background-color: white;
+    border-radius: 2px;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    height: 22px !important;
+  }
+
 </style>
