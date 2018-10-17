@@ -23,5 +23,8 @@
 </script>
 
 <style scoped>
-  .QRdiv{}
+  .QRdiv{
+    text-align: center;
+    margin-top: 10%;
+  }
 </style>
