@@ -39,6 +39,12 @@
                 <span>医生管理</span>
               </div>
             </MenuItem>
+            <MenuItem name="miniclass">
+              <div @click="changeRouter('MiniClass')">
+                <Icon custom="icon iconfont icon-yisheng"></Icon>
+                <span>微课管理</span>
+              </div>
+            </MenuItem>
             <!--<Submenu name="1">
               <template slot="title">
                 <Icon custom="icon iconfont icon-yisheng"></Icon>
@@ -51,22 +57,28 @@
                 <div @click="changeRouter('demo03')">单个医生</div>
               </MenuItem>
             </Submenu>-->
+            <MenuItem name="problemlist">
+              <div @click="changeRouter('ProblemList')">
+                <Icon custom="icon iconfont icon-bangzhu"></Icon>
+                <span>疑难求助</span>
+              </div>
+            </MenuItem>
             <!--<MenuItem name="tag">
               <div @click="changeRouter('Tag')">
                 <Icon custom="icon iconfont icon-common-xiangmubiaoqian-copy"></Icon>
                 <span>标签管理</span>
               </div>
-            </MenuItem>
+            </MenuItem>-->
             <MenuItem name="databaselist">
               <div @click="changeRouter('DataBaseList')">
                 <Icon custom="icon iconfont icon-ziliao"></Icon>
                 <span>资料库</span>
               </div>
-            </MenuItem>-->
-            <MenuItem name="problemlist">
-              <div @click="changeRouter('ProblemList')">
+            </MenuItem>
+            <MenuItem name="wechatscan">
+              <div @click="changeRouter('WeChatScan')">
                 <Icon custom="icon iconfont icon-bangzhu"></Icon>
-                <span>疑难求助</span>
+                <span>微信管理</span>
               </div>
             </MenuItem>
           </Menu>

@@ -21,7 +21,7 @@
             columns1: [
               {title:'序号',type: 'index',width: 60,align: 'center'},
               {title: '拜访方式',key: 'visiting',align: 'center'},
-              {title: '时间',key: 'visit_time',
+              {title: '拜访时间',key: 'visit_time',
                 render:(h,params)=>{
                   let texts = '';
                   texts = this.$commonTools.formatDate(params.row.visit_time);
@@ -30,7 +30,7 @@
                   },texts)
                 }
               },
-              {title: '目的',key: 'purpose',align: 'center'},
+              {title: '拜访目的',key: 'purpose',align: 'center'},
               {title: 'VR',key: 'vr',align: 'center'},
               {title: '操作',key: 'action',width: 150,align: 'center',
                 render: (h, params) => {
@@ -117,23 +117,6 @@
                         on: {
                           click: () => {
                             this.goDetail(params.row.id,'wk','view');
-                          }
-                        }
-                      })
-                    ]),
-                    h("Tooltip",
-                      {props:{trigger:"hover",content:"编辑",placement:"top"}},
-                      [h("Icon", {
-                        props: {
-                          type: "icon iconfont icon-bianji"
-                        },
-                        style: {
-                          marginLeft: "5px",
-                          color: "#4fb115"
-                        },
-                        on: {
-                          click: () => {
-                            this.goDetail(params.row.id,'wk','edit');
                           }
                         }
                       })

@@ -3,7 +3,7 @@
     <Row>
       <Col span="12" class="tag_title">标签管理</Col>
       <Col span="12" class="tag_button">
-        <Button type="success" icon="icon iconfont icon-tianjia" @click="addFirstLabel">新增一级标签</Button>
+        <Button type="success" icon="icon iconfont icon-tianjia" @click="addLabel">新增标签</Button>
       </Col>
     </Row>
     <div class="tag_cardTitle">
@@ -16,9 +16,7 @@
       <div class="tag_first_panel">
         <Row>
           <Col span="3" class="tag_title"><span v-text="item.name"></span></Col>
-          <Col span="10" class="tag_summary"><p v-text="item.summary"></p></Col>
-          <Col span="2">
-            <Icon custom="icon iconfont icon-xinzeng" color="#4fb115" @click="addSecondLabel"/>&emsp;
+          <Col span="2" offset="10">
             <Icon custom="icon iconfont icon-bianji" color="#4fb115"/>&emsp;
             <Icon custom="icon iconfont icon-shanchu" color="#4fb115"/>
           </Col>
@@ -31,9 +29,7 @@
       <div class="tag_second_panel" v-for="(citem,cindex) in item.children" :key="cindex" v-show="item.isShow">
         <Row>
           <Col span="2" class="tag_title_se">{{cindex+1}}、<span v-text="citem.name"></span></Col>
-          <Col span="8" class="tag_summary"><p v-text="citem.summary"></p></Col>
-          <Col span="4">
-            &emsp;&nbsp;
+          <Col span="4" offset="8">
             <Icon custom="icon iconfont icon-bianji" color="#4fb115"/>&emsp;
             <Icon custom="icon iconfont icon-shanchu" color="#4fb115"/>
           </Col>
@@ -44,14 +40,21 @@
       <Page :total="100" show-elevator />
     </div>
 
-    <Modal v-model="labelModel" draggable scrollable :title="labelTitle">
+    <Modal v-model="labelModel" draggable scrollable :title="modalTitle" @on-ok="saveLabel">
       <Row class="tag_modelRow">
-        <Col span="8" class="tag_inputName"><span class="necessary">*</span>标签名称：</Col>
-        <Col span="16"><Input v-model="labelName" clearable class="tag_input"/></Col>
+        <Col span="8" class="tag_inputName"><span class="necessary">*</span>一级标签：</Col>
+        <Col span="16"><Input v-model="firstLabelName" clearable class="tag_input"/></Col>
       </Row>
       <Row class="tag_modelRow">
-        <Col span="8" class="tag_inputName">标签描述：</Col>
-        <Col span="16"><Input type="textarea" v-model="labelSummary" :rows="4" class="tag_input"/></Col>
+        <Col span="8" class="tag_inputName"><span class="necessary">*</span>二级标签：</Col>
+        <Col span="16">
+          <Input v-model="secondLabelName" class="tag_input" icon="md-add" @on-click="addSeLabel"/>
+        </Col>
+      </Row>
+      <Row class="input_top" v-for="(item,index) in secondList" :key="index">
+        <Col span="16" offset="8">
+          <Input v-model="item.name" class="tag_input" icon="md-remove" @on-click="delSeLabel(index)"/>
+        </Col>
       </Row>
     </Modal>
 
@@ -63,24 +66,86 @@
       name: "tag",
       data(){
           return{
-            listData:[{"name":"妇科专家","summary":"该主任为该地区有名的妇科专家，常年从事妇科疾病的治疗，非常有经。如果在治疗这方面有任何问题的话请咨询该主任。能够保证在你" +
-              "该主任为该地区有名的妇科专家，常年从事妇科疾病的治疗，非常有经。如果在治疗这方面有任何问题的话请咨询该主任。","isShow":false,
-              "children":[{"name":"不孕不育专家","summary":"该主任为该地区有名的妇科专家，常年从事妇科疾病的治疗，非常有经验。"}]},
-              {"name":"大量门诊","summary":"大量门诊大量门诊","isShow":false,
-                "children":[{"name":"大量门诊1","summary":"大量门诊11111。"},{"name":"大量门诊2","summary":"大量门诊22222。"}]}],
+            listData:[],
             labelModel:false,
-            labelName:'',
-            labelSummary:'',
-            labelOrder:'',
-            labelTitle:'新增一级'
+            modalTitle:'新增标签',
+            firstLabelName:'',
+            secondLabelName:'',
+            secondList:[],
+            postSecondList:[],
           }
       },
-      mounted(){},
+      mounted(){
+        this.getLabelList();
+      },
       methods:{
-        addFirstLabel(){
+        getLabelList(){
+          let vm = this;
+          vm.$http.get(vm.$commonTools.g_restUrl+'admin/label/label_list', {
+            params: {}
+          })
+            .then(function(response) {
+              if(response.data.code == 200){
+                vm.listData = response.data.list;
+              }
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        },
+        addLabel(){
           let vm = this;
           vm.labelModel = true;
-          vm.labelTitle = "新增一级标签";
+          vm.clearModal();
+        },
+        addSeLabel(){
+          let vm = this;
+          if(vm.secondLabelName == ""){
+            vm.$Notice.error({
+              title: '请先填写第一项！'
+            });
+          }else{
+            let cope = {name:""};
+            vm.secondList.push(cope);
+          }
+        },
+        delSeLabel(index){
+          this.secondList.splice(index,1);
+        },
+        saveLabel(){
+          let vm = this;
+          let postData = {};
+          postData.label_name = vm.firstLabelName;
+          vm.postSecondList.push(vm.secondLabelName);
+          if(vm.secondList.length > 0){
+            vm.secondList.forEach(function (ele,index,arr) {
+              vm.postSecondList.push(ele.name)
+            });
+          }
+          postData.label_two = vm.postSecondList;
+          this.$http({
+            method:"post",
+            url:vm.$commonTools.g_restUrl+'admin/label/label_edit',
+            data:vm.$qs.stringify(postData)
+          })
+            .then(function(response) {
+              if(response.data.code == 200){
+                vm.$Notice.success({
+                  title: '标签添加成功！'
+                });
+              }
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        },
+        clearModal(){
+          let vm = this;
+          vm.firstLabelName = "";
+          vm.secondLabelName = "";
+          vm.secondList = [];
+          vm.postSecondList = [];
+
         },
         changeClass(cindex,item){
             let vm = this;
@@ -90,11 +155,6 @@
               }
             })
         },
-        addSecondLabel(){
-          let vm = this;
-          vm.labelModel = true;
-          vm.labelTitle = "新增二级标签";
-        }
       }
     }
 </script>
@@ -139,12 +199,6 @@
     font-size: 16px;
   }
 
-  .tag_summary{
-    font-size: 14px;
-    text-align: left;
-    color: #b2b2b2;
-  }
-
   .tag_second_panel .tag_title_se{
     font-size: 15px;
     margin: 0 1vw;
@@ -173,5 +227,9 @@
   .tag_page{
     text-align: right;
     margin:2vh 0;
+  }
+
+  .input_top{
+    margin-top: 10px;
   }
 </style>

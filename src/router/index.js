@@ -1,14 +1,15 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import HelloWorld from '@/components/HelloWorld'
 import Login from '@/pages/login'
 import Index from '@/pages/index'
 import Doctor from '@/pages/doctor/doctor'
-/*import DoctorDetail from '@/pages/doctor/doctorDetail'*/
+import MiniClass from '@/pages/miniclass/miniClass'
 import Tag from '@/pages/tag/tag'
 import DataBaseList from '@/pages/database/databaseList'
 import DataBaseAdd from '@/pages/database/databaseAdd'
 import ProblemList from '@/pages/problem/problemlist'
+import WeChatScan from '@/pages/wechat/wechatscan'
+import QRcode from '@/pages/wechat/QRcode'
 import demo01 from '@/pages/demo/demo01'
 import demo02 from '@/pages/demo/demo02'
 import demo03 from '@/pages/demo/demo03'
@@ -17,11 +18,6 @@ Vue.use(Router)
 
 export default new Router({
   routes: [
-    /*{
-      path: '/',
-      name: 'HelloWorld',
-      component: HelloWorld
-    }*/,
     {
       path: '/',
       name: 'Login',
@@ -40,18 +36,34 @@ export default new Router({
             requiresAuth:true
           }
         },
-        /*{
-          path: 'doctordetail',
-          component: DoctorDetail,
-          name:'DoctorDetail',
+        {
+          path: 'miniclass',
+          component: MiniClass,
+          name:'MiniClass',
           meta:{
             requiresAuth:true
           }
-        },*/
+        },
         {
           path: 'tag',
           component: Tag,
           name:'Tag',
+          meta:{
+            requiresAuth:true
+          }
+        },
+        {
+          path: 'wechatscan',
+          component: WeChatScan,
+          name:'WeChatScan',
+          meta:{
+            requiresAuth:true
+          }
+        },
+        {
+          path: 'QRcode',
+          component: QRcode,
+          name:'QRcode',
           meta:{
             requiresAuth:true
           }

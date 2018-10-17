@@ -2,12 +2,20 @@
       <div class="doctor">
         <div class="title" ref="title">医生管理</div>
         <div class="searchCard" ref="searchCard">
-          所属医院：<Input v-model="hospitalName" clearable class="inputStyle"/>
-          医生姓名：<Input v-model="doctorName" clearable class="inputStyle"/>
-          医生编号：<Input v-model="doctorNum" clearable class="inputStyle"/>
-          医生手机：<Input v-model="doctorMobile" clearable class="inputStyle"/>
-          <Button type="success" @click="search">搜索</Button>
-          <Button type="warning" @click="clear">重置</Button>
+          <Row type="flex" align="middle">
+            <Col span="1">所属医院</Col>
+            <Col span="4"><Input v-model="hospitalName" clearable/></Col>
+            <Col span="1" offset="1">医生姓名</Col>
+            <Col span="4"><Input v-model="doctorName" clearable/></Col>
+            <Col span="1" offset="1">微信昵称</Col>
+            <Col span="4"><Input v-model="nickName" clearable/></Col>
+            <!--<Col span="1" style="text-align: right">城市</Col>
+            <Col span="4"><Cascader :data="cities" v-model="city" change-on-select></Cascader></Col>-->
+            <Col span="2">
+              <Button type="success" @click="search">搜索</Button>
+              <Button type="warning" @click="clear">重置</Button>
+            </Col>
+          </Row>
         </div>
         <div class="tableDiv" :style="{height:tableBgH+'px'}">
           <div class="buttonDiv" ref="buttonDiv">
@@ -179,14 +187,15 @@
 
 <script>
   import DoctorPassDetail from '@/components/DoctorPassDetail.vue'
+  /*import areaList from "../../../static/js/area.js"*/
 export default {
   name: "doctor",
   data() {
     return {
       hospitalName:'',
       doctorName:'',
-      doctorNum:'',
-      doctorMobile:'',
+      nickName:'',
+      city:[],
       tableBgH: "",
       tableH: "",
       curPage:1,
@@ -231,18 +240,7 @@ export default {
         { title: "编号", key: "numbers",width:118},
         { title: "姓名", key: "realname"},
         { title: "昵称", key: "nickname" },
-        {title: "医院",key: "hospital",
-          render:(h,params) => {
-            let texts = params.row.hospital;
-            return h('div',{
-              style:{
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap"
-              }
-            },texts)
-          }
-        },
+        {title: "医院",key: "hospital"},
         {title: "科室",key: "department"},
         {title:"城市",key:"citys"},
         { title: "标签",key: "action",
@@ -391,7 +389,8 @@ export default {
             ]);
           }
         }
-      ]
+      ],
+      /*cities: areaList.cities*/
     };
   },
   components: {
@@ -412,8 +411,7 @@ export default {
       let postData = {};
       postData.page = vm.curPage ;
       postData.hospital = vm.hospitalName;
-      postData.numbers = vm.doctorNum;
-      postData.mobile = vm.doctorMobile;
+      postData.nickname = vm.nickName;
       postData.realname = vm.doctorName;
       this.$http({
         method:"post",
@@ -438,8 +436,7 @@ export default {
     clear(){
       let vm = this;
       vm.hospitalName = "";
-      vm.doctorNum = "";
-      vm.doctorMobile = "";
+      vm.nickName = "";
       vm.doctorName = "";
     },
     isPass(id,status){//通过or拒绝
