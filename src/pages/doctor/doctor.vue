@@ -28,8 +28,8 @@
           </div>
         </div>
 
-        <Modal v-model="labelModel" title="请输入您需要添加的标签" @on-ok="addLabel" >
-          <Cascader :data="tagData" v-model="tagValue"></Cascader>
+        <Modal v-model="labelModel" title="请选择您需要添加的标签" @on-ok="addLabel" >
+          <Cascader :data="tagData" v-model="tagValue" style="width: 400px"></Cascader>
         </Modal>
         <Modal v-model="detailEditModel" @on-ok="save(detailData)">
           <Row class="detail_row">
@@ -217,6 +217,15 @@ export default {
         { title: "标签",key: "label_name",
           render:(h,params)=>{
           let texts = "";
+          if(params.row.label_name.length>0){
+            params.row.label_name.forEach(function (value,index,arr) {
+              if(index == 0){
+                texts = value.name;
+              }else{
+                texts = texts + '；' +value.name;
+              }
+            });
+          }
           return h('span',{
             props:{},
           },texts)
@@ -520,6 +529,7 @@ export default {
     },
     showLabelModal() {
       let vm = this;
+      vm.tagValue = [];
       if(vm.selections.length == 0){
         vm.$Notice.info({
           title: '请先选择需要添加标签的医生！'
