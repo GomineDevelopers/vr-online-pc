@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="title" ref="title">微信管理</div>
-    <div class="wordFont">您好，<span v-text="$store.state.userData.name" class="nameFont"></span>。目前您正在使用网页版微信，请点击下方按钮登录。</div>
+    <div class="wordFont">您好，<span v-text="name" class="nameFont"></span>。目前您正在使用网页版微信，请点击下方按钮登录。(请耐心等待几秒)</div>
     <div class="buttonDiv">
       <Button type="success" size="large" @click="loginWx">扫码登录</Button>
     </div>
@@ -12,16 +12,15 @@
     export default {
       name: "wechatScan",
       data(){
-        return{}
+        return{
+          name:''
+        }
       },
       mounted(){
-        this.$store.commit('getUserData');
+        this.name = window.localStorage.getItem("UserData_name");
       },
       methods:{
         loginWx(){
-          /*if(this.$store.state.QR){
-            this.$router.push({name:'QRcode'});
-          }*/
           let vm = this;
           vm.$http.get('http://icampaign.com.cn:9080/api/wx_login/', {
             params: {}

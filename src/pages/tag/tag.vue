@@ -14,9 +14,9 @@
     </div>
     <div v-for="(item,index) in listData" :key="index">
       <div class="tag_first_panel">
-        <Row>
-          <Col span="3" class="tag_title"><span v-text="item.name"></span></Col>
-          <Col span="2" offset="10">
+        <Row type="flex" align="middle">
+          <Col span="10" class="tag_title_fir"><span v-text="item.name"></span></Col>
+          <Col span="2" offset="3">
             <Icon custom="icon iconfont icon-bianji" color="#4fb115"/>&emsp;
             <Icon custom="icon iconfont icon-shanchu" color="#4fb115"/>
           </Col>
@@ -26,10 +26,10 @@
           </Col>
         </Row>
       </div>
-      <div class="tag_second_panel" v-for="(citem,cindex) in item.children" :key="cindex" v-show="item.isShow">
+      <div class="tag_second_panel" v-for="(citem,cindex) in item.children" :key="cindex" v-if="item.isShow">
         <Row>
-          <Col span="2" class="tag_title_se">{{cindex+1}}、<span v-text="citem.name"></span></Col>
-          <Col span="4" offset="8">
+          <Col span="10" class="tag_title_se">{{cindex+1}}、<span v-text="citem.name"></span></Col>
+          <Col span="4" offset="1">
             <Icon custom="icon iconfont icon-bianji" color="#4fb115"/>&emsp;
             <Icon custom="icon iconfont icon-shanchu" color="#4fb115"/>
           </Col>
@@ -37,7 +37,7 @@
       </div>
     </div>
     <div class="tag_page">
-      <Page :total="100" show-elevator />
+      <Page :total="totalPage" :page-size="6" show-elevator :current="curPage" @on-change="changePage"/>
     </div>
 
     <Modal v-model="labelModel" draggable scrollable :title="modalTitle" @on-ok="saveLabel">
@@ -73,6 +73,8 @@
             secondLabelName:'',
             secondList:[],
             postSecondList:[],
+            curPage:1,
+            totalPage:0
           }
       },
       mounted(){
@@ -82,11 +84,17 @@
         getLabelList(){
           let vm = this;
           vm.$http.get(vm.$commonTools.g_restUrl+'admin/label/label_list', {
-            params: {}
+            params: {
+              page:vm.curPage
+            }
           })
             .then(function(response) {
               if(response.data.code == 200){
-                vm.listData = response.data.list;
+                vm.totalPage = response.data.list.total;
+                response.data.list.data.forEach(function (value, index, array) {
+                  value.isShow = false;
+                });
+                vm.listData = response.data.list.data;
               }
             })
             .catch(function(error) {
@@ -133,6 +141,7 @@
                 vm.$Notice.success({
                   title: '标签添加成功！'
                 });
+                vm.getLabelList();
               }
             })
             .catch(function(error) {
@@ -147,13 +156,17 @@
           vm.postSecondList = [];
 
         },
-        changeClass(cindex,item){
+        changeClass(index_temp,item_temp){
             let vm = this;
             vm.listData.forEach(function (value, index, array) {
-              if(cindex == index){
-                value.isShow = !item.isShow;
+              if(index_temp == index){
+                value.isShow = !item_temp.isShow;
               }
             })
+        },
+        changePage(curPage){
+          this.curPage = curPage;
+          this.getLabelList();
         },
       }
     }
@@ -164,6 +177,13 @@
     font-size: 1.25rem;
     margin-bottom: 2vh;
     color: #adb3a8;
+  }
+
+  .tag_title_fir{
+    font-size: 1rem;
+    color: #adb3a8;
+    text-align: left;
+    padding-left: 15px;
   }
 
   .tag_button{
@@ -188,7 +208,7 @@
   }
 
   .tag_second_panel{
-    margin: 1vh 0 1vh 11vw;
+    margin: 1vh 0 1vh 6vw;
     background-color: #fff;
     text-align: center;
     border-left: 4px solid #b3df97;
@@ -202,6 +222,7 @@
   .tag_second_panel .tag_title_se{
     font-size: 15px;
     margin: 0 1vw;
+    text-align: left;
   }
 
   .tag_icon{
@@ -232,4 +253,5 @@
   .input_top{
     margin-top: 10px;
   }
+
 </style>

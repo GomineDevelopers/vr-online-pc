@@ -21,7 +21,7 @@
           <Col span="4">
             <DatePicker ref="datewk" type="datetime" v-model="wk.date" :value="wk.date" format="yyyy-MM-dd HH:mm"></DatePicker>
           </Col>
-          <Col offset="1">创建者&emsp;<span v-text="$store.state.userData.name"></span></Col>
+          <Col offset="1">创建者&emsp;<span v-text="wk.creater"></span></Col>
         </Row>
         <Row class="modalRow">
           <Col span="2">主讲医生</Col>
@@ -84,7 +84,7 @@
         <Row class="modalRow">
           <Col span="2">参会人员</Col>
           <Col span="22">
-            <Table :columns="wk.columns" :data="wk.data2"></Table>
+            <Table :columns="wk.columns" :data="wk.data2" height="200"></Table>
           </Col>
         </Row>
         <Row>
@@ -99,7 +99,7 @@
           <Col span="5"><span v-text="wk.num"></span></Col>
           <Col span="2">微课时间</Col>
           <Col span="5"><span v-text="date_C"></span></Col>
-          <Col >创建者&emsp;<span v-text="$store.state.userData.name"></span></Col>
+          <Col >创建者&emsp;<span v-text="wk.creater"></span></Col>
         </Row>
         <Row class="modalRow">
           <Col span="2">主讲医生</Col>
@@ -127,7 +127,7 @@
         <Row class="modalRow">
           <Col span="2">参会人员</Col>
           <Col span="22">
-            <Table :columns="wk.columns" :data="wk.data2"></Table>
+            <Table :columns="wk.columns" :data="wk.data2" height="200"></Table>
           </Col>
         </Row>
         <Row class="modalRow">
@@ -234,6 +234,7 @@
             totalPage:0,
             curPage:1,
             isAdd : true,
+            isScan:false,
             wkID:'',
             serverImgUrl:'http://icampaign.com.cn/customers/vrOnlinePc/backend/admin/images/add_images',
             wk:{
@@ -241,6 +242,7 @@
               viewWKModal:false,
               title:'',
               num:'',
+              creater:'',
               date:'',
               date1:'',
               salesman:'',
@@ -250,8 +252,7 @@
                 {title:'所属医院',key:'hospital'},
                 {title:'科室',key:'department'},
                 {title:'职称',key:'job'},
-                {title:'城市',key:'citys'},
-                {title:'微信号',key:'wechat'},
+                {title:'城市',key:'citys'}
               ],
               data2:[],
               members:[],
@@ -289,7 +290,7 @@
           }
       },
       mounted() {
-        this.$store.commit('getUserData');//获取登录用户信息
+        this.wk.creater = window.localStorage.getItem("UserData_name");
         this.getBgHeight();
         this.getData();
         this.wk.uploadList = this.$refs.uploadwk.fileList;
@@ -315,7 +316,7 @@
             .then(function(response) {
               if(response.data.code == 200){
                 vm.data = response.data.list.data;
-                vm.totalPages = response.data.list.total;
+                vm.totalPage = response.data.list.total;
               }
             })
             .catch(function(error) {
@@ -327,9 +328,11 @@
           vm.wkID = id;
           if(temp == 'view'){
             vm.wk.viewWKModal = true;
+            vm.wk.data2 = [];
           }else if(temp == 'edit'){
             vm.wk.addWKModal = true;
             vm.wk.imgNameList = [];
+            vm.wk.data2 = [];
             vm.isAdd = false;
           }
 
@@ -349,7 +352,6 @@
                   vm.wk.doctor.data = [];
                   vm.wk.doctor.data.push(response.data.data);
                   vm.wk.updateDate = response.data.data.update_time;
-                  vm.wk.data2 = [];
                 }else{
                   vm.wk.doctor.name = response.data.data.speaker_name;
                   vm.wk.doctor.hospital = response.data.data.speaker_hospital;
@@ -362,6 +364,10 @@
                 vm.$nextTick(()=> { //赋值后马上更新
                   vm.wk.uploadList = vm.$refs.uploadwk.fileList;
                 });
+                response.data.data.doctors_list.forEach(function (value,index,arr) {
+                  value.group = response.data.data.group;
+                });
+                vm.wk.data2 = response.data.data.doctors_list;
               }
             })
             .catch(function(error) {
@@ -381,6 +387,7 @@
         saveWkRecord(){
           let vm = this;
           let postData = {};
+          vm.wk.members = [];
           if(vm.isAdd){
             postData.id = "";
           }else{
@@ -408,7 +415,13 @@
           vm.wk.data2.forEach(function (value, index, array) {
             vm.wk.members.push(value.uid);
           });
+
           postData.participate = vm.wk.members;
+          if(vm.wk.data2.length>0){
+            postData.group = vm.wk.data2[0].group;
+          }else {
+            postData.group = "";
+          }
 
           this.$http({
             method:"post",
@@ -463,18 +476,43 @@
         },
         del(id){
           let vm = this;
-          this.$http.get(vm.$commonTools.g_restUrl+ 'admin/lesson/lesson_del',{
+          this.$Modal.confirm({
+            title: '提示',
+            content: '确定要删除吗？',
+            onOk: () => {
+              this.$http.get(vm.$commonTools.g_restUrl+"admin/lesson/lesson_del",{
+                params: {
+                  id : id
+                }
+              })
+                .then(function(response) {
+                  if(response.data.code == 200){
+                    vm.$Notice.success({
+                      title: '删除成功！'
+                    });
+                    vm.curPage = 1;
+                    vm.getData();
+                  }
+
+                })
+                .catch(function(error) {
+                  console.log(error);
+                });
+            }
+          });
+        },
+        getIsScan(){
+          let vm = this;
+          this.$http.get('http://icampaign.com.cn/customers/vrOnlinePc/backend/admin/login/scanState',{
             params: {
-              id : id
+              bot_id:window.localStorage.getItem("QR_id")
             }
           })
             .then(function(response) {
-              if(response.data.code == 200){
-                vm.$Notice.success({
-                  title: '删除成功！'
-                });
-                vm.curPage = 1;
-                vm.getData();
+              if(response.data.code != 200){
+                vm.isScan = false;
+              }else{
+                vm.isScan = true;
               }
             })
             .catch(function(error) {
@@ -483,23 +521,74 @@
         },
         addAttend(){
           let vm = this;
-          vm.wk.docList.doctorListModal = true;
-          this.$http.get('http://icampaign.com.cn:9080/api/get_group_list/',{
+          this.$http.get('http://icampaign.com.cn/customers/vrOnlinePc/backend/admin/login/scanState',{
             params: {
               bot_id:window.localStorage.getItem("QR_id")
             }
           })
             .then(function(response) {
               if(response.data.code == 200){
-                response.data.data.group_list.forEach(function (ele,index,arr) {
-                  ele.isShow = false;
+                setTimeout(vm.wk.docList.doctorListModal = true,27000);
+                vm.$http.get('http://icampaign.com.cn:9080/api/get_group_list/',{
+                  params: {
+                    bot_id:window.localStorage.getItem("QR_id")
+                  }
+                })
+                  .then(function(response) {
+                    if(response.data.code == 200){
+                      response.data.data.group_list.forEach(function (ele,index,arr) {
+                        if(vm.wk.data2.length != 0){
+                          if(vm.wk.data2[0].group == ele.NickName){
+                            ele.isShow = true;
+                            vm.$http.get('http://icampaign.com.cn:9080/api/get_group_members/',{
+                              params: {
+                                bot_id:window.localStorage.getItem("QR_id")
+                              }
+                            })
+                              .then(function(response) {
+                                if(response.data.code == 200){
+                                  for(var key in response.data.data.group_members){
+                                    if(key == ele.UserName){
+                                      vm.wk.docList.data = response.data.data.group_members[key];
+                                    }
+                                  }
+                                }
+                                vm.wk.docList.data.forEach(function (value, index, array) {//将群名放入群成员中,默认选中已存在的
+                                  value.groupName = ele.NickName;
+                                  vm.wk.data2.forEach(function (ele,index,array) {
+                                    if(ele.nickname == value.NickName){
+                                      value._checked = true;
+                                    }
+                                  });
+                                });
+                              })
+                              .catch(function(error) {
+                                console.log(error);
+                              });
+                          }else{
+                            ele.isShow = false;
+                          }
+                        }else{
+                          ele.isShow = false;
+                        }
+                      });
+                      vm.wk.docList.groupList = response.data.data.group_list;
+                    }
+                  })
+                  .catch(function(error) {
+                    console.log(error);
+                  });
+              }else{
+                vm.$Notice.info({
+                  title: '请到微信管理页面先扫码登录!'
                 });
-                vm.wk.docList.groupList = response.data.data.group_list;
               }
             })
             .catch(function(error) {
               console.log(error);
             });
+
+
         },
         onSelect(selection,row){
           this.wk.docList.selectedList = selection;
@@ -515,11 +604,13 @@
         },
         saveAttend(){
           let vm = this;
+          vm.wk.docList.postList = [];
           vm.wk.docList.selectedList.forEach(function (ele,index,array) {
             vm.wk.docList.postList.push(ele.NickName);
           });
           let postData = {};
           postData.member = vm.wk.docList.postList;
+          postData.group = vm.wk.docList.selectedList[0].groupName;
           this.$http({
             method:"post",
             url:vm.$commonTools.g_restUrl+'admin/doctors/doctors_match',
@@ -534,7 +625,7 @@
               console.log(error);
             });
         },
-        showTable(index_g,item_g){
+        showTable(index_g,item_g){//点击展开获取群成员列表
           let vm = this;
           vm.wk.docList.groupList.forEach(function (value, index, array) {
             value.isShow = false;
@@ -555,11 +646,14 @@
                   }
                 }
               }
+              vm.wk.docList.data.forEach(function (value, index, array) {//将群名放入群成员中
+                value.groupName = item_g.NickName;
+              });
             })
             .catch(function(error) {
               console.log(error);
             });
-        }
+        },
       }
     }
 </script>

@@ -1,7 +1,6 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
-import store from './store'
 import App from './App'
 import router from './router'
 import axios from 'axios';
@@ -22,6 +21,16 @@ Vue.use(iView);
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     let token = window.localStorage.getItem('token');
+    axios('http://icampaign.com.cn/customers/vrOnlinePc/backend/admin/user/getinfo', {
+      params: {}
+    })
+      .then(function (response) {
+        let temp = {};
+        window.localStorage.setItem("UserData_name",response.data.data.name);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
     if (token) {
       next();
     } else {
@@ -32,11 +41,12 @@ router.beforeEach((to, from, next) => {
   }
 })
 
+require('promise.prototype.finally').shim();
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
-  store,
   components: { App },
   template: '<App/>'
 })

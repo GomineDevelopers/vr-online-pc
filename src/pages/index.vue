@@ -41,7 +41,7 @@
             </MenuItem>
             <MenuItem name="miniclass">
               <div @click="changeRouter('MiniClass')">
-                <Icon custom="icon iconfont icon-yisheng"></Icon>
+                <Icon custom="icon iconfont icon-kecheng"></Icon>
                 <span>微课管理</span>
               </div>
             </MenuItem>
@@ -63,12 +63,12 @@
                 <span>疑难求助</span>
               </div>
             </MenuItem>
-            <!--<MenuItem name="tag">
+            <MenuItem name="tag">
               <div @click="changeRouter('Tag')">
                 <Icon custom="icon iconfont icon-common-xiangmubiaoqian-copy"></Icon>
                 <span>标签管理</span>
               </div>
-            </MenuItem>-->
+            </MenuItem>
             <MenuItem name="databaselist">
               <div @click="changeRouter('DataBaseList')">
                 <Icon custom="icon iconfont icon-ziliao"></Icon>
@@ -77,7 +77,7 @@
             </MenuItem>
             <MenuItem name="wechatscan">
               <div @click="changeRouter('WeChatScan')">
-                <Icon custom="icon iconfont icon-bangzhu"></Icon>
+                <Icon custom="icon iconfont icon-weixin"></Icon>
                 <span>微信管理</span>
               </div>
             </MenuItem>

@@ -3,11 +3,11 @@
         <div class="title" ref="title">医生管理</div>
         <div class="searchCard" ref="searchCard">
           <Row type="flex" align="middle">
-            <Col span="1">所属医院</Col>
+            <Col span="2">所属医院</Col>
             <Col span="4"><Input v-model="hospitalName" clearable/></Col>
-            <Col span="1" offset="1">医生姓名</Col>
+            <Col span="2" offset="1">医生姓名</Col>
             <Col span="4"><Input v-model="doctorName" clearable/></Col>
-            <Col span="1" offset="1">微信昵称</Col>
+            <Col span="2" offset="1">微信昵称</Col>
             <Col span="4"><Input v-model="nickName" clearable/></Col>
             <!--<Col span="1" style="text-align: right">城市</Col>
             <Col span="4"><Cascader :data="cities" v-model="city" change-on-select></Cascader></Col>-->
@@ -19,7 +19,7 @@
         </div>
         <div class="tableDiv" :style="{height:tableBgH+'px'}">
           <div class="buttonDiv" ref="buttonDiv">
-            <Button icon="md-add" @click="showLabel">添加标签</Button>
+            <Button icon="md-add" @click="showLabelModal">添加标签</Button>
           </div>
           <Table ref="selection" :columns="columns2" :data="data2"  @on-select="selected" @on-select-cancel="unSelected" :height="tableH"></Table>
           <div class="pageDiv" ref="pageDiv">
@@ -28,7 +28,7 @@
         </div>
 
         <Modal v-model="labelModel" title="请输入您需要添加的标签" @on-ok="addLabel" >
-          <div class="labelDiv">
+          <!--<div class="labelDiv">
             <Row type="flex" justify="center">
              <i-col span="15" class="tag-row">
                 <label >请选择一级标签：</label>
@@ -43,7 +43,8 @@
               </Select>
              </i-col>
             </Row>
-           </div>
+           </div>-->
+          <Cascader :data="tagData" v-model="tagValue"></Cascader>
         </Modal>
         <Modal v-model="detailEditModel" @on-ok="save(detailData)">
           <Row class="detail_row">
@@ -206,22 +207,6 @@ export default {
       detailEditModel:false,
       detailData:"",
       detailPassModel:false,
-
-      selections: [],
-      tag: "",
-      subtag: "",
-      tagData: [
-        { name: "老中医" },
-        { name: "省医" },
-        { name: "县医" },
-        { name: "全国十佳" }
-      ],
-      subTagData: [
-        { name: "老中医" },
-        { name: "省医" },
-        { name: "县医" },
-        { name: "全国十佳" }
-      ],
       columns2: [
         { title:"序号",type: "selection", width: 50, align: "center" },
         {title: "头像", key: "avatar",width:60,
@@ -302,74 +287,74 @@ export default {
             return h("div", [
               h("Tooltip",{props:{trigger:"hover",content:"同意", placement:"top"}},
                 [h("Icon", {
-                props: {
-                  type: "md-checkmark-circle",
-                  size:"16"
-                },
-                style: {
-                  color: "#4fb115",
-                  display:(params.row.is_registered == 0 || params.row.is_registered == 2 || params.row.is_registered == 3)?"none":"inline"
-                },
-                on: {
-                  click: () => {
-                    this.isPass(params.row.id,2);
-                  }
-                }
-              })]),
-              h("Tooltip",{props:{trigger:"hover",content:"拒绝",placement:"top"}},
-                [h("Icon", {
-                props: {
-                  type: "md-close-circle",
-                  size:"16"
-                },
-                style: {
-                  color: "red",
-                  display:(params.row.is_registered == 0 ||params.row.is_registered == 2 || params.row.is_registered == 3)?"none":"inline"
-                },
-                on: {
-                  click: () => {
-                    this.isPass(params.row.id,3);
-                  }
-                }
-              })]),
-              h("Tooltip",{props:{trigger:"hover",content:"资料",placement:"top"}},
-                [h("Icon", {
-                props: {
-                  type: "icon iconfont icon-ziliao",
-                },
-                style: {
-                  marginLeft: "5px",
-                  color: "#4fb115"
-                },
-                on: {
-                  click: () => {
-                    if(params.row.is_registered == 2){
-                      this.goDetailPass(params.row.id);
-                    }else{
-                      this.goDetail(params.row.id);
+                  props: {
+                    type: "md-checkmark-circle",
+                    size:"16"
+                  },
+                  style: {
+                    color: "#4fb115",
+                    display:(params.row.is_registered == 0 || params.row.is_registered == 2 || params.row.is_registered == 3)?"none":"inline"
+                  },
+                  on: {
+                    click: () => {
+                      this.isPass(params.row.id,2);
                     }
                   }
-                }
-              })
-              ]),
+                })]),
+              h("Tooltip",{props:{trigger:"hover",content:"拒绝",placement:"top"}},
+                [h("Icon", {
+                  props: {
+                    type: "md-close-circle",
+                    size:"16"
+                  },
+                  style: {
+                    color: "red",
+                    display:(params.row.is_registered == 0 ||params.row.is_registered == 2 || params.row.is_registered == 3)?"none":"inline"
+                  },
+                  on: {
+                    click: () => {
+                      this.isPass(params.row.id,3);
+                    }
+                  }
+                })]),
+              h("Tooltip",{props:{trigger:"hover",content:"资料",placement:"top"}},
+                [h("Icon", {
+                  props: {
+                    type: "icon iconfont icon-ziliao",
+                  },
+                  style: {
+                    marginLeft: "5px",
+                    color: "#4fb115"
+                  },
+                  on: {
+                    click: () => {
+                      if(params.row.is_registered == 2){
+                        this.goDetailPass(params.row.id);
+                      }else{
+                        this.goDetail(params.row.id);
+                      }
+                    }
+                  }
+                })
+                ]),
               h("Tooltip",
                 {props:{trigger:"hover",content:"编辑",placement:"top"}},
                 [h("Icon", {
-                props: {
-                  type: "icon iconfont icon-bianji"
-                },
-                style: {
-                  marginLeft: "5px",
-                  color: "#4fb115",
-                  display:(params.row.is_registered == 0)?"none":"inline"
-                },
-                on: {
-                  click: () => {
-                    this.editDetail(params.row.id);
+                  props: {
+                    type: "icon iconfont icon-bianji"
+                  },
+                  style: {
+                    marginLeft: "5px",
+                    color: "#4fb115",
+                    display:(params.row.is_registered == 0)?"none":"inline"
+                  },
+                  on: {
+                    click: () => {
+                      this.editDetail(params.row.id);
+                    }
                   }
-                }
-              })
-              ]),
+                })
+                ]),
               h("Tooltip",{props:{trigger:"hover",content:"删除",placement:"top"}},
                 [h("Icon",{
                   props: {
@@ -390,6 +375,60 @@ export default {
           }
         }
       ],
+
+      selections: [],
+      tag: "",
+      subtag: "",
+      tagData:[
+        {
+          value: 'beijing',
+          label: '北京',
+          children: [
+            {
+              value: 'gugong',
+              label: '故宫'
+            },
+            {
+              value: 'tiantan',
+              label: '天坛'
+            },
+            {
+              value: 'wangfujing',
+              label: '王府井'
+            }
+          ]
+        }, {
+          value: 'jiangsu',
+          label: '江苏',
+          children: [
+            {
+              value: 'nanjing',
+              label: '南京',
+              children: [
+                {
+                  value: 'fuzimiao',
+                  label: '夫子庙',
+                }
+              ]
+            },
+            {
+              value: 'suzhou',
+              label: '苏州',
+              children: [
+                {
+                  value: 'zhuozhengyuan',
+                  label: '拙政园',
+                },
+                {
+                  value: 'shizilin',
+                  label: '狮子林',
+                }
+              ]
+            }
+          ],
+        }],
+      tagValue:[],
+
       /*cities: areaList.cities*/
     };
   },
@@ -493,23 +532,30 @@ export default {
     },
     del(id){
       let vm = this;
-      this.$http.get(vm.$commonTools.g_restUrl+'admin/doctors/doctors_del',{
-        params: {
-          id : id
-        }
-      })
-        .then(function(response) {
-          if(response.data.code == 200){
-            vm.$Notice.success({
-              title: '删除成功！'
+      this.$Modal.confirm({
+        title: '提示',
+        content: '确定要删除吗？',
+        onOk: () => {
+          this.$http.get(vm.$commonTools.g_restUrl+"admin/doctors/doctors_del",{
+            params: {
+              id : id
+            }
+          })
+            .then(function(response) {
+              if(response.data.code == 200){
+                vm.$Notice.success({
+                  title: '删除成功！'
+                });
+                vm.curPage = 1;
+                vm.getData2();
+              }
+
+            })
+            .catch(function(error) {
+              console.log(error);
             });
-            vm.curPage = 1;
-            vm.getData2();
-          }
-        })
-        .catch(function(error) {
-          console.log(error);
-        });
+        }
+      });
     },
     changePage(curPage) {
       this.curPage = curPage;
@@ -557,34 +603,13 @@ export default {
     unSelected(selection, row) {
       this.selections = selection;
     },
-    showLabel() {
+    showLabelModal() {
       let vm = this;
       vm.labelModel = true;
     },
-    tagValidate() {
-      let vm = this;
-      let msg = "";
-      if (vm.selections.length == 0) {
-        msg = "未选择医生";
-        this.$Message.warning(msg);
-        return false;
-      } else if (!vm.tag) {
-        msg = "未选择一级标签";
-        this.$Message.warning(msg);
-        return false;
-      } else if (!vm.subtag) {
-        msg = "未选择二级标签";
-        this.$Message.warning(msg);
-        return false;
-      } else {
-        return true;
-      }
-    },
     addLabel() {
       let vm = this;
-      if (vm.tagValidate()) {
-        console.log(vm.selections);
-      }
+      console.info(vm.tagValue);
     },
 
     tip(){

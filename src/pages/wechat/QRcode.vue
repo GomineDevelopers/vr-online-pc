@@ -15,13 +15,59 @@
       name: "QRcode",
       data(){
         return {
-          QRcode:''
+          QRcode:'',
+          isloading:false,
         }
+      },
+      beforeCreate(){
+        window.intervalObj="";
       },
       mounted(){
         let vm = this;
         let img = window.localStorage.getItem("QR_img");
         vm.QRcode = 'http://icampaign.com.cn:9080'+ img;
+        this.watchStatus();
+      },
+      methods:{
+        watchStatus(){
+           setInterval(
+             this.getStatus, 3000);
+        },
+        getStatus(){
+          let vm = this;
+          if(!vm.isloading){
+            vm.isloading=true;
+          this.$http.get('http://icampaign.com.cn/customers/vrOnlinePc/backend/admin/login/scanState',{
+            params: {
+              bot_id:window.localStorage.getItem("QR_id")
+            }
+          })
+            .then(function(response) {
+              if(response.data.code == 200){
+                vm.$Notice.success({
+                  title: '扫码登录成功!'
+                });
+                vm.isloading=true;
+              }else if(response.data.code == 201){
+                // vm.$Notice.info({
+                //   title: '正在登录，请稍等!'
+                // });
+                vm.isloading=false;
+              }else if(response.data.code == 408){
+                // vm.$Notice.info({
+                //   title: '等待扫码!'
+                // });
+                vm.isloading=false;
+              }
+
+            })
+            .catch(function(error) {
+              vm.isloading=false;
+              console.log(error);
+            })
+        }
+        }
+
       }
     }
 </script>

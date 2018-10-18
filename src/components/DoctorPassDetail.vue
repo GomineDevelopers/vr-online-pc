@@ -144,7 +144,7 @@
     <!--拜访记录的对话框end-->
 
     <!--微课记录的对话框start-->
-    <Modal v-model="wk.viewWKModal" title="添加微课记录" width="850" :footer-hide="true">
+    <Modal v-model="wk.viewWKModal" title="微课记录" width="850" :footer-hide="true">
       <Row type="flex" align="middle" class="modalRow">
         <Col span="2">微课标题</Col>
         <Col span="5"><span v-text="wk.title"></span></Col>
@@ -152,7 +152,7 @@
         <Col span="5"><span v-text="wk.num"></span></Col>
         <Col span="2">微课时间</Col>
         <Col span="5"><span v-text="wkUpdateDate_C"></span></Col>
-        <Col >创建者&emsp;<span v-text="$store.state.userData.name"></span></Col>
+        <Col >创建者&emsp;<span v-text="wk.creater"></span></Col>
       </Row>
       <Row class="modalRow">
         <Col span="2">主讲医生</Col>
@@ -231,6 +231,7 @@
             num:'',
             date:'',
             salesman:'',
+            creater:'',
             intro:'',
             columns1:[
               {title:'姓名',key:'speaker_name'},
@@ -244,8 +245,7 @@
               {title:'所属医院',key:'hospital'},
               {title:'科室',key:'department'},
               {title:'职称',key:'job'},
-              {title:'城市',key:'city'},
-              {title:'微信号',key:'wechat'},
+              {title:'城市',key:'citys'}
             ],
             data1:[],
             data2:[],
@@ -269,7 +269,7 @@
         }
       },
       mounted(){
-        this.$store.commit('getUserData');//获取登录用户信息
+        this.wk.creater = window.localStorage.getItem("UserData_name");
         this.uploadList = this.$refs.upload.fileList;
       },
       methods:{
@@ -357,6 +357,7 @@
                   vm.wk.data1 = [];
                   vm.wk.data1.push(response.data.data);
                   vm.wk.updateDate = response.data.data.update_time;
+                  vm.wk.data2 = response.data.data.doctors_list;
                 }
 
               }

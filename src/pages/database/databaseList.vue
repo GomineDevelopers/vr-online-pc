@@ -46,7 +46,7 @@
                     </div>
                   </Col>
                   <Col span="9">
-                    <div class="icon-wrapper" @click="deleteListData(item.id)">
+                    <div class="icon-wrapper" @click="del(item.id)">
                       <Icon type="icon iconfont icon-shanchu" size="14" color="#3fab23"/>
                       <span class="number">删除</span>
                     </div>
@@ -75,7 +75,7 @@
       },
       data(){
           return{
-            curPage:'',
+            curPage:1,
             listData:[],
             conH:'',
             totalPage:0,
@@ -113,24 +113,32 @@
               console.log(error);
             });
         },
-        deleteListData(id){
-
+        del(id){
           let vm = this;
-          this.$http.get(vm.$commonTools.g_restUrl+"admin/database/database_del",{
-            params: {
-              id : id
-            }
-          })
-            .then(function(response) {
-              if(response.data.code == 200){
-                vm.$Message.success("该条信息删除成功");
-                vm.getListData();
-              }
+          this.$Modal.confirm({
+            title: '提示',
+            content: '确定要删除吗？',
+            onOk: () => {
+              this.$http.get(vm.$commonTools.g_restUrl+"admin/database/database_del",{
+                params: {
+                  id : id
+                }
+              })
+                .then(function(response) {
+                  if(response.data.code == 200){
+                    vm.$Notice.success({
+                      title: '删除成功！'
+                    });
+                    vm.curPage = 1;
+                    vm.getListData();
+                  }
 
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
+                })
+                .catch(function(error) {
+                  console.log(error);
+                });
+            }
+          });
         },
         changePage(curPage) {
           this.curPage = curPage;
