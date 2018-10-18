@@ -17,6 +17,7 @@
         return {
           QRcode:'',
           isloading:false,
+          timer:''
         }
       },
       beforeCreate(){
@@ -28,13 +29,18 @@
         vm.QRcode = 'http://icampaign.com.cn:9080'+ img;
         this.watchStatus();
       },
+      beforeDestroy() {
+        if(this.timer) { //如果定时器还在运行 或者直接关闭，不用判断
+          clearInterval(this.timer); //关闭
+        }
+      },
       methods:{
         watchStatus(){
-           setInterval(
-             this.getStatus, 3000);
+           this.timer = setInterval(this.getStatus, 5000);
         },
         getStatus(){
           let vm = this;
+          vm.$Loading.start();
           if(!vm.isloading){
             vm.isloading=true;
           this.$http.get('http://icampaign.com.cn/customers/vrOnlinePc/backend/admin/login/scanState',{
@@ -43,7 +49,7 @@
             }
           })
             .then(function(response) {
-              if(response.data.code == 200){
+              /*if(response.data.code == 200){
                 vm.$Notice.success({
                   title: '扫码登录成功!'
                 });
@@ -58,11 +64,25 @@
                 //   title: '等待扫码!'
                 // });
                 vm.isloading=false;
+              }*/
+              if(response.data.code != ""){
+                if(response.data.code == 200){
+                  vm.$Notice.success({
+                    title: '扫码登录成功!'
+                  });
+                  vm.isloading=true;
+                  clearInterval(vm.timer);
+                  vm.$Loading.finish();
+                }else{
+                  vm.$Loading.finish();
+                  vm.isloading=false;
+                }
               }
 
             })
             .catch(function(error) {
               vm.isloading=false;
+              vm.$Loading.error();
               console.log(error);
             })
         }

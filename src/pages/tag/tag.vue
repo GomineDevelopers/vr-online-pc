@@ -95,9 +95,11 @@
                   value.isShow = false;
                 });
                 vm.listData = response.data.list.data;
+                vm.$Loading.finish();
               }
             })
             .catch(function(error) {
+              vm.$Loading.error();
               console.log(error);
             });
         },

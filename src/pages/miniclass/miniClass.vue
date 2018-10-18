@@ -5,7 +5,7 @@
         <div class="buttonDiv" ref="buttonDiv">
           <Button icon="md-add" @click="addWk">添加微课记录</Button>
         </div>
-        <Table ref="selection" :columns="columns" :data="data" :height="tableH"></Table>
+        <Table ref="selection" :columns="columns" :data="data" :height="tableH" :loading="loading"></Table>
         <div class="pageDiv" ref="pageDiv">
           <Page :total="totalPage" show-elevator :current="curPage" @on-change="changePage"/>
         </div>
@@ -145,7 +145,8 @@
                 <Icon type="ios-arrow-up" size="26" color="#a1a99b" v-show="!item.isShow" @click="showTable(index,item)"/>
               </Col>
             </Row>
-            <Table v-if="item.isShow" border ref="selection" :columns="wk.docList.columns" :data="wk.docList.data" :height="300"
+            <Table v-if="item.isShow" border ref="selection" :columns="wk.docList.columns" :data="wk.docList.data"
+                   :height="300" :loading="wk.docList.loading"
                    @on-select="onSelect" @on-select-cancel="onSelectRemove" @on-select-all="selectAll" @on-select-all-cancel="cancelAll"></Table>
           </div>
         </div>
@@ -233,6 +234,7 @@
             data:[],
             totalPage:0,
             curPage:1,
+            loading:true,
             isAdd : true,
             isScan:false,
             wkID:'',
@@ -285,6 +287,7 @@
                 selectedList:[],
                 postList:[],
                 groupList:[],
+                loading:true,
               }
             }
           }
@@ -317,9 +320,12 @@
               if(response.data.code == 200){
                 vm.data = response.data.list.data;
                 vm.totalPage = response.data.list.total;
+                vm.loading = false;
+                vm.$Loading.finish();
               }
             })
             .catch(function(error) {
+              vm.$Loading.error();
               console.log(error);
             });
         },
@@ -501,24 +507,6 @@
             }
           });
         },
-        getIsScan(){
-          let vm = this;
-          this.$http.get('http://icampaign.com.cn/customers/vrOnlinePc/backend/admin/login/scanState',{
-            params: {
-              bot_id:window.localStorage.getItem("QR_id")
-            }
-          })
-            .then(function(response) {
-              if(response.data.code != 200){
-                vm.isScan = false;
-              }else{
-                vm.isScan = true;
-              }
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
-        },
         addAttend(){
           let vm = this;
           this.$http.get('http://icampaign.com.cn/customers/vrOnlinePc/backend/admin/login/scanState',{
@@ -528,51 +516,59 @@
           })
             .then(function(response) {
               if(response.data.code == 200){
-                setTimeout(vm.wk.docList.doctorListModal = true,27000);
                 vm.$http.get('http://icampaign.com.cn:9080/api/get_group_list/',{
                   params: {
                     bot_id:window.localStorage.getItem("QR_id")
                   }
                 })
                   .then(function(response) {
-                    if(response.data.code == 200){
-                      response.data.data.group_list.forEach(function (ele,index,arr) {
-                        if(vm.wk.data2.length != 0){
-                          if(vm.wk.data2[0].group == ele.NickName){
-                            ele.isShow = true;
-                            vm.$http.get('http://icampaign.com.cn:9080/api/get_group_members/',{
-                              params: {
-                                bot_id:window.localStorage.getItem("QR_id")
-                              }
-                            })
-                              .then(function(response) {
-                                if(response.data.code == 200){
-                                  for(var key in response.data.data.group_members){
-                                    if(key == ele.UserName){
-                                      vm.wk.docList.data = response.data.data.group_members[key];
+                    if(response.data.code == 200){//请求成功200
+                      if(response.data.data.group_list.length > 0){//请求成功，但是第一次有可能无数据
+                        vm.wk.docList.doctorListModal = true;//打开Modal
+                        response.data.data.group_list.forEach(function (ele,index,arr) {
+                          if(vm.wk.data2.length != 0){
+                            if(vm.wk.data2[0].group == ele.NickName){//编辑的时候默认展开已选择的群
+                              ele.isShow = true;
+                              vm.$http.get('http://icampaign.com.cn:9080/api/get_group_members/',{
+                                params: {
+                                  bot_id:window.localStorage.getItem("QR_id")
+                                }
+                              })
+                                .then(function(response) {
+                                  if(response.data.code == 200){
+                                    vm.wk.docList.loading = false;
+                                    for(var key in response.data.data.group_members){
+                                      if(key == ele.UserName){
+                                        vm.wk.docList.data = response.data.data.group_members[key];
+                                      }
                                     }
                                   }
-                                }
-                                vm.wk.docList.data.forEach(function (value, index, array) {//将群名放入群成员中,默认选中已存在的
-                                  value.groupName = ele.NickName;
-                                  vm.wk.data2.forEach(function (ele,index,array) {
-                                    if(ele.nickname == value.NickName){
-                                      value._checked = true;
-                                    }
+                                  vm.wk.docList.data.forEach(function (value, index, array) {//将群名放入群成员中,默认选中已存在的
+                                    value.groupName = ele.NickName;
+                                    vm.wk.data2.forEach(function (ele,index,array) {
+                                      if(ele.nickname == value.NickName){
+                                        value._checked = true;
+                                      }
+                                    });
                                   });
+                                })
+                                .catch(function(error) {
+                                  console.log(error);
                                 });
-                              })
-                              .catch(function(error) {
-                                console.log(error);
-                              });
-                          }else{
+                            }else{
+                              ele.isShow = false;
+                            }
+                          }
+                          else{//第一次加载群列表默认不展开
                             ele.isShow = false;
                           }
-                        }else{
-                          ele.isShow = false;
-                        }
-                      });
-                      vm.wk.docList.groupList = response.data.data.group_list;
+                        });
+                        vm.wk.docList.groupList = response.data.data.group_list;
+                      }else{
+                        vm.$Notice.info({
+                          title: '无数据，请再次点击添加!'
+                        });
+                      }
                     }
                   })
                   .catch(function(error) {
@@ -640,6 +636,7 @@
           })
             .then(function(response) {
               if(response.data.code == 200){
+                vm.wk.docList.loading = false;
                 for(var key in response.data.data.group_members){
                   if(key == item_g.UserName){
                     vm.wk.docList.data = response.data.data.group_members[key];

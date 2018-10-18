@@ -2,7 +2,8 @@
   <div class="problem_answered">
     <Table :columns="columns" :data="data" :height="tableH"></Table>
     <div class="pageDiv" ref="pageDiv">
-      <Page :total="totalPage" :current="curPage" show-elevator @on-change="changePage"/>
+      <Page :total="totalPage" :current="curPage" show-elevator
+            :loading="loading" @on-change="changePage"/>
     </div>
 
     <Modal v-model="detailModel" :footer-hide="true">
@@ -138,7 +139,8 @@
           type:"1",
           detailModel:false,
           detailData:{},
-          keyword:''
+          keyword:'',
+          loading:true
         }
       },
       props:{
@@ -168,8 +170,11 @@
             if (response.data.code=="200"){
               vm.data=response.data.list.data;
               vm.totalPage = response.data.list.total;
+              vm.loading = false;
+              vm.$Loading.finish();
             }
           }).catch(function (error) {
+            vm.$Loading.error();
             console.log(error)
 
           })

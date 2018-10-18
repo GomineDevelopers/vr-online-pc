@@ -18,10 +18,12 @@
       },
       mounted(){
         this.name = window.localStorage.getItem("UserData_name");
+        this.$Loading.finish();
       },
       methods:{
         loginWx(){
           let vm = this;
+          vm.$Loading.start();
           vm.$http.get('http://icampaign.com.cn:9080/api/wx_login/', {
             params: {}
           })
@@ -31,10 +33,12 @@
                 let QRImg = response.data.data.login_qr;
                 window.localStorage.setItem("QR_id",QRId);
                 window.localStorage.setItem("QR_img",QRImg);
+                vm.$Loading.finish();
                 vm.$router.push({name:'QRcode'});
               }
             })
             .catch(function(error) {
+              vm.$Loading.error();
               console.log(error);
             });
         }

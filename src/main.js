@@ -19,6 +19,7 @@ Vue.prototype.$qs = qs;
 Vue.use(iView);
 
 router.beforeEach((to, from, next) => {
+  iView.LoadingBar.start();
   if (to.matched.some(record => record.meta.requiresAuth)) {
     let token = window.localStorage.getItem('token');
     axios('http://icampaign.com.cn/customers/vrOnlinePc/backend/admin/user/getinfo', {
@@ -39,9 +40,11 @@ router.beforeEach((to, from, next) => {
   } else {
     next(); // 确保一定要调用 next()
   }
-})
+});
 
-require('promise.prototype.finally').shim();
+/*router.afterEach(route => {
+  iView.LoadingBar.finish();
+});*/
 
 /* eslint-disable no-new */
 new Vue({

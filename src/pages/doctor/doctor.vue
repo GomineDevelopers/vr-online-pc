@@ -21,29 +21,14 @@
           <div class="buttonDiv" ref="buttonDiv">
             <Button icon="md-add" @click="showLabelModal">添加标签</Button>
           </div>
-          <Table ref="selection" :columns="columns2" :data="data2"  @on-select="selected" @on-select-cancel="unSelected" :height="tableH"></Table>
+          <Table ref="selection" :columns="columns2" :data="data2" :height="tableH" :loading="loading"
+                 @on-select="selected" @on-select-cancel="unSelected" @on-select-all="selectedAll" @on-select-all-cancel="unSelectedAll"></Table>
           <div class="pageDiv" ref="pageDiv">
             <Page :total="totalPage" show-elevator :current="curPage" @on-change="changePage"/>
           </div>
         </div>
 
         <Modal v-model="labelModel" title="请输入您需要添加的标签" @on-ok="addLabel" >
-          <!--<div class="labelDiv">
-            <Row type="flex" justify="center">
-             <i-col span="15" class="tag-row">
-                <label >请选择一级标签：</label>
-                <Select v-model="tag" style="width:200px">
-                    <Option v-for="(item,index) in tagData" :value="item.name" :key="index">{{ item.name }}</Option>
-                </Select>
-             </i-col>
-             <i-col span="15" class="tag-row">
-              <label >请选择二级标签：</label>
-              <Select v-model="subtag" style="width:200px">
-                  <Option v-for="(item,index) in tagData" :value="item.name" :key="index">{{ item.name }}</Option>
-              </Select>
-             </i-col>
-            </Row>
-           </div>-->
           <Cascader :data="tagData" v-model="tagValue"></Cascader>
         </Modal>
         <Modal v-model="detailEditModel" @on-ok="save(detailData)">
@@ -202,6 +187,7 @@ export default {
       curPage:1,
       data2: [],
       totalPage:0,
+      loading:true,
       labelModel: false,
       detailModel:false,
       detailEditModel:false,
@@ -228,28 +214,12 @@ export default {
         {title: "医院",key: "hospital"},
         {title: "科室",key: "department"},
         {title:"城市",key:"citys"},
-        { title: "标签",key: "action",
-          filters: [
-            {
-              label: "大量门诊",
-              value: 1
-            },
-            {
-              label: "中医",
-              value: 2
-            },
-            {
-              label: "外科专家",
-              value: 2
-            }
-          ],
-          filterMultiple: false,
-          filterMethod(value, row) {
-            if (value === 1) {
-              return row.age > 25;
-            } else if (value === 2) {
-              return row.age < 25;
-            }
+        { title: "标签",key: "label_name",
+          render:(h,params)=>{
+          let texts = "";
+          return h('span',{
+            props:{},
+          },texts)
           }
         },
         { title: "注册时间", key: "reg_time",width:140,
@@ -375,59 +345,12 @@ export default {
           }
         }
       ],
-
+      tagData:[],
+      tagValue:[],
       selections: [],
+
       tag: "",
       subtag: "",
-      tagData:[
-        {
-          value: 'beijing',
-          label: '北京',
-          children: [
-            {
-              value: 'gugong',
-              label: '故宫'
-            },
-            {
-              value: 'tiantan',
-              label: '天坛'
-            },
-            {
-              value: 'wangfujing',
-              label: '王府井'
-            }
-          ]
-        }, {
-          value: 'jiangsu',
-          label: '江苏',
-          children: [
-            {
-              value: 'nanjing',
-              label: '南京',
-              children: [
-                {
-                  value: 'fuzimiao',
-                  label: '夫子庙',
-                }
-              ]
-            },
-            {
-              value: 'suzhou',
-              label: '苏州',
-              children: [
-                {
-                  value: 'zhuozhengyuan',
-                  label: '拙政园',
-                },
-                {
-                  value: 'shizilin',
-                  label: '狮子林',
-                }
-              ]
-            }
-          ],
-        }],
-      tagValue:[],
 
       /*cities: areaList.cities*/
     };
@@ -461,9 +384,12 @@ export default {
           if(response.data.code == 200){
             vm.data2 = response.data.list.data;
             vm.totalPage = response.data.list.total;
+            vm.loading = false;
+            vm.$Loading.finish();
           }
         })
         .catch(function(error) {
+          vm.$Loading.error();
           console.log(error);
         });
     },
@@ -592,30 +518,65 @@ export default {
           console.log(error);
         });
     },
+    showLabelModal() {
+      let vm = this;
+      if(vm.selections.length == 0){
+        vm.$Notice.info({
+          title: '请先选择需要添加标签的医生！'
+        });
+      }else{
+        this.$http.get(vm.$commonTools.g_restUrl+"admin/label/doctors_label",{
+          params: {}
+        })
+          .then(function(response) {
+            if(response.data.code == 200){
+              vm.tagData = response.data.list;
+            }
+          })
+          .catch(function(error) {
+            console.log(error);
+          });
+        vm.labelModel = true;
+      }
+    },
+    addLabel() {
+      let vm = this;
+      let id_doctor = [];
+      let postData = {};
+      vm.selections.forEach(function (value, index, array) {
+        id_doctor.push(value.id);
+      });
+      postData.member = id_doctor;
+      postData.label = vm.tagValue;
+      this.$http({
+        method:"post",
+        url:vm.$commonTools.g_restUrl+'admin/doctors/doctors_chectlabel',
+        data:vm.$qs.stringify(postData)
+      })
+        .then(function(response) {
+          if(response.data.code == 200){
+            vm.$Notice.success({
+              title: '标签添加成功！'
+            });
+            vm.getData2();
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
 
-
-
-
-
+    },
     selected(selection, row) {
       this.selections = selection;
     },
     unSelected(selection, row) {
       this.selections = selection;
     },
-    showLabelModal() {
-      let vm = this;
-      vm.labelModel = true;
+    selectedAll(selection){
+      this.selections = selection;
     },
-    addLabel() {
-      let vm = this;
-      console.info(vm.tagValue);
-    },
-
-    tip(){
-      this.$Notice.info({
-        title: '功能待完善'
-      });
+    unSelectedAll(selection){
+      this.selections = selection;
     }
   }
 };

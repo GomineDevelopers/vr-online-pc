@@ -107,9 +107,11 @@
               if(response.data.code == 200){
                 vm.listData = response.data.list.data;
                 vm.totalPage = response.data.list.total;
+                vm.$Loading.finish();
               }
             })
             .catch(function(error) {
+              vm.$Loading.error();
               console.log(error);
             });
         },

@@ -2,7 +2,8 @@
   <div class="problem_no_answered">
     <Table :columns="columns" :data="data" :height="tableH"></Table>
     <div class="pageDiv" ref="pageDiv">
-      <Page :total="totalPages" :current="curPage" show-elevator @on-change="changePage"/>
+      <Page :total="totalPages" :current="curPage" show-elevator
+            :loading="loading" @on-change="changePage"/>
     </div>
 
     <Modal v-model="detailModel" :footer-hide="true">
@@ -161,7 +162,8 @@
                 ]);
               }
             }
-          ]
+          ],
+          loading:true
         }
       },
       props:{
@@ -194,9 +196,12 @@
               if(response.data.code == 200){
                 vm.data = response.data.list.data;
                 vm.totalPages = response.data.list.total;
+                vm.loading = false;
+                vm.$Loading.finish();
               }
             })
             .catch(function(error) {
+              vm.$Loading.error();
               console.log(error);
             });
         },
