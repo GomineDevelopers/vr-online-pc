@@ -10,6 +10,8 @@ import DataBaseAdd from '@/pages/database/databaseAdd'
 import ProblemList from '@/pages/problem/problemlist'
 import WeChatScan from '@/pages/wechat/wechatscan'
 import QRcode from '@/pages/wechat/QRcode'
+import FriendsList from '@/pages/wechat/friendsList'
+
 import demo01 from '@/pages/demo/demo01'
 import demo02 from '@/pages/demo/demo02'
 import demo03 from '@/pages/demo/demo03'
@@ -64,6 +66,14 @@ export default new Router({
           path: 'QRcode',
           component: QRcode,
           name:'QRcode',
+          meta:{
+            requiresAuth:true
+          }
+        },
+        {
+          path: 'friendslist',
+          component: FriendsList,
+          name:'FriendsList',
           meta:{
             requiresAuth:true
           }

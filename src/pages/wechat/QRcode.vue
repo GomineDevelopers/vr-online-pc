@@ -73,6 +73,7 @@
                   vm.isloading=true;
                   clearInterval(vm.timer);
                   vm.$Loading.finish();
+                  vm.$router.replace({name:'FriendsList'});
                 }else{
                   vm.$Loading.finish();
                   vm.isloading=false;

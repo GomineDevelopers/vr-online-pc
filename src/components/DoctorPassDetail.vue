@@ -33,7 +33,11 @@
             <Col span="8">负责销售：<span class="spanFont" v-text="detailPassData.sales"></span></Col>
           </Row>
           <Row>
-            <Col span="8">标签：<span class="spanFont">老中医 全国十佳 省医院</span></Col>
+            <Col span="22">标签：
+              <Tag v-for="item in detailPassData.label_name" :key="item.id" :name="item.name"
+                   closable @on-close="delLabel(item.id)" color="primary">{{item.name}}</Tag>
+              <Button icon="ios-add" type="dashed" size="small" @click="showLabel">添加标签</Button>
+            </Col>
           </Row>
         </Col>
         <Col span="6"><img :src="detailPassData.avatar" style="height: 140px;"></Col>
@@ -180,11 +184,16 @@
       <Row class="modalRow">
         <Col span="2">参会人员</Col>
         <Col span="22">
-          <Table :columns="wk.columns2" :data="wk.data2"></Table>
+          <Table :columns="wk.columns2" :data="wk.data2" height="200"></Table>
         </Col>
       </Row>
     </Modal>
     <!--微课记录的对话框end-->
+
+    <!--给医生新增标签-->
+    <Modal v-model="labelModel" title="请选择您需要添加的标签" :mask-closable="false" @on-ok="addLabel" >
+      <Cascader :data="tagData" v-model="tagValue" style="width: 400px"></Cascader>
+    </Modal>
 
   </div>
 </template>
@@ -200,6 +209,9 @@
           commonHeight:'',
           detailPassData:'',
           type:1,
+          labelModel:false,
+          tagData:[],
+          tagValue:[],
           /*图片上传相关start*/
           serverImgUrl:'http://icampaign.com.cn/customers/vrOnlinePc/backend/admin/images/add_images',
           imgNameList:[],
@@ -298,6 +310,74 @@
             .catch(function(error) {
               console.log(error);
             });
+        },
+        showLabel(){
+          let vm = this;
+          this.$http.get(vm.$commonTools.g_restUrl+"admin/label/doctors_label",{
+            params: {}
+          })
+            .then(function(response) {
+              if(response.data.code == 200){
+                vm.tagData = response.data.list;
+              }
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+          vm.labelModel = true;
+        },
+        addLabel(){
+          let vm = this;
+          let postData = {};
+          let postId = [];
+          postId.push(vm.doctorId);
+          postData.member = postId;
+          postData.label = vm.tagValue;
+          this.$http({
+            method:"post",
+            url:vm.$commonTools.g_restUrl+'admin/doctors/doctors_chectlabel',
+            data:vm.$qs.stringify(postData)
+          })
+            .then(function(response) {
+              if(response.data.code == 200){
+                vm.$Notice.success({
+                  title: '标签添加成功！'
+                });
+                vm.getPassDetailData(vm.doctorId);
+              }
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        },
+        delLabel(id){
+          let vm = this;
+          let postData = {};
+          postData.doctors_id  = vm.doctorId;
+          postData.label = id;
+          this.$Modal.confirm({
+            title: '提示',
+            content: '确定要删除吗？',
+            onOk: () => {
+              this.$http({
+                method:"post",
+                url:vm.$commonTools.g_restUrl+'admin/doctors/doctors_dellabel',
+                data:vm.$qs.stringify(postData)
+              })
+                .then(function(response) {
+                  if(response.data.code == 200){
+                    vm.$Notice.success({
+                      title: '删除成功！'
+                    });
+                    vm.getPassDetailData(vm.doctorId);
+                  }
+
+                })
+                .catch(function(error) {
+                  console.log(error);
+                });
+            }
+          });
         },
         addRecord(temp){
           let vm = this;

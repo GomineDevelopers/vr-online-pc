@@ -197,23 +197,30 @@
           }else if(temp == 'wk'){
             url = 'admin/lesson/lesson_del';
           }
-          this.$http.get(vm.$commonTools.g_restUrl+ url,{
-            params: {
-              id : id
-            }
-          })
-            .then(function(response) {
-              if(response.data.code == 200){
-                vm.$Notice.success({
-                  title: '删除成功！'
+          this.$Modal.confirm({
+            title: '提示',
+            content: '确定要删除吗？',
+            onOk: () => {
+              this.$http.get(vm.$commonTools.g_restUrl+url,{
+                params: {
+                  id : id
+                }
+              })
+                .then(function(response) {
+                  if(response.data.code == 200){
+                    vm.$Notice.success({
+                      title: '删除成功！'
+                    });
+                    vm.curPage = 1;
+                    vm.getRecordList();
+                  }
+
+                })
+                .catch(function(error) {
+                  console.log(error);
                 });
-                vm.curPage = 1;
-                vm.getRecordList();
-              }
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
+            }
+          });
         }
       }
     }

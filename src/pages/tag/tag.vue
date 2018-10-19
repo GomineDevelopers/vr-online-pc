@@ -3,7 +3,7 @@
     <Row>
       <Col span="12" class="tag_title">标签管理</Col>
       <Col span="12" class="tag_button">
-        <Button type="success" icon="icon iconfont icon-tianjia" @click="addLabel">新增标签</Button>
+        <Button type="success" icon="icon iconfont icon-tianjia" @click="addLabel('add')">新增标签</Button>
       </Col>
     </Row>
     <div class="tag_cardTitle">
@@ -17,8 +17,8 @@
         <Row type="flex" align="middle">
           <Col span="10" class="tag_title_fir"><span v-text="item.name"></span></Col>
           <Col span="2" offset="3">
-            <Icon custom="icon iconfont icon-bianji" color="#4fb115"/>&emsp;
-            <Icon custom="icon iconfont icon-shanchu" color="#4fb115"/>
+            <Icon custom="icon iconfont icon-bianji" color="#4fb115" @click="addLabel('edit',item.id)"/>&emsp;
+            <Icon custom="icon iconfont icon-shanchu" color="#4fb115" @click="del(item.id,item.pid)"/>
           </Col>
           <Col span="9" class="tag_icon">
             <Icon type="ios-arrow-down" size="26" color="#a1a99b" v-show="item.isShow" @click="changeClass(index,item)"/>
@@ -29,9 +29,8 @@
       <div class="tag_second_panel" v-for="(citem,cindex) in item.children" :key="cindex" v-if="item.isShow">
         <Row>
           <Col span="10" class="tag_title_se">{{cindex+1}}、<span v-text="citem.name"></span></Col>
-          <Col span="4" offset="1">
-            <Icon custom="icon iconfont icon-bianji" color="#4fb115"/>&emsp;
-            <Icon custom="icon iconfont icon-shanchu" color="#4fb115"/>
+          <Col span="3" offset="1">
+            <Icon custom="icon iconfont icon-shanchu" color="#4fb115" @click="del(citem.id,citem.pid)"/>
           </Col>
         </Row>
       </div>
@@ -46,7 +45,7 @@
         <Col span="16"><Input v-model="firstLabelName" clearable class="tag_input"/></Col>
       </Row>
       <Row class="tag_modelRow">
-        <Col span="8" class="tag_inputName"><span class="necessary">*</span>二级标签：</Col>
+        <Col span="8" class="tag_inputName">二级标签：</Col>
         <Col span="16">
           <Input v-model="secondLabelName" class="tag_input" icon="md-add" @on-click="addSeLabel"/>
         </Col>
@@ -74,7 +73,8 @@
             secondList:[],
             postSecondList:[],
             curPage:1,
-            totalPage:0
+            totalPage:0,
+            editId:''
           }
       },
       mounted(){
@@ -103,36 +103,52 @@
               console.log(error);
             });
         },
-        addLabel(){
+        addLabel(temp,id){
           let vm = this;
+          vm.editId = id ;
           vm.labelModel = true;
-          vm.clearModal();
-        },
-        addSeLabel(){
-          let vm = this;
-          if(vm.secondLabelName == ""){
-            vm.$Notice.error({
-              title: '请先填写第一项！'
-            });
-          }else{
-            let cope = {name:""};
-            vm.secondList.push(cope);
+          if(temp == 'add'){
+            vm.clearModal();
+          }else if(temp == 'edit'){
+            vm.secondList = [];
+            this.$http.get(vm.$commonTools.g_restUrl+"admin/label/label_detail",{
+              params: {
+                id : id
+              }
+            })
+              .then(function(response) {
+                if(response.data.code == 200){
+                  vm.firstLabelName = response.data.data.label;
+                  vm.secondLabelName = response.data.data.children[0].label;
+                  if(response.data.data.children.length > 1){
+                    response.data.data.children.forEach(function (value,index,arr) {
+                      if(index != 0){
+                        let cope = {};
+                        cope.name = value.label;
+                        vm.secondList.push(cope);
+                      }
+                    });
+                  }
+                }
+              })
+              .catch(function(error) {
+                console.log(error);
+              });
           }
-        },
-        delSeLabel(index){
-          this.secondList.splice(index,1);
         },
         saveLabel(){
           let vm = this;
           let postData = {};
           postData.label_name = vm.firstLabelName;
+          vm.postSecondList = [];
           vm.postSecondList.push(vm.secondLabelName);
           if(vm.secondList.length > 0){
             vm.secondList.forEach(function (ele,index,arr) {
-              vm.postSecondList.push(ele.name)
+              vm.postSecondList.push(ele.name);
             });
           }
           postData.label_two = vm.postSecondList;
+          postData.id = vm.editId;
           this.$http({
             method:"post",
             url:vm.$commonTools.g_restUrl+'admin/label/label_edit',
@@ -156,7 +172,7 @@
           vm.secondLabelName = "";
           vm.secondList = [];
           vm.postSecondList = [];
-
+          vm.editId = "";
         },
         changeClass(index_temp,item_temp){
             let vm = this;
@@ -169,6 +185,53 @@
         changePage(curPage){
           this.curPage = curPage;
           this.getLabelList();
+        },
+        del(id,pid){
+          let vm = this;
+          let texts = "";
+          if(pid == 0){
+            texts = "删除一级标签的同时二级标签也将删除，确定要删除吗？";
+          }else{
+            texts = "确定要删除二级标签吗？"
+          }
+          this.$Modal.confirm({
+            title: '提示',
+            content: texts,
+            onOk: () => {
+              this.$http.get(vm.$commonTools.g_restUrl+"admin/label/label_del",{
+                params: {
+                  id : id
+                }
+              })
+                .then(function(response) {
+                  if(response.data.code == 200){
+                    vm.$Notice.success({
+                      title: '删除成功！'
+                    });
+                    vm.curPage = 1;
+                    vm.getLabelList();
+                  }
+
+                })
+                .catch(function(error) {
+                  console.log(error);
+                });
+            }
+          });
+        },
+        addSeLabel(){
+          let vm = this;
+          if(vm.secondLabelName == ""){
+            vm.$Notice.error({
+              title: '请先填写第一项！'
+            });
+          }else{
+            let cope = {name:""};
+            vm.secondList.push(cope);
+          }
+        },
+        delSeLabel(index){
+          this.secondList.splice(index,1);
         },
       }
     }

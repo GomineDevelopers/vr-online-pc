@@ -84,7 +84,7 @@
         <Row class="modalRow">
           <Col span="2">参会人员</Col>
           <Col span="22">
-            <Table :columns="wk.columns" :data="wk.data2" height="200"></Table>
+            <Table :columns="wk.columns" :data="wk.data2" :height="200"></Table>
           </Col>
         </Row>
         <Row>
@@ -146,7 +146,7 @@
               </Col>
             </Row>
             <Table v-if="item.isShow" border ref="selection" :columns="wk.docList.columns" :data="wk.docList.data"
-                   :height="300" :loading="wk.docList.loading"
+                   height="300" :loading="wk.docList.loading"
                    @on-select="onSelect" @on-select-cancel="onSelectRemove" @on-select-all="selectAll" @on-select-all-cancel="cancelAll"></Table>
           </div>
         </div>
@@ -250,7 +250,18 @@
               salesman:'',
               intro:'',
               columns:[
-                {title:'姓名',key:'realname'},
+                {title:'姓名',key:'realname',
+                  render:(h,params)=>{
+                    let texts = "";
+                    if(params.row.realname == ""){
+                      texts = params.row.nickname;
+                    }else{
+                      texts = params.row.realname;
+                    }
+                    return h('span',{
+                      props:{},
+                    },texts)
+                  }},
                 {title:'所属医院',key:'hospital'},
                 {title:'科室',key:'department'},
                 {title:'职称',key:'job'},
@@ -602,7 +613,7 @@
           let vm = this;
           vm.wk.docList.postList = [];
           vm.wk.docList.selectedList.forEach(function (ele,index,array) {
-            vm.wk.docList.postList.push(ele.NickName);
+            vm.wk.docList.postList.push(ele.NickName+'￥'+ele.DisplayName);
           });
           let postData = {};
           postData.member = vm.wk.docList.postList;

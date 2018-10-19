@@ -2,16 +2,22 @@
       <div class="doctor">
         <div class="title" ref="title">医生管理</div>
         <div class="searchCard" ref="searchCard">
-          <Row type="flex" align="middle">
-            <Col span="2">所属医院</Col>
+          <Row type="flex" align="middle" class="search_row">
+            <Col span="3" class="searchFont">所属医院</Col>
             <Col span="4"><Input v-model="hospitalName" clearable/></Col>
-            <Col span="2" offset="1">医生姓名</Col>
+            <Col span="3" class="searchFont">医生姓名</Col>
             <Col span="4"><Input v-model="doctorName" clearable/></Col>
-            <Col span="2" offset="1">微信昵称</Col>
+            <Col span="3" class="searchFont">微信昵称</Col>
             <Col span="4"><Input v-model="nickName" clearable/></Col>
-            <!--<Col span="1" style="text-align: right">城市</Col>
+          </Row>
+          <Row type="flex" align="middle" class="search_row">
+            <Col span="3" class="searchFont">标签</Col>
+            <Col span="4">
+              <Cascader :data="tagData" v-model="tagValue" change-on-select></Cascader>
+            </Col>
+            <!--<Col span="3" class="searchFont">城市</Col>
             <Col span="4"><Cascader :data="cities" v-model="city" change-on-select></Cascader></Col>-->
-            <Col span="2">
+            <Col span="10" class="searchFont">
               <Button type="success" @click="search">搜索</Button>
               <Button type="warning" @click="clear">重置</Button>
             </Col>
@@ -165,7 +171,7 @@
           </Row>
 
         </Modal>
-        <Modal v-model="detailPassModel" :footer-hide="true" fullscreen class="fullModal">
+        <Modal v-model="detailPassModel" :footer-hide="true" fullscreen class="fullModal" @on-cancel="getData2">
           <doctor-pass-detail ref="c1"></doctor-pass-detail>
         </Modal>
     </div>
@@ -357,11 +363,7 @@ export default {
       tagData:[],
       tagValue:[],
       selections: [],
-
-      tag: "",
-      subtag: "",
-
-      /*cities: areaList.cities*/
+      /*cities: areaList*/
     };
   },
   components: {
@@ -370,11 +372,12 @@ export default {
   mounted() {
     this.getBgHeight();
     this.getData2();
+    this.getLabels();
   },
   methods: {
     getBgHeight() {
       let vm = this;
-      vm.tableBgH = document.documentElement.clientHeight -64 -24 * 2 -(vm.$refs.title.offsetHeight + 10) -(vm.$refs.searchCard.offsetHeight + 26) -2;
+      vm.tableBgH = document.documentElement.clientHeight -64 -24 * 2 -(vm.$refs.title.offsetHeight + 10) -(vm.$refs.searchCard.offsetHeight + 20) - 5;
       vm.tableH = vm.tableBgH - (vm.$refs.buttonDiv.offsetHeight + 10 * 2) - (vm.$refs.pageDiv.offsetHeight + 10 * 2) -10;
     },
     getData2() {
@@ -384,6 +387,8 @@ export default {
       postData.hospital = vm.hospitalName;
       postData.nickname = vm.nickName;
       postData.realname = vm.doctorName;
+      postData.label = vm.tagValue;
+      /*postData.citys = vm.city;*/
       this.$http({
         method:"post",
         url:vm.$commonTools.g_restUrl+'admin/doctors/doctors_list',
@@ -412,6 +417,8 @@ export default {
       vm.hospitalName = "";
       vm.nickName = "";
       vm.doctorName = "";
+      vm.tagValue = [];
+      vm.city = [];
     },
     isPass(id,status){//通过or拒绝
       let vm = this;
@@ -527,6 +534,20 @@ export default {
           console.log(error);
         });
     },
+    getLabels(){
+      let vm = this;
+      this.$http.get(vm.$commonTools.g_restUrl+"admin/label/doctors_label",{
+        params: {}
+      })
+        .then(function(response) {
+          if(response.data.code == 200){
+            vm.tagData = response.data.list;
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
     showLabelModal() {
       let vm = this;
       vm.tagValue = [];
@@ -535,17 +556,6 @@ export default {
           title: '请先选择需要添加标签的医生！'
         });
       }else{
-        this.$http.get(vm.$commonTools.g_restUrl+"admin/label/doctors_label",{
-          params: {}
-        })
-          .then(function(response) {
-            if(response.data.code == 200){
-              vm.tagData = response.data.list;
-            }
-          })
-          .catch(function(error) {
-            console.log(error);
-          });
         vm.labelModel = true;
       }
     },
@@ -602,12 +612,16 @@ export default {
 
 .searchCard {
 	background-color: #fff;
-	height: 8vh;
-	line-height: 8vh;
-	padding: 0 3vh;
-	white-space: nowrap;
+	padding: 20px 10px 0 10px;
 }
 
+.searchCard .searchFont{
+  text-align: center
+}
+
+.search_row{
+  padding-bottom: 20px;
+}
 .tableDiv {
 	background-color: #fff;
 	margin-top: 26px;
@@ -626,10 +640,6 @@ export default {
 .buttonDiv {
 	text-align: right;
 	margin-bottom: 10px;
-}
-
-.tag-row {
-	margin: 0.5vh 0;
 }
 
   .detail_row{
