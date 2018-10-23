@@ -15,8 +15,8 @@
             <Col span="4">
               <Cascader :data="tagData" v-model="tagValue" change-on-select></Cascader>
             </Col>
-            <!--<Col span="3" class="searchFont">城市</Col>
-            <Col span="4"><Cascader :data="cities" v-model="city" change-on-select></Cascader></Col>-->
+            <Col span="3" class="searchFont">城市</Col>
+            <Col span="4"><Cascader :data="cities" v-model="city" change-on-select></Cascader></Col>
             <Col span="10" class="searchFont">
               <Button type="success" @click="search">搜索</Button>
               <Button type="warning" @click="clear">重置</Button>
@@ -179,7 +179,7 @@
 
 <script>
   import DoctorPassDetail from '@/components/DoctorPassDetail.vue'
-  /*import areaList from "../../../static/js/area.js"*/
+  import areaList from "../../../static/js/area.js"
 export default {
   name: "doctor",
   data() {
@@ -363,7 +363,7 @@ export default {
       tagData:[],
       tagValue:[],
       selections: [],
-      /*cities: areaList*/
+      cities: areaList
     };
   },
   components: {
@@ -388,7 +388,7 @@ export default {
       postData.nickname = vm.nickName;
       postData.realname = vm.doctorName;
       postData.label = vm.tagValue;
-      /*postData.citys = vm.city;*/
+      postData.citys = vm.city;
       this.$http({
         method:"post",
         url:vm.$commonTools.g_restUrl+'admin/doctors/doctors_list',

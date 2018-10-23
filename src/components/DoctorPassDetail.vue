@@ -28,9 +28,6 @@
             <Col span="8">微课记录：<span class="spanFont" v-text="detailPassData.lesson_total"></span></Col>
             <Col span="8">累计积分：<span class="spanFont" v-text="detailPassData.score"></span></Col>
           </Row>
-          <Row class="doctor_detail_rowBottom">
-            <Col span="8">互动记录：<span class="spanFont" v-text="detailPassData.interactive_total"></span></Col>
-          </Row>
           <Row>
             <Col span="22">标签：
               <Tag v-for="item in detailPassData.label_name" :key="item.id" :name="item.name"
