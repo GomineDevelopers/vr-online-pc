@@ -81,7 +81,7 @@ export default new Router({
           }
         },
         {
-          path: 'chatframe',
+          path: 'chatframe/:id',
           component: ChatFrame,
           name:'ChatFrame',
           meta:{

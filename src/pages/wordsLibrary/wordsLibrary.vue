@@ -76,7 +76,7 @@
           return{
             wordsTitle:'',
             wordsCreater:'',
-            selectedType1:'',
+            selectedType1:[],
             type1:[],
             tableBgH:'',
             tableH:'',
@@ -188,6 +188,7 @@
           postData.page = vm.curPage ;
           postData.speechcraft = vm.wordsTitle;
           postData.username = vm.wordsCreater;
+          postData.type = vm.selectedType1;
 
           this.$http({
             method:"post",
@@ -269,6 +270,7 @@
         clear(){
           this.wordsTitle = "";
           this.wordsCreater = "";
+          this.selectedType1 = [];
         },
         save(modalData){
           let vm = this;

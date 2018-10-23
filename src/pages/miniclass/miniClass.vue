@@ -253,7 +253,7 @@
                 {title:'姓名',key:'realname',
                   render:(h,params)=>{
                     let texts = "";
-                    if(params.row.uid == 0){
+                    if(params.row.uid == 0 || params.row.realname == ""){//uid是0的话是未匹配到，uid不为0但是realname为空是只关注未注册
                       texts = params.row.nickname;
                     }else{
                       texts = params.row.realname;
@@ -382,9 +382,11 @@
                 vm.$nextTick(()=> { //赋值后马上更新
                   vm.wk.uploadList = vm.$refs.uploadwk.fileList;
                 });
-                response.data.data.doctors_list.forEach(function (value,index,arr) {
-                  value.group = response.data.data.group;
-                });
+                if(response.data.data.doctors_list != undefined){
+                  response.data.data.doctors_list.forEach(function (value,index,arr) {
+                    value.group = response.data.data.group;
+                  });
+                }
                 vm.wk.data2 = response.data.data.doctors_list;
               }
             })

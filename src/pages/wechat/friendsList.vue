@@ -7,20 +7,20 @@
         <Row>
           <Col span="5" class="friends_list_left" :style="{height: listH + 'px' }">
             <div class="friends_list_avator"><img src="../../../static/images/1.png" width="110"></div>
-            <div class="friends_list_wxname">王空间</div>
+            <div class="friends_list_wxname" v-text="userNickName"></div>
           </Col>
           <Col span="19" class="friends_list_right">
             <Tabs :animated="false" @on-click="changeTab">
               <TabPane label="我的好友" name="1">
                 <div class="friends_list_lists_main" :style="{height: listRightH + 'px' }">
-                  <div class="friends_list_lists" v-for="(item,index) in friends">
+                  <div class="friends_list_lists" v-for="item in friends">
                     <Row>
                       <Col span="10">
                         <Avatar style="color: #f56a00;background-color: #fde3cf"></Avatar>
                         <span v-text="item.RemarkName == '' ?item.NickName:item.RemarkName"></span>
                       </Col>
                       <Col span="4" offset="10" class="friends_list_btn">
-                        <Button @click="">发起会话</Button>
+                        <Button @click="goChat(item.UserName)">发起会话</Button>
                       </Col>
                     </Row>
                   </div>
@@ -61,13 +61,21 @@
           listRightH:'',
           listLeftH:'',
           friends:[],
-          groups:[]
+          groups:[],
+          isloading:false,
+          userNickName:''
         }
       },
       mounted(){
         this.name = window.localStorage.getItem("UserData_name");
         this.getBgHeight();
-        this.getMembers();
+        this.watchStatus();
+        this.getUserData();
+      },
+      beforeDestroy() {
+        if(this.timer) { //如果定时器还在运行 或者直接关闭，不用判断
+          clearInterval(this.timer); //关闭
+        }
       },
       methods:{
         getBgHeight(){
@@ -76,31 +84,54 @@
           vm.listH = vm.bgH - 80;
           vm.listRightH = vm.listH - 54;
         },
-        changeTab(name){
-          if(name == 1){
-            this.getMembers();
-          }else if(name == 2){
-            this.getGroups();
-          }
-        },
-        getMembers(){
+        getUserData(){
           let vm = this;
-          this.$http.get('http://icampaign.com.cn:9080/api/get_contact_list/',{
+          this.$http.get('http://icampaign.com.cn:9080/api/get_my_account/',{
             params: {
               bot_id:window.localStorage.getItem("QR_id")
             }
           })
             .then(function(response) {
-              if(response.data.code == 200&&response.data.data.contact_list != ""){
-                vm.friends = response.data.data.contact_list;
-                vm.$Loading.finish();
-              }else{
-                vm.getMembers();
+              if(response.data.code == 200){
+                vm.userNickName = response.data.data.my_account.NickName;
               }
             })
             .catch(function(error) {
               console.log(error);
             });
+        },
+        changeTab(name){
+          if(name == 1){
+            this.isloading = false;
+            this.getMembers();
+          }else if(name == 2){
+            this.getGroups();
+          }
+        },
+        watchStatus(){
+          this.timer = setInterval(this.getMembers, 5000);
+        },
+        getMembers(){
+          let vm = this;
+          if(!vm.isloading){
+            this.$http.get('http://icampaign.com.cn:9080/api/get_contact_list/',{
+              params: {
+                bot_id:window.localStorage.getItem("QR_id")
+              }
+            })
+              .then(function(response) {
+                if(response.data.code == 200&&response.data.data.contact_list.length >0){
+                  vm.friends = response.data.data.contact_list;
+                  vm.isloading = true;
+                  vm.$Loading.finish();
+                }else{
+                  vm.isloading = false;
+                }
+              })
+              .catch(function(error) {
+                console.log(error);
+              });
+          }
         },
         getGroups(){
           let vm = this;
@@ -121,6 +152,9 @@
             .catch(function(error) {
               console.log(error);
             });
+        },
+        goChat(id){
+          this.$router.push({name:'ChatFrame',params:{id:id}});
         }
       }
     }

@@ -258,7 +258,7 @@
               {title:'姓名',key:'realname',
                 render:(h,params)=>{
                   let texts = "";
-                  if(params.row.realname == ""){
+                  if(params.row.realname == "" || params.row.uid == 0){
                     texts = params.row.nickname;
                   }else{
                     texts = params.row.realname;

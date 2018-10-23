@@ -190,7 +190,6 @@
             vm.columns = vm.columns2;
             vm.url = 'admin/lesson/lesson_list';
           }else if(vm.tabType == 3){
-            console.info(vm.tabType)
             vm.columns = vm.columns3;
             vm.url = 'admin/doctors/score_list';
           }

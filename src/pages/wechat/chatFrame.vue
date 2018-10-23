@@ -10,20 +10,19 @@
             <div class="chat_main_left" :style="{height: conH + 'px' }">
               <div class="chat_main_left_top" :style="{height: leftTopH + 'px' }">
                 <div class="message">
-                      <Avatar style="color: #f56a00;background-color: #fde3cf">U</Avatar>
-                      <div class="content">
-                        <div class="content">
-                          <div class="bubble bubble-default left">
-                            <div class="bubble_cont">
-                              <div class="plain">
-                                <pre>现在超也得</pre>
-                              </div>
-                            </div>
+                  <Avatar style="color: #f56a00;background-color: #fde3cf">U</Avatar>
+                  <div class="content">
+                    <div class="content">
+                      <div class="bubble bubble-default left">
+                        <div class="bubble_cont">
+                          <div class="plain">
+                            <pre>现在超也得</pre>
                           </div>
                         </div>
                       </div>
+                    </div>
                   </div>
-
+                </div>
                 <div class="message me">
                   <div class="content">
                     <div class="content">
@@ -38,7 +37,6 @@
                   </div>
                   <Avatar style="color: #f56a00;background-color: #fde3cf">U</Avatar>
                 </div>
-
               </div>
               <div class="chat_main_left_bottom">
                 <div class="send_file">
@@ -48,7 +46,7 @@
                   <Input v-model="sendCon" type="textarea" :rows="4" />
                 </div>
                 <div class="send_btn">
-                  <Button type="success" size="large">&emsp;发送&emsp;</Button>
+                  <Button type="success" size="large" @click="sendMessage">&emsp;发送&emsp;</Button>
                 </div>
               </div>
             </div>
@@ -95,6 +93,30 @@
           vm.mainH = vm.bgH -(vm.$refs.chatText.offsetHeight + 20);
           vm.conH = vm.mainH -(vm.$refs.user.offsetHeight);
           vm.leftTopH = vm.mainH -(vm.$refs.user.offsetHeight)-180;
+        },
+        sendMessage(){
+          let vm = this;
+          this.$http.get('http://icampaign.com.cn:9080/api/send_msg_by_uid/',{
+            params: {
+              bot_id:window.localStorage.getItem("QR_id"),
+              word:vm.sendCon,
+              uid:vm.$route.params.id
+            }
+          })
+            .then(function(response) {
+              if(response.data.code == 200 && response.data.data == true){
+                vm.$Notice.success({
+                  title: '信息发生成功!'
+                });
+              }else{
+                vm.$Notice.error({
+                  title: '信息发生失败!'
+                });
+              }
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
         }
       }
     }
