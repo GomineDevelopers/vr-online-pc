@@ -11,6 +11,8 @@ import ProblemList from '@/pages/problem/problemlist'
 import WeChatScan from '@/pages/wechat/wechatscan'
 import QRcode from '@/pages/wechat/QRcode'
 import FriendsList from '@/pages/wechat/friendsList'
+import ChatFrame from '@/pages/wechat/chatFrame'
+import WordsLibrary from '@/pages/wordsLibrary/wordslibrary'
 
 import demo01 from '@/pages/demo/demo01'
 import demo02 from '@/pages/demo/demo02'
@@ -79,6 +81,14 @@ export default new Router({
           }
         },
         {
+          path: 'chatframe',
+          component: ChatFrame,
+          name:'ChatFrame',
+          meta:{
+            requiresAuth:true
+          }
+        },
+        {
           path: 'databaselist',
           component: DataBaseList,
           name:'DataBaseList',
@@ -98,6 +108,14 @@ export default new Router({
           path: 'problemlist',
           component: ProblemList,
           name:'ProblemList',
+          meta:{
+            requiresAuth:true
+          }
+        },
+        {
+          path: 'wordslibrary',
+          component: WordsLibrary,
+          name:'WordsLibrary',
           meta:{
             requiresAuth:true
           }

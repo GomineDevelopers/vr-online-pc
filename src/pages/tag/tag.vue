@@ -36,7 +36,7 @@
       </div>
     </div>
     <div class="tag_page">
-      <Page :total="totalPage" :page-size="6" show-elevator :current="curPage" @on-change="changePage"/>
+      <Page :total="totalPage" :page-size="6" show-elevator show-total :current="curPage" @on-change="changePage"/>
     </div>
 
     <Modal v-model="labelModel" draggable scrollable :title="modalTitle" @on-ok="saveLabel">

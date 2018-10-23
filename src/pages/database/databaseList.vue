@@ -1,8 +1,6 @@
 <template>
   <div>
-    <Row>
-      <div class="title" ref="title">资料库</div>
-    </Row>
+    <div class="title" ref="title">资料库</div>
 
     <div class="database-list" :style="{minHeight: conH + 'px' }">
       <Row>
@@ -58,7 +56,7 @@
 
         </Row>
         <div class="page-wrapper">
-          <Page :total="totalPage" show-elevator @on-change="changePage"/>
+          <Page :total="totalPage" show-elevator show-total @on-change="changePage"/>
         </div>
       </div>
     </div>

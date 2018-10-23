@@ -91,11 +91,11 @@
             }
           })
             .then(function(response) {
-              if(response.data.code != ""){
-                if(response.data.code == 200){
-                  vm.friends = response.data.data.contact_list;
-                  vm.$Loading.finish();
-                }
+              if(response.data.code == 200&&response.data.data.contact_list != ""){
+                vm.friends = response.data.data.contact_list;
+                vm.$Loading.finish();
+              }else{
+                vm.getMembers();
               }
             })
             .catch(function(error) {

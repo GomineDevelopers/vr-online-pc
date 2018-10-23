@@ -7,7 +7,7 @@
         </div>
         <Table ref="selection" :columns="columns" :data="data" :height="tableH" :loading="loading"></Table>
         <div class="pageDiv" ref="pageDiv">
-          <Page :total="totalPage" show-elevator :current="curPage" @on-change="changePage"/>
+          <Page :total="totalPage" show-elevator show-total :current="curPage" @on-change="changePage"/>
         </div>
       </div>
 
@@ -253,7 +253,7 @@
                 {title:'姓名',key:'realname',
                   render:(h,params)=>{
                     let texts = "";
-                    if(params.row.realname == ""){
+                    if(params.row.uid == 0){
                       texts = params.row.nickname;
                     }else{
                       texts = params.row.realname;
@@ -269,6 +269,7 @@
               ],
               data2:[],
               members:[],
+              matcherror:[],
               imgNameList:[],
               uploadList: [],
               existImg:[],
@@ -430,10 +431,15 @@
           postData.img = vm.wk.imgNameList;
 
           vm.wk.data2.forEach(function (value, index, array) {
-            vm.wk.members.push(value.uid);
+            if(value.uid == 0){
+              vm.wk.matcherror.push(value.nickname);
+            }else{
+              vm.wk.members.push(value.uid);
+            }
           });
 
           postData.participate = vm.wk.members;
+          postData.matcherror = vm.wk.matcherror;
           if(vm.wk.data2.length>0){
             postData.group = vm.wk.data2[0].group;
           }else {

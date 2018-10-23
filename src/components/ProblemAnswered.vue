@@ -2,7 +2,7 @@
   <div class="problem_answered">
     <Table :columns="columns" :data="data" :height="tableH"></Table>
     <div class="pageDiv" ref="pageDiv">
-      <Page :total="totalPage" :current="curPage" show-elevator
+      <Page :total="totalPage" :current="curPage" show-elevator show-total
             :loading="loading" @on-change="changePage"/>
     </div>
 

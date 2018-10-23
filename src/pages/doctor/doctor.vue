@@ -30,7 +30,7 @@
           <Table ref="selection" :columns="columns2" :data="data2" :height="tableH" :loading="loading"
                  @on-select="selected" @on-select-cancel="unSelected" @on-select-all="selectedAll" @on-select-all-cancel="unSelectedAll"></Table>
           <div class="pageDiv" ref="pageDiv">
-            <Page :total="totalPage" show-elevator :current="curPage" @on-change="changePage"/>
+            <Page :total="totalPage" show-elevator show-total :current="curPage" @on-change="changePage"/>
           </div>
         </div>
 
@@ -216,7 +216,7 @@ export default {
         },
         { title: "编号", key: "numbers",width:118},
         { title: "姓名", key: "realname"},
-        { title: "昵称", key: "nickname" },
+        { title: "昵称", key: "nickname"},
         {title: "医院",key: "hospital"},
         {title: "科室",key: "department"},
         {title:"城市",key:"citys"},

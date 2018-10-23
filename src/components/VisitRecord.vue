@@ -1,8 +1,8 @@
 <template>
     <div class="visit_record">
-      <Table :columns="columns" :data="data" :height="tableH"></Table>
+      <Table :columns="columns" :data="data" :height="tableH" :loading="loading"></Table>
       <div class="pageDiv" ref="pageDiv">
-        <Page :total = totalPages :current="curPage" show-elevator @on-change="changePage"/>
+        <Page :total = totalPages :current="curPage" show-elevator show-total @on-change="changePage"/>
       </div>
     </div>
 </template>
@@ -18,6 +18,7 @@
             data:[],
             columns:[],
             url:'',
+            loading:true,
             columns1: [
               {title:'序号',type: 'index',width: 60,align: 'center'},
               {title: '拜访方式',key: 'visiting',align: 'center'},
@@ -141,6 +142,20 @@
                 }
               }
             ],
+            columns3:[
+              {title:'序号',type: 'index',width: 60,align: 'center'},
+              {title:'时间',key: 'create_update',
+                render:(h,params)=>{
+                  let texts = '';
+                  texts = this.$commonTools.formatDate(params.row.create_update);
+                  return h('span',{
+                    props:{},
+                  },texts)
+                }},
+              {title:'积分来源',key: 'source'},
+              {title:'单项积分',key: 'score'},
+              {title:'经办人',key:'manager'},
+            ]
           }
       },
       props:{
@@ -151,6 +166,11 @@
       mounted(){
         this.getTableH();
         this.getRecordList();
+      },
+      watch:{
+        url: function (newQuestion, oldQuestion) {
+          this.curPage = 1;
+        }
       },
       methods:{
         getTableH(){
@@ -169,17 +189,22 @@
           }else if(vm.tabType == 2){
             vm.columns = vm.columns2;
             vm.url = 'admin/lesson/lesson_list';
+          }else if(vm.tabType == 3){
+            console.info(vm.tabType)
+            vm.columns = vm.columns3;
+            vm.url = 'admin/doctors/score_list';
           }
           this.$http.get(vm.$commonTools.g_restUrl + vm.url,{
             params: {
               doctors_id : vm.doctorId,
-              current_page:vm.curPage
+              page:vm.curPage
             }
           })
             .then(function(response) {
               if(response.data.code == 200){
                 vm.data = response.data.list.data;
                 vm.totalPages = response.data.list.total;
+                vm.loading = false;
               }
             })
             .catch(function(error) {

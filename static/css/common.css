@@ -51,6 +51,14 @@
   color: #51b213;
 }
 
+.ivu-menu-vertical .ivu-menu-item, .ivu-menu-vertical .ivu-menu-submenu-title{
+  padding: 0;
+}
+
+.ivu-menu-item .menuDiv{
+  padding: 14px 24px;
+}
+
 /*全部的type为success的按钮样式*/
 .ivu-btn-success{
   background: -webkit-linear-gradient(left bottom, #65b901 , #3fab23); /* Safari 5.1 - 6.0 */
@@ -186,4 +194,13 @@
 /*清除iview框架自带的line-hight带来的编辑器高度变化*/
 .database-add .ivu-form-item-content{
   line-height: unset !important;
+}
+
+/*聊天框的input*/
+.chat_main_left_bottom .ivu-input{
+  border: none;
+  background-color: #fdfffc;
+}
+.chat_main_left_bottom .ivu-input:focus{
+  box-shadow:none;
 }

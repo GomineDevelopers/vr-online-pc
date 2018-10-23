@@ -34,13 +34,13 @@
         <Sider hide-trigger :style="{background: '#fff'}">
           <Menu active-name="doctor" theme="light" width="auto" :open-names="['1']">
             <MenuItem name="doctor">
-              <div @click="changeRouter('Doctor')">
+              <div @click="changeRouter('Doctor')" class="menuDiv">
                 <Icon custom="icon iconfont icon-yisheng"></Icon>
                 <span>医生管理</span>
               </div>
             </MenuItem>
             <MenuItem name="miniclass">
-              <div @click="changeRouter('MiniClass')">
+              <div @click="changeRouter('MiniClass')" class="menuDiv">
                 <Icon custom="icon iconfont icon-kecheng"></Icon>
                 <span>微课管理</span>
               </div>
@@ -58,27 +58,33 @@
               </MenuItem>
             </Submenu>-->
             <MenuItem name="problemlist">
-              <div @click="changeRouter('ProblemList')">
+              <div @click="changeRouter('ProblemList')" class="menuDiv">
                 <Icon custom="icon iconfont icon-bangzhu"></Icon>
                 <span>疑难求助</span>
               </div>
             </MenuItem>
             <MenuItem name="tag">
-              <div @click="changeRouter('Tag')">
+              <div @click="changeRouter('Tag')" class="menuDiv">
                 <Icon custom="icon iconfont icon-common-xiangmubiaoqian-copy"></Icon>
                 <span>标签管理</span>
               </div>
             </MenuItem>
             <MenuItem name="databaselist">
-              <div @click="changeRouter('DataBaseList')">
+              <div @click="changeRouter('DataBaseList')"  class="menuDiv">
                 <Icon custom="icon iconfont icon-ziliao"></Icon>
                 <span>资料库</span>
               </div>
             </MenuItem>
             <MenuItem name="wechatscan">
-              <div @click="changeRouter('WeChatScan')">
+              <div @click="changeRouter('WeChatScan')" class="menuDiv">
                 <Icon custom="icon iconfont icon-weixin"></Icon>
                 <span>微信管理</span>
+              </div>
+            </MenuItem>
+            <MenuItem name="wordslibrary">
+              <div @click="changeRouter('WordsLibrary')" class="menuDiv">
+                <Icon custom="icon iconfont icon-shu"></Icon>
+                <span>话术资料库</span>
               </div>
             </MenuItem>
           </Menu>

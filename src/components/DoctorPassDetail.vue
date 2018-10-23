@@ -21,7 +21,7 @@
           <Row class="doctor_detail_rowBottom">
             <Col span="8">手机号：<span class="spanFont" v-text="detailPassData.mobile"></span></Col>
             <Col span="8">邮箱：<span class="spanFont" v-text="detailPassData.email"></span></Col>
-            <Col span="8">微信号：<span class="spanFont" v-text="detailPassData.wechat"></span></Col>
+            <Col span="8">负责销售：<span class="spanFont" v-text="detailPassData.sales"></span></Col>
           </Row>
           <Row class="doctor_detail_rowBottom">
             <Col span="8">拜访记录：<span class="spanFont" v-text="detailPassData.visit_total"></span></Col>
@@ -30,7 +30,6 @@
           </Row>
           <Row class="doctor_detail_rowBottom">
             <Col span="8">互动记录：<span class="spanFont" v-text="detailPassData.interactive_total"></span></Col>
-            <Col span="8">负责销售：<span class="spanFont" v-text="detailPassData.sales"></span></Col>
           </Row>
           <Row>
             <Col span="22">标签：
@@ -56,7 +55,10 @@
           <visit-record ref="c2" :postCommonH="commonHeight" :tabType="type" :doctorId="doctorId"
                         @getRecordDetailC="getRecordDetail" v-if="commonHeight && type == 2"></visit-record>
         </TabPane>
-        <TabPane label="积分记录" name="3">积分记录</TabPane>
+        <TabPane label="积分记录" name="3">
+          <visit-record :postCommonH="commonHeight" :tabType="type" :doctorId="doctorId"
+                        v-if="commonHeight && type == 3"></visit-record>
+        </TabPane>
       </Tabs>
     </div>
 
@@ -253,7 +255,19 @@
               {title:'身份证号',key:'speaker_idcard'}
             ],
             columns2:[
-              {title:'姓名',key:'realname'},
+              {title:'姓名',key:'realname',
+                render:(h,params)=>{
+                  let texts = "";
+                  if(params.row.realname == ""){
+                    texts = params.row.nickname;
+                  }else{
+                    texts = params.row.realname;
+                  }
+                  return h('span',{
+                    props:{},
+                  },texts)
+                }
+              },
               {title:'所属医院',key:'hospital'},
               {title:'科室',key:'department'},
               {title:'职称',key:'job'},
