@@ -13,6 +13,7 @@ import QRcode from '@/pages/wechat/QRcode'
 import FriendsList from '@/pages/wechat/friendsList'
 import ChatFrame from '@/pages/wechat/chatFrame'
 import WordsLibrary from '@/pages/wordsLibrary/wordslibrary'
+import Interaction from '@/pages/interaction/interaction'
 
 import demo01 from '@/pages/demo/demo01'
 import demo02 from '@/pages/demo/demo02'
@@ -116,6 +117,14 @@ export default new Router({
           path: 'wordslibrary',
           component: WordsLibrary,
           name:'WordsLibrary',
+          meta:{
+            requiresAuth:true
+          }
+        },
+        {
+          path: 'interaction',
+          component: Interaction,
+          name:'Interaction',
           meta:{
             requiresAuth:true
           }
