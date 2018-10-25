@@ -1,6 +1,6 @@
 <template>
   <div class="wordsLib">
-    <div class="title" ref="title">话术资料库</div>
+    <page-title ref="title" :title="titleText"></page-title>
     <div class="searchCard" ref="searchCard">
       <Row>
         <Col span="2" class="searchFont">话术标题</Col>
@@ -23,10 +23,8 @@
       <div class="buttonDiv" ref="buttonDiv">
         <Button icon="md-add" @click="showLabelModal('add')">新增话术</Button>
       </div>
-      <Table ref="table" :columns="columns" :data="data" :height="tableH" :loading="loading"></Table>
-      <div class="pageDiv" ref="pageDiv">
-        <Page :total="totalPage" show-elevator show-total :current="curPage" @on-change="changePage"/>
-      </div>
+      <table-list :htmlType="'wordsLib'" :fatherH = "fatherH" v-if="fatherH"
+        @goDetail_C = "goDetail" @goEdit_C = "showLabelModal" ref="list"></table-list>
     </div>
 
     <Modal v-model="libModal" :title="modalTitle" @on-ok="save(modalData)">
@@ -70,21 +68,24 @@
 </template>
 
 <script>
+  import PageTitle from '../../components/pageTitle'
+  import TableList from '../../components/tableList'
     export default {
       name: "wordsLibrary",
       data(){
           return{
+            titleText:'话术资料库',
             wordsTitle:'',
             wordsCreater:'',
             selectedType1:[],
             type1:[],
             tableBgH:'',
-            tableH:'',
+            fatherH:'',
             loading:true,
             libModal:false,
             libModalView:false,
             modalTitle:'新增话术',
-            columns: [
+            /*columns: [
               { title:"序号",type: "index", width: 60, align: "center" },
               {title: "话术标题", key: "speechcraft"},
               {title: "话术类别1", key: "type1",width:150},
@@ -159,7 +160,7 @@
                   ]);
                 }
               }
-            ],
+            ],*/
             data:[],
             totalPage:0,
             curPage:1,
@@ -171,42 +172,19 @@
             }
           }
       },
+      components:{
+        'page-title':PageTitle,
+        'table-list':TableList
+      },
       mounted(){
         this.getBgHeight();
-        this.getData();
         this.getType1();
       },
       methods:{
         getBgHeight() {
           let vm = this;
-          vm.tableBgH = document.documentElement.clientHeight -64 -24 * 2 -(vm.$refs.title.offsetHeight + 10) -(vm.$refs.searchCard.offsetHeight + 20) - 5;
-          vm.tableH = vm.tableBgH - (vm.$refs.buttonDiv.offsetHeight + 10 * 2) - (vm.$refs.pageDiv.offsetHeight + 10 * 2) -10;
-        },
-        getData(){
-          let vm = this;
-          let postData = {};
-          postData.page = vm.curPage ;
-          postData.speechcraft = vm.wordsTitle;
-          postData.username = vm.wordsCreater;
-          postData.type = vm.selectedType1;
-
-          this.$http({
-            method:"post",
-            url:vm.$commonTools.g_restUrl+'admin/speech/speech_list',
-            data:vm.$qs.stringify(postData)
-          })
-            .then(function(response) {
-              if(response.data.code == 200){
-                vm.data = response.data.list.data;
-                vm.totalPage = response.data.list.total;
-                vm.loading = false;
-                vm.$Loading.finish();
-              }
-            })
-            .catch(function(error) {
-              vm.$Loading.error();
-              console.log(error);
-            });
+          vm.tableBgH = document.documentElement.clientHeight -64 -24 * 2 -(vm.$refs.title.$el.offsetHeight + 10) -(vm.$refs.searchCard.offsetHeight + 20) - 10;
+          vm.fatherH = vm.tableBgH - (vm.$refs.buttonDiv.offsetHeight + 10 * 2);
         },
         getType1(){
           let vm = this;
@@ -222,36 +200,6 @@
               console.log(error);
             });
         },
-        changePage(curPage) {
-          this.curPage = curPage;
-          this.getData();
-        },
-        del(id){
-          let vm = this;
-          this.$Modal.confirm({
-            title: '提示',
-            content: '确定要删除吗？',
-            onOk: () => {
-              this.$http.get(vm.$commonTools.g_restUrl+"admin/speech/speech_del",{
-                params: {
-                  id : id
-                }
-              })
-                .then(function(response) {
-                  if(response.data.code == 200){
-                    vm.$Notice.success({
-                      title: '删除成功！'
-                    });
-                    vm.curPage = 1;
-                    vm.getData();
-                  }
-                })
-                .catch(function(error) {
-                  console.log(error);
-                });
-            }
-          });
-        },
         showLabelModal(temp,id){
           let vm = this;
           if(temp == 'add'){
@@ -264,8 +212,12 @@
           vm.libModal = true;
         },
         search(){
-          this.curPage = 1;
-          this.getData();
+          let postData = {};
+          let vm = this;
+          postData.speechcraft = vm.wordsTitle;
+          postData.username = vm.wordsCreater;
+          postData.type = vm.selectedType1;
+          vm.$refs.list.getData(postData);
         },
         clear(){
           this.wordsTitle = "";
@@ -286,7 +238,7 @@
                   title: '保存成功！'
                 });
                 vm.curPage = 1;
-                vm.getData();
+                vm.$refs.list.getData();
               }
             })
             .catch(function(error) {
@@ -320,12 +272,6 @@
 </script>
 
 <style scoped>
-  .title {
-    font-size: 1.25rem;
-    color: #adb3a8;
-    margin-bottom: 10px;
-  }
-
   .searchCard {
     background-color: #fff;
     height: 54px;
@@ -339,6 +285,12 @@
   .buttonDiv {
     text-align: right;
     margin: 10px;
+  }
+
+  .tableDiv {
+    background-color: #fff;
+    margin-top: 26px;
+    padding: 2vh;
   }
 
   .pageDiv {

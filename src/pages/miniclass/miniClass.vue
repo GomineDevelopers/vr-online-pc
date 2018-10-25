@@ -387,7 +387,11 @@
                     value.group = response.data.data.group;
                   });
                 }
-                vm.wk.data2 = response.data.data.doctors_list;
+                if(response.data.data.doctors_list == undefined){
+                  vm.wk.data2 = [];
+                }else{
+                  vm.wk.data2 = response.data.data.doctors_list;
+                }
               }
             })
             .catch(function(error) {
@@ -423,13 +427,15 @@
           postData.speaker_section = vm.wk.doctor.department;
           postData.speaker_position = vm.wk.doctor.title;
           postData.speaker_idcard = vm.wk.doctor.IDcard;
-          vm.$refs.uploadwk.fileList.forEach(function (ele,index,arr) {
-            if(ele.response == undefined){//已上传的图片
-              vm.wk.imgNameList.push(ele.filename);
-            }else{//新上传的图片
-              vm.wk.imgNameList.push(ele.name);
-            }
-          });
+          if(vm.$refs.uploadwk.fileList.length>0){
+            vm.$refs.uploadwk.fileList.forEach(function (ele,index,arr) {
+              if(ele.response == undefined){//已上传的图片
+                vm.wk.imgNameList.push(ele.filename);
+              }else{//新上传的图片
+                vm.wk.imgNameList.push(ele.name);
+              }
+            });
+          }
           postData.img = vm.wk.imgNameList;
 
           vm.wk.data2.forEach(function (value, index, array) {

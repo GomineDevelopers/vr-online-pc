@@ -16,8 +16,8 @@
                   <div class="friends_list_lists" v-for="item in friends">
                     <Row>
                       <Col span="10">
-                        <Avatar style="color: #f56a00;background-color: #fde3cf"></Avatar>
-                        <span v-text="item.RemarkName == '' ?item.NickName:item.RemarkName"></span>
+                        <Avatar :src='"http://icampaign.com.cn/customers/Wxbot_r/temp/" + item.HeadImgUrl'></Avatar>
+                        <span v-text="item.RemarkName"></span>
                       </Col>
                       <Col span="4" offset="10" class="friends_list_btn">
                         <Button @click="goChat(item.UserName)">发起会话</Button>
@@ -114,14 +114,17 @@
         getMembers(){
           let vm = this;
           if(!vm.isloading){
-            this.$http.get('http://icampaign.com.cn:9080/api/get_contact_list/',{
+            this.$http.get(vm.$commonTools.g_restUrl + 'admin/wxbot/get_contact_list',{
               params: {
                 bot_id:window.localStorage.getItem("QR_id")
               }
             })
               .then(function(response) {
-                if(response.data.code == 200&&response.data.data.contact_list.length >0){
-                  vm.friends = response.data.data.contact_list;
+                if(response.data.code == 200){
+                  vm.friends = response.data.info;
+                  /*vm.friends.forEach(function (ele) {
+                    ele.HeadImgUrl = 'http://icampaign.com.cn/customers/Wxbot_r/temp/'+ele.HeadImgUrl;
+                  });*/
                   vm.isloading = true;
                   vm.$Loading.finish();
                 }else{

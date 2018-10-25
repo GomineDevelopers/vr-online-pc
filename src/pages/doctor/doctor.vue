@@ -25,6 +25,7 @@
         </div>
         <div class="tableDiv" :style="{height:tableBgH+'px'}">
           <div class="buttonDiv" ref="buttonDiv">
+            <Button icon="icon iconfont icon-excel" @click="exportRecord">导出Excel</Button>
             <Button icon="md-add" @click="showLabelModal">添加标签</Button>
           </div>
           <Table ref="selection" :columns="columns2" :data="data2" :height="tableH" :loading="loading"
@@ -597,6 +598,25 @@ export default {
     },
     unSelectedAll(selection){
       this.selections = selection;
+    },
+    exportRecord(){
+      let vm = this;
+      let postData = {};
+      postData.hospital = vm.hospitalName;
+      postData.nickname = vm.nickName;
+      postData.realname = vm.doctorName;
+      postData.label = vm.tagValue;
+      postData.citys = vm.city;
+
+      this.$http({
+        method:"post",
+        url:vm.$commonTools.g_restUrl+'admin/doctors/doctors_export',
+        data:vm.$qs.stringify(postData)
+      })
+        .then(function(response) {})
+        .catch(function(error) {
+          console.log(error);
+        });
     }
   }
 };
@@ -654,5 +674,10 @@ export default {
   .detail_text{
     font-weight: 600;
   }
-</style>
 
+</style>
+<style>
+  .iconfont.icon-excel{
+    font-size: 12px;
+  }
+</style>

@@ -87,6 +87,12 @@
                 <span>话术资料库</span>
               </div>
             </MenuItem>
+            <MenuItem name="interaction">
+              <div @click="changeRouter('Interaction')" class="menuDiv">
+                <Icon custom="icon iconfont icon-hudong1"></Icon>
+                <span>互动记录</span>
+              </div>
+            </MenuItem>
           </Menu>
         </Sider>
         <Layout>
