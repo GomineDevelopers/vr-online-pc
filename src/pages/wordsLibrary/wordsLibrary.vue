@@ -85,82 +85,6 @@
             libModal:false,
             libModalView:false,
             modalTitle:'新增话术',
-            /*columns: [
-              { title:"序号",type: "index", width: 60, align: "center" },
-              {title: "话术标题", key: "speechcraft"},
-              {title: "话术类别1", key: "type1",width:150},
-              {title: "创建人", key: "username",width:100,align:"center"},
-              {title: "创建时间", key: "create_time",width:140,
-                render:(h,params)=>{
-                  let texts = '';
-                  if(params.row.create_time == null){
-                    texts = '-';
-                  }else{
-                    texts = this.$commonTools.formatDate(params.row.create_time);
-                  }
-                  return h('span',{
-                    props:{},
-                  },texts)
-                }
-              },
-              {title: "被引用次数", key: "frequency", align: "center",width:100},
-              {title: "操作", key: "action",width: 150,align: "center",
-                render: (h, params) => {
-                  return h("div", [
-                    h("Tooltip",{props:{trigger:"hover",content:"详情",placement:"top"}},
-                      [h("Icon", {
-                        props: {
-                          type: "icon iconfont icon-ziliao",
-                        },
-                        style: {
-                          marginLeft: "5px",
-                          color: "#4fb115"
-                        },
-                        on: {
-                          click: () => {
-                            this.goDetail(params.row.id);
-                          }
-                        }
-                      })
-                      ]),
-                    h("Tooltip",
-                      {props:{trigger:"hover",content:"编辑",placement:"top"}},
-                      [h("Icon", {
-                        props: {
-                          type: "icon iconfont icon-bianji"
-                        },
-                        style: {
-                          marginLeft: "5px",
-                          color: "#4fb115",
-                          display:(params.row.is_registered == 0)?"none":"inline"
-                        },
-                        on: {
-                          click: () => {
-                            this.showLabelModal('edit',params.row.id);
-                          }
-                        }
-                      })
-                      ]),
-                    h("Tooltip",{props:{trigger:"hover",content:"删除",placement:"top"}},
-                      [h("Icon",{
-                        props: {
-                          custom: "icon iconfont icon-shanchu"
-                        },
-                        style: {
-                          marginLeft: "5px",
-                          color: "#4fb115"
-                        },
-                        on: {
-                          click: () => {
-                            this.del(params.row.id);
-                          }
-                        }
-                      })
-                      ])
-                  ]);
-                }
-              }
-            ],*/
             data:[],
             totalPage:0,
             curPage:1,
@@ -291,11 +215,6 @@
     background-color: #fff;
     margin-top: 26px;
     padding: 2vh;
-  }
-
-  .pageDiv {
-    margin: 10px;
-    text-align: right;
   }
 
   .rowBottom{

@@ -534,7 +534,7 @@
         },
         addAttend(){
           let vm = this;
-          this.$http.get('http://icampaign.com.cn/customers/vrOnlinePc/backend/admin/login/scanState',{
+          this.$http.get(vm.$commonTools.g_restUrl +'admin/wxbot/scanState',{
             params: {
               bot_id:window.localStorage.getItem("QR_id")
             }

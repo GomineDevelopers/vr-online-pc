@@ -25,7 +25,9 @@
         </div>
         <div class="tableDiv" :style="{height:tableBgH+'px'}">
           <div class="buttonDiv" ref="buttonDiv">
-            <Button icon="icon iconfont icon-excel" @click="exportRecord">导出Excel</Button>
+            <download-excel style="display: inline-block;" :data = "excelData" :fields="excelFileds" :name=" '医生管理'+ excelTime+'.xls'">
+              <Button icon="icon iconfont icon-excel" @click="exportRecord">导出Excel</Button>
+            </download-excel>
             <Button icon="md-add" @click="showLabelModal">添加标签</Button>
           </div>
           <Table ref="selection" :columns="columns2" :data="data2" :height="tableH" :loading="loading"
@@ -185,6 +187,9 @@ export default {
   name: "doctor",
   data() {
     return {
+      excelData:[],
+      excelFileds:{},
+      excelTime:this.$commonTools.formatDate3(new Date()),
       hospitalName:'',
       doctorName:'',
       nickName:'',
@@ -600,20 +605,41 @@ export default {
       this.selections = selection;
     },
     exportRecord(){
-      let vm = this;
+      let vm= this;
       let postData = {};
+      let excelData = [];
       postData.hospital = vm.hospitalName;
       postData.nickname = vm.nickName;
       postData.realname = vm.doctorName;
       postData.label = vm.tagValue;
       postData.citys = vm.city;
 
+      vm.excelFileds = {
+        '编号':'numbers',
+        '微信昵称':'nickname',
+        '真实姓名':'realname',
+        '手机号':'mobile',
+        '邮箱':'email',
+        '省':'province',
+        '市':'city',
+        '区':'county',
+        '医院科室':'department',
+        '职称':'job',
+        '注册时间':'reg_time'
+      };
       this.$http({
         method:"post",
         url:vm.$commonTools.g_restUrl+'admin/doctors/doctors_export',
         data:vm.$qs.stringify(postData)
       })
-        .then(function(response) {})
+        .then(function(response) {
+          if(response.data.code == 200){
+            response.data.list.forEach(function (ele) {
+              ele.reg_time = vm.$commonTools.formatDate(ele.reg_time);
+            });
+            vm.excelData = response.data.list;
+          }
+        })
         .catch(function(error) {
           console.log(error);
         });

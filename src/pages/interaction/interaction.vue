@@ -24,7 +24,7 @@
       <Row class="modalRow">
         <Col span="2">主讲医生</Col>
         <Col span="22">
-          <Table :columns="wk.columns" :data="wk.speakerList"></Table>
+          <Table :columns="wk.columns1" :data="wk.speakerList"></Table>
         </Col>
       </Row>
       <Row class="modalRow">
@@ -47,7 +47,7 @@
       <Row class="modalRow">
         <Col span="2">参会人员</Col>
         <Col span="22">
-          <Table :columns="wk.columns" :data="wk.data.doctors_list" height="200"></Table>
+          <Table :columns="wk.columns2" :data="wk.data.doctors_list" height="200"></Table>
         </Col>
       </Row>
       <Row class="modalRow">
@@ -155,12 +155,30 @@
           wk:{
             viewWKModal:false,
             data:"",
-            columns:[
+            columns1:[
               {title:'姓名',key:'speaker_name'},
               {title:'所属医院',key:'speaker_hospital'},
               {title:'科室',key:'speaker_section'},
               {title:'职称',key:'speaker_position'},
               {title:'身份证号',key:'speaker_idcard'}
+            ],
+            columns2:[
+              {title:'姓名',key:'realname',
+                render:(h,params)=>{
+                  let texts = "";
+                  if(params.row.uid == 0 || params.row.realname == ""){//uid是0的话是未匹配到，uid不为0但是realname为空是只关注未注册
+                    texts = params.row.nickname;
+                  }else{
+                    texts = params.row.realname;
+                  }
+                  return h('span',{
+                    props:{},
+                  },texts)
+                }},
+              {title:'所属医院',key:'hospital'},
+              {title:'科室',key:'department'},
+              {title:'职称',key:'job'},
+              {title:'城市',key:'citys'}
             ],
             speakerList:[]
           },
@@ -234,13 +252,7 @@
           window.open(item.url);
         },
         exportRecord(){
-          this.$http.get(this.$commonTools.g_restUrl+ 'admin/interactive/interactive_export',{
-            params: {}
-          })
-            .then(function(response) {})
-            .catch(function(error) {
-              console.log(error);
-            });
+          window.open( this.$commonTools.g_restUrl+"admin/interactive/interactive_export", "_blank");
         }
       }
     }

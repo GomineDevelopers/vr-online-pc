@@ -5,6 +5,7 @@ import App from './App'
 import router from './router'
 import axios from 'axios';
 import qs from 'qs';
+import JsonExcel from 'vue-json-excel'
 import {commonTools} from '../static/js/common';
 import iView from 'iview'
 import 'iview/dist/styles/iview.css'
@@ -17,6 +18,7 @@ Vue.prototype.$http = axios;
 Vue.prototype.$commonTools = commonTools;
 Vue.prototype.$qs = qs;
 Vue.use(iView);
+Vue.component('downloadExcel',JsonExcel)
 
 router.beforeEach((to, from, next) => {
   iView.LoadingBar.start();
@@ -36,6 +38,24 @@ router.beforeEach((to, from, next) => {
       next();
     } else {
       next({name:'Login'});
+    }
+
+    if(to.name == 'WeChatScan'){
+      axios('http://icampaign.com.cn/customers/vrOnlinePc/backend/admin/wxbot/scanState', {
+        params: {
+          bot_id:window.localStorage.getItem("QR_id")
+        }
+      })
+        .then(function (response) {
+         if(response.data.code == 200){
+           next({name:'FriendsList'});
+         }else{
+           next();
+         }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
     }
   } else {
     next(); // 确保一定要调用 next()

@@ -51,11 +51,15 @@
   color: #51b213;
 }
 
-.ivu-menu-vertical .ivu-menu-item, .ivu-menu-vertical .ivu-menu-submenu-title{
+.ivu-menu-vertical .ivu-menu-item{
   padding: 0;
 }
 
 .ivu-menu-item .menuDiv{
+  padding: 14px 24px;
+}
+
+.ivu-menu-submenu-title{
   padding: 14px 24px;
 }
 

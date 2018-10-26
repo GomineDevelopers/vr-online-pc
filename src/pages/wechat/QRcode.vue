@@ -49,22 +49,6 @@
             }
           })
             .then(function(response) {
-              /*if(response.data.code == 200){
-                vm.$Notice.success({
-                  title: '扫码登录成功!'
-                });
-                vm.isloading=true;
-              }else if(response.data.code == 201){
-                // vm.$Notice.info({
-                //   title: '正在登录，请稍等!'
-                // });
-                vm.isloading=false;
-              }else if(response.data.code == 408){
-                // vm.$Notice.info({
-                //   title: '等待扫码!'
-                // });
-                vm.isloading=false;
-              }*/
               if(response.data.code != ""){
                 if(response.data.code == 200){
                   vm.$Notice.success({

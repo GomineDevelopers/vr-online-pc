@@ -45,18 +45,6 @@
                 <span>微课管理</span>
               </div>
             </MenuItem>
-            <!--<Submenu name="1">
-              <template slot="title">
-                <Icon custom="icon iconfont icon-yisheng"></Icon>
-                医生管理
-              </template>
-              <MenuItem name="1-1">
-                <div @click="changeRouter('demo02')">医生N</div>
-              </MenuItem>
-              <MenuItem name="1-2">
-                <div @click="changeRouter('demo03')">单个医生</div>
-              </MenuItem>
-            </Submenu>-->
             <MenuItem name="problemlist">
               <div @click="changeRouter('ProblemList')" class="menuDiv">
                 <Icon custom="icon iconfont icon-bangzhu"></Icon>
@@ -93,6 +81,18 @@
                 <span>互动记录</span>
               </div>
             </MenuItem>
+            <Submenu name="1">
+              <template slot="title">
+                <Icon custom="icon iconfont icon-xitongguanli"></Icon>
+                系统管理
+              </template>
+              <MenuItem name="1-1">
+                <div class="menuDiv" @click="changeRouter('UserList')">用户列表</div>
+              </MenuItem>
+              <MenuItem name="1-2">
+                <div class="menuDiv" @click="changeRouter('Role')">权限管理</div>
+              </MenuItem>
+            </Submenu>
           </Menu>
         </Sider>
         <Layout>

@@ -37,6 +37,13 @@ commonTools.formatDate2 = function (date) {
   return year + "年" + month + "月" + date1 + "日";
 }
 
+commonTools.formatDate3 = function (d) {
+  /*var d = new Date(parseInt(date)*1000);*/
+  var year = String(d.getFullYear());
+  var month = String(d.getMonth() + 1 > 9 ? d.getMonth() + 1 : "0" + (d.getMonth() + 1));
+  var date1 = String(d.getDate() > 9 ? d.getDate() : "0" + d.getDate());
+  return year + month + date1 ;
+}
 export {
   commonTools
 }
