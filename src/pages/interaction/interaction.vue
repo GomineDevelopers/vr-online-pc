@@ -200,12 +200,14 @@
         },
         changePage(curPage){
           this.curPage = curPage;
-          this.getData2();
+          this.getData();
         },
         getData(){
           let vm = this;
           vm.$http.get(vm.$commonTools.g_restUrl+'admin/interactive/interactive_list', {
-            params: {}
+            params: {
+              page:vm.curPage
+            }
           })
             .then(function(response) {
               if(response.data.code == 200){
@@ -283,6 +285,11 @@
 
   .modalRow{
     margin-bottom: 10px;
+  }
+
+  .introDiv{
+    height: 200px;
+    overflow-y: auto;
   }
 
   /*图片上传start*/

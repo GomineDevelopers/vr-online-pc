@@ -195,6 +195,9 @@
 .ivu-notice{
  z-index: 9999;
 }
+.ivu-message{
+  z-index: 9999;
+}
 /*清除iview框架自带的line-hight带来的编辑器高度变化*/
 .database-add .ivu-form-item-content{
   line-height: unset !important;

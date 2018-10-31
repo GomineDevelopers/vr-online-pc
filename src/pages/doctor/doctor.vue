@@ -3,21 +3,23 @@
         <div class="title" ref="title">医生管理</div>
         <div class="searchCard" ref="searchCard">
           <Row type="flex" align="middle" class="search_row">
-            <Col span="3" class="searchFont">所属医院</Col>
+            <Col span="2" class="searchFont">所属医院</Col>
             <Col span="4"><Input v-model="hospitalName" clearable/></Col>
-            <Col span="3" class="searchFont">医生姓名</Col>
+            <Col span="2" class="searchFont">医生姓名</Col>
             <Col span="4"><Input v-model="doctorName" clearable/></Col>
-            <Col span="3" class="searchFont">微信昵称</Col>
+            <Col span="2" class="searchFont">微信昵称</Col>
             <Col span="4"><Input v-model="nickName" clearable/></Col>
           </Row>
           <Row type="flex" align="middle" class="search_row">
-            <Col span="3" class="searchFont">标签</Col>
+            <Col span="2" class="searchFont">标签</Col>
             <Col span="4">
-              <Cascader :data="tagData" v-model="tagValue" change-on-select></Cascader>
+              <Cascader :data="tagData" v-model="tagValue_search" change-on-select></Cascader>
             </Col>
-            <Col span="3" class="searchFont">城市</Col>
+            <Col span="2" class="searchFont">城市</Col>
             <Col span="4"><Cascader :data="cities" v-model="city" change-on-select></Cascader></Col>
-            <Col span="10" class="searchFont">
+            <Col span="2" class="searchFont">VR</Col>
+            <Col span="4"><Input v-model="vr" clearable/></Col>
+            <Col span="5" style="text-align: center">
               <Button type="success" @click="search">搜索</Button>
               <Button type="warning" @click="clear">重置</Button>
             </Col>
@@ -187,6 +189,7 @@ export default {
   name: "doctor",
   data() {
     return {
+      tabValue:1,
       excelData:[],
       excelFileds:{},
       excelTime:this.$commonTools.formatDate3(new Date()),
@@ -194,6 +197,7 @@ export default {
       doctorName:'',
       nickName:'',
       city:[],
+      vr:'',
       tableBgH: "",
       tableH: "",
       curPage:1,
@@ -243,6 +247,7 @@ export default {
           },texts)
           }
         },
+        {title: "VR",key: "vr"},
         { title: "注册时间", key: "reg_time",width:140,
           render:(h,params)=>{
             let texts = '';
@@ -368,6 +373,7 @@ export default {
       ],
       tagData:[],
       tagValue:[],
+      tagValue_search:[],
       selections: [],
       cities: areaList
     };
@@ -393,8 +399,9 @@ export default {
       postData.hospital = vm.hospitalName;
       postData.nickname = vm.nickName;
       postData.realname = vm.doctorName;
-      postData.label = vm.tagValue;
+      postData.label = vm.tagValue_search;
       postData.citys = vm.city;
+      postData.vr = vm.vr;
       this.$http({
         method:"post",
         url:vm.$commonTools.g_restUrl+'admin/doctors/doctors_list',
@@ -423,8 +430,9 @@ export default {
       vm.hospitalName = "";
       vm.nickName = "";
       vm.doctorName = "";
-      vm.tagValue = [];
+      vm.tagValue_search = [];
       vm.city = [];
+      vm.vr = "";
     },
     isPass(id,status){//通过or拒绝
       let vm = this;
@@ -476,7 +484,7 @@ export default {
     },
     goDetailPass(id){
       this.detailPassModel = true;
-      this.$refs.c1.getPassDetailData(id);
+      this.$refs.c1.getPassDetailData(id);//子组件中的详情方法
     },
     del(id){
       let vm = this;
@@ -567,30 +575,36 @@ export default {
     },
     addLabel() {
       let vm = this;
-      let id_doctor = [];
-      let postData = {};
-      vm.selections.forEach(function (value, index, array) {
-        id_doctor.push(value.id);
-      });
-      postData.member = id_doctor;
-      postData.label = vm.tagValue;
-      this.$http({
-        method:"post",
-        url:vm.$commonTools.g_restUrl+'admin/doctors/doctors_chectlabel',
-        data:vm.$qs.stringify(postData)
-      })
-        .then(function(response) {
-          if(response.data.code == 200){
-            vm.$Notice.success({
-              title: '标签添加成功！'
-            });
-            vm.getData2();
-          }
-        })
-        .catch(function(error) {
-          console.log(error);
+      if(vm.tagValue != ''){
+        let id_doctor = [];
+        let postData = {};
+        vm.selections.forEach(function (value, index, array) {
+          id_doctor.push(value.id);
         });
-
+        postData.member = id_doctor;
+        postData.label = vm.tagValue;
+        this.$http({
+          method:"post",
+          url:vm.$commonTools.g_restUrl+'admin/doctors/doctors_chectlabel',
+          data:vm.$qs.stringify(postData)
+        })
+          .then(function(response) {
+            if(response.data.code == 200){
+              vm.$Notice.success({
+                title: '标签添加成功！'
+              });
+              vm.getData2();
+            }
+          })
+          .catch(function(error) {
+            console.log(error);
+          });
+      }else{
+        vm.$Message.error({
+          content: '请先选择标签后再保存！',
+          duration: 3
+        });
+      }
     },
     selected(selection, row) {
       this.selections = selection;
@@ -625,6 +639,10 @@ export default {
         '区':'county',
         '医院科室':'department',
         '职称':'job',
+        'VR':'vr',
+        '拜访记录':'visit_total',
+        '微课记录':'lesson_total',
+        '积分':'score',
         '注册时间':'reg_time'
       };
       this.$http({

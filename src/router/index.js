@@ -33,7 +33,6 @@ export default new Router({
     {
       path: '/index/',
       component: Index,
-      redirect: '/index/doctor',
       children: [
         {
           path: 'doctor',

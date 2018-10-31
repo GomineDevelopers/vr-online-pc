@@ -32,65 +32,20 @@
       </Header>
       <Layout :style="{height:mainHeight+'px'}">
         <Sider hide-trigger :style="{background: '#fff'}">
-          <Menu active-name="doctor" theme="light" width="auto" :open-names="['1']">
-            <MenuItem name="doctor">
-              <div @click="changeRouter('Doctor')" class="menuDiv">
-                <Icon custom="icon iconfont icon-yisheng"></Icon>
-                <span>医生管理</span>
+          <Menu :active-name="activeMenu" theme="light" width="auto" @on-select="changeRouter" v-if="activeMenu">
+            <MenuItem :name="item.url" v-if="item.url && item.checked" v-for="item in menuList" :key="item.id">
+              <div class="menuDiv">
+                <Icon :custom=" 'icon iconfont '+ item.icon"></Icon>
+                <span>{{item.title}}</span>
               </div>
             </MenuItem>
-            <MenuItem name="miniclass">
-              <div @click="changeRouter('MiniClass')" class="menuDiv">
-                <Icon custom="icon iconfont icon-kecheng"></Icon>
-                <span>微课管理</span>
-              </div>
-            </MenuItem>
-            <MenuItem name="problemlist">
-              <div @click="changeRouter('ProblemList')" class="menuDiv">
-                <Icon custom="icon iconfont icon-bangzhu"></Icon>
-                <span>疑难求助</span>
-              </div>
-            </MenuItem>
-            <MenuItem name="tag">
-              <div @click="changeRouter('Tag')" class="menuDiv">
-                <Icon custom="icon iconfont icon-common-xiangmubiaoqian-copy"></Icon>
-                <span>标签管理</span>
-              </div>
-            </MenuItem>
-            <MenuItem name="databaselist">
-              <div @click="changeRouter('DataBaseList')"  class="menuDiv">
-                <Icon custom="icon iconfont icon-ziliao"></Icon>
-                <span>资料库</span>
-              </div>
-            </MenuItem>
-            <MenuItem name="wechatscan">
-              <div @click="changeRouter('WeChatScan')" class="menuDiv">
-                <Icon custom="icon iconfont icon-weixin"></Icon>
-                <span>微信管理</span>
-              </div>
-            </MenuItem>
-            <MenuItem name="wordslibrary">
-              <div @click="changeRouter('WordsLibrary')" class="menuDiv">
-                <Icon custom="icon iconfont icon-shu"></Icon>
-                <span>话术资料库</span>
-              </div>
-            </MenuItem>
-            <MenuItem name="interaction">
-              <div @click="changeRouter('Interaction')" class="menuDiv">
-                <Icon custom="icon iconfont icon-hudong1"></Icon>
-                <span>互动记录</span>
-              </div>
-            </MenuItem>
-            <Submenu name="1">
+            <Submenu name="1" v-if="!item.url && item.checked" v-for="item in menuList" :key="item.id">
               <template slot="title">
-                <Icon custom="icon iconfont icon-xitongguanli"></Icon>
-                系统管理
+                <Icon :custom=" 'icon iconfont '+ item.icon"></Icon>
+                {{item.title}}
               </template>
-              <MenuItem name="1-1">
-                <div class="menuDiv" @click="changeRouter('UserList')">用户列表</div>
-              </MenuItem>
-              <MenuItem name="1-2">
-                <div class="menuDiv" @click="changeRouter('Role')">权限管理</div>
+              <MenuItem :name="itemSub.url" v-for="itemSub in item.children" :key="itemSub.id" v-if="itemSub.checked">
+                <div class="menuDiv" @click="changeRouter(itemSub.url)">{{itemSub.title}}</div>
               </MenuItem>
             </Submenu>
           </Menu>
@@ -112,14 +67,33 @@
       return {
         fullHeight: document.documentElement.clientHeight,
         mainHeight: '',
-        username: ''
+        username: '',
+        menuList:[],
+        activeMenu:''
       }
     },
     mounted() {
+      this.getMeunData();
       this.getMainHeight();
       this.getUserName();
     },
     methods: {
+      getMeunData(){
+        let vm = this;
+        vm.$http.get(vm.$commonTools.g_restUrl + 'admin/user/rule', {
+          params: {}
+        })
+          .then(function (response) {
+            if (response.data.code == 200) {
+              vm.menuList = response.data.list;
+              vm.activeMenu = response.data.list[0].url;//默认选中第一个菜单
+              vm.changeRouter(response.data.list[0].url);
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      },
       getMainHeight() {
         let headerHeight = this.$refs.header.offsetHeight;
         this.mainHeight = this.fullHeight - headerHeight - 6;

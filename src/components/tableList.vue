@@ -92,7 +92,8 @@
           curPage:1,
           totalPage:0,
           loading:true,
-          tableH:''
+          tableH:'',
+          searchData:{}
         }
       },
       props:{
@@ -107,12 +108,16 @@
         }
       },
       methods:{
-        getData(temp){
+        getData(temp1,temp2){
           let vm = this;
+          vm.searchData = temp1;//保存下父组件的搜索条件
           let postData = {};
-          if(temp != undefined) {//搜索
-            postData = temp;
+          if(temp1 != undefined && temp2 == 'first' ) {//点击搜索按钮
+            postData = temp1;
             vm.curPage = 1;
+            postData.page = vm.curPage;
+          }else if(temp1 != undefined && temp2 == undefined){//从分页触发搜索
+            postData = temp1;
             postData.page = vm.curPage;
           }else{
             postData.page = vm.curPage;
@@ -170,7 +175,7 @@
         },
         changePage(curPage){
           this.curPage = curPage;
-          this.getData();
+          this.getData(this.searchData);
         },
       }
     }

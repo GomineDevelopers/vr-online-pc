@@ -13,11 +13,11 @@
 
       <Modal v-model="wk.addWKModal" title="添加微课记录" width="850" @on-ok="saveWkRecord">
         <Row type="flex" align="middle" class="modalRow">
-          <Col span="2">微课标题</Col>
+          <Col span="2"><span class="necessary">*</span>微课标题</Col>
           <Col span="4"><Input v-model="wk.title"/></Col>
-          <Col span="2" offset="1">微课编号</Col>
+          <Col span="2" offset="1"><span class="necessary">*</span>微课编号</Col>
           <Col span="4"><Input v-model="wk.num"/></Col>
-          <Col span="2" offset="1">微课时间</Col>
+          <Col span="2" offset="1"><span class="necessary">*</span>微课时间</Col>
           <Col span="4">
             <DatePicker ref="datewk" type="datetime" v-model="wk.date" :value="wk.date" format="yyyy-MM-dd HH:mm"></DatePicker>
           </Col>
@@ -27,23 +27,23 @@
           <Col span="2">主讲医生</Col>
           <Col span="22">
             <Row class="modalRow" type="flex" align="middle">
-              <Col span="1">姓名</Col>
+              <Col span="1"><span class="necessary">*</span>姓名</Col>
               <Col span="5"><Input v-model="wk.doctor.name"/></Col>
-              <Col span="2" offset="1">所属医院</Col>
+              <Col span="2" offset="1"><span class="necessary">*</span>所属医院</Col>
               <Col span="6"><Input v-model="wk.doctor.hospital"/></Col>
-              <Col span="1" offset="1">科室</Col>
+              <Col span="1" offset="1"><span class="necessary">*</span>科室</Col>
               <Col span="5"><Input v-model="wk.doctor.department"/></Col>
             </Row>
             <Row class="modalRow" type="flex" align="middle">
-              <Col span="1">职称</Col>
+              <Col span="1"><span class="necessary">*</span>职称</Col>
               <Col span="5"><Input v-model="wk.doctor.title"/></Col>
-              <Col span="2" offset="1">身份证号</Col>
+              <Col span="2" offset="1"><span class="necessary">*</span>身份证号</Col>
               <Col span="6"><Input v-model="wk.doctor.IDcard"/></Col>
             </Row>
           </Col>
         </Row>
         <Row class="modalRow">
-          <Col span="2">微课简介</Col>
+          <Col span="2"><span class="necessary">*</span>微课简介</Col>
           <Col span="22">
             <Input v-model="wk.intro" type="textarea" :rows="4"/>
           </Col>
@@ -408,72 +408,104 @@
           vm.clearwk();
           vm.isAdd = true;
         },
+        validator(){
+          let vm = this;
+          let texts = "";
+          let regID = /^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/;
+          if(!vm.wk.title){
+            texts = '请填写微课标题！';
+          }else if(!vm.wk.num){
+            texts = '请填写微课编号！';
+          }else if(!vm.wk.date){
+            texts = '请选择微课时间！';
+          }else if(!(vm.wk.doctor.name && vm.wk.doctor.hospital &&
+                   vm.wk.doctor.department&&vm.wk.doctor.title && vm.wk.doctor.IDcard)){
+            texts = '请完善主讲医生内容！';
+          }else if(vm.wk.doctor.IDcard && !regID.test(vm.wk.doctor.IDcard)){
+            texts = '身份证号码格式不正确！';
+          }else if(!vm.wk.intro){
+            texts = '请填写微课简介！';
+          }
+
+          if (texts) {
+            vm.$Message.error({
+              content: texts,
+              duration: 3
+            });
+            return false;
+          } else {
+            return true;
+          }
+        },
         saveWkRecord(){
           let vm = this;
-          let postData = {};
-          vm.wk.members = [];
-          if(vm.isAdd){
-            postData.id = "";
-          }else{
-            postData.id = vm.wkID;
-          }
-
-          postData.lesson_title = vm.wk.title;
-          postData.lesson_time = vm.wk.date;
-          postData.lesson_number = vm.wk.num;
-          postData.content = vm.wk.intro;
-          postData.speaker_name = vm.wk.doctor.name;
-          postData.speaker_hospital = vm.wk.doctor.hospital;
-          postData.speaker_section = vm.wk.doctor.department;
-          postData.speaker_position = vm.wk.doctor.title;
-          postData.speaker_idcard = vm.wk.doctor.IDcard;
-          if(vm.$refs.uploadwk.fileList.length>0){
-            vm.$refs.uploadwk.fileList.forEach(function (ele,index,arr) {
-              if(ele.response == undefined){//已上传的图片
-                vm.wk.imgNameList.push(ele.filename);
-              }else{//新上传的图片
-                vm.wk.imgNameList.push(ele.name);
-              }
-            });
-          }
-          postData.img = vm.wk.imgNameList;
-
-          vm.wk.data2.forEach(function (value, index, array) {
-            if(value.uid == 0){
-              vm.wk.matcherror.push(value.nickname);
+          if(vm.validator()){
+            let postData = {};
+            vm.wk.members = [];
+            if(vm.isAdd){
+              postData.id = "";
             }else{
-              vm.wk.members.push(value.uid);
+              postData.id = vm.wkID;
             }
-          });
 
-          postData.participate = vm.wk.members;
-          postData.matcherror = vm.wk.matcherror;
-          if(vm.wk.data2.length>0){
-            postData.group = vm.wk.data2[0].group;
-          }else {
-            postData.group = "";
+            postData.lesson_title = vm.wk.title;
+            postData.lesson_time = vm.wk.date;
+            postData.lesson_number = vm.wk.num;
+            postData.content = vm.wk.intro;
+            postData.speaker_name = vm.wk.doctor.name;
+            postData.speaker_hospital = vm.wk.doctor.hospital;
+            postData.speaker_section = vm.wk.doctor.department;
+            postData.speaker_position = vm.wk.doctor.title;
+            postData.speaker_idcard = vm.wk.doctor.IDcard;
+            if(vm.$refs.uploadwk.fileList.length>0){
+              vm.$refs.uploadwk.fileList.forEach(function (ele,index,arr) {
+                if(ele.response == undefined){//已上传的图片
+                  vm.wk.imgNameList.push(ele.filename);
+                }else{//新上传的图片
+                  vm.wk.imgNameList.push(ele.name);
+                }
+              });
+            }
+            postData.img = vm.wk.imgNameList;
+
+            vm.wk.data2.forEach(function (value, index, array) {
+              if(value.uid == 0){
+                vm.wk.matcherror.push(value.nickname);
+              }else{
+                vm.wk.members.push(value.uid);
+              }
+            });
+
+            postData.participate = vm.wk.members;
+            postData.matcherror = vm.wk.matcherror;
+            if(vm.wk.data2.length>0){
+              postData.group = vm.wk.data2[0].group;
+            }else {
+              postData.group = "";
+            }
+
+            this.$http({
+              method:"post",
+              url:vm.$commonTools.g_restUrl+'admin/lesson/lesson_edit',
+              data:vm.$qs.stringify(postData)
+            })
+              .then(function(response) {
+                if(response.data.code == 200){
+                  vm.$Notice.success({
+                    title: '记录提交成功!'
+                  });
+                  vm.getData();
+                }else{
+                  vm.$Notice.error({
+                    title: '记录提交出错，请重试!'
+                  });
+                }
+              })
+              .catch(function(error) {
+                console.log(error);
+              });
           }
 
-          this.$http({
-            method:"post",
-            url:vm.$commonTools.g_restUrl+'admin/lesson/lesson_edit',
-            data:vm.$qs.stringify(postData)
-          })
-            .then(function(response) {
-              if(response.data.code == 200){
-                vm.$Notice.success({
-                  title: '记录提交成功!'
-                });
-                vm.getData();
-              }else{
-                vm.$Notice.error({
-                  title: '记录提交出错，请重试!'
-                });
-              }
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
         },
         handleSuccesswk(res, file){
           file.url = res.path;
@@ -709,6 +741,14 @@
 
   .groupCard{
     padding: 5px 0;
+  }
+
+  .introDiv{
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    padding: 10px;
+    height: 200px;
+    overflow-y: auto;
   }
 
   /*图片上传start*/

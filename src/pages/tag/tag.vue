@@ -108,9 +108,11 @@
           vm.editId = id ;
           vm.labelModel = true;
           if(temp == 'add'){
+            vm.modalTitle = '新增标签';
             vm.clearModal();
           }else if(temp == 'edit'){
             vm.secondList = [];
+            vm.modalTitle = '编辑标签';
             this.$http.get(vm.$commonTools.g_restUrl+"admin/label/label_detail",{
               params: {
                 id : id
@@ -138,33 +140,40 @@
         },
         saveLabel(){
           let vm = this;
-          let postData = {};
-          postData.label_name = vm.firstLabelName;
-          vm.postSecondList = [];
-          vm.postSecondList.push(vm.secondLabelName);
-          if(vm.secondList.length > 0){
-            vm.secondList.forEach(function (ele,index,arr) {
-              vm.postSecondList.push(ele.name);
+          if(vm.firstLabelName){
+            let postData = {};
+            postData.label_name = vm.firstLabelName;
+            vm.postSecondList = [];
+            vm.postSecondList.push(vm.secondLabelName);
+            if(vm.secondList.length > 0){
+              vm.secondList.forEach(function (ele,index,arr) {
+                vm.postSecondList.push(ele.name);
+              });
+            }
+            postData.label_two = vm.postSecondList;
+            postData.id = vm.editId;
+            this.$http({
+              method:"post",
+              url:vm.$commonTools.g_restUrl+'admin/label/label_edit',
+              data:vm.$qs.stringify(postData)
+            })
+              .then(function(response) {
+                if(response.data.code == 200){
+                  vm.$Notice.success({
+                    title: '标签添加成功！'
+                  });
+                  vm.getLabelList();
+                }
+              })
+              .catch(function(error) {
+                console.log(error);
+              });
+          }else{
+            vm.$Message.error({
+              content:'请填写一级标签！',
+              duration: 3
             });
           }
-          postData.label_two = vm.postSecondList;
-          postData.id = vm.editId;
-          this.$http({
-            method:"post",
-            url:vm.$commonTools.g_restUrl+'admin/label/label_edit',
-            data:vm.$qs.stringify(postData)
-          })
-            .then(function(response) {
-              if(response.data.code == 200){
-                vm.$Notice.success({
-                  title: '标签添加成功！'
-                });
-                vm.getLabelList();
-              }
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
         },
         clearModal(){
           let vm = this;

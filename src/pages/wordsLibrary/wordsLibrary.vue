@@ -29,15 +29,15 @@
 
     <Modal v-model="libModal" :title="modalTitle" @on-ok="save(modalData)">
       <Row class="rowBottom">
-        <Col span="4">话术标题</Col>
+        <Col span="4"><span class="necessary">*</span>话术标题</Col>
         <Col span="20"><Input v-model="modalData.speechcraft"/></Col>
       </Row>
       <Row class="rowBottom">
-        <Col span="4">话术辅助信息</Col>
+        <Col span="4"><span class="necessary">*</span>话术辅助信息</Col>
         <Col span="20"><Input type="textarea" :rows="4" v-model="modalData.auxiliary"/></Col>
       </Row>
       <Row class="rowBottom">
-        <Col span="4">话术类别1</Col>
+        <Col span="4"><span class="necessary">*</span>话术类别1</Col>
         <Col span="20"><Input v-model="modalData.type1"/></Col>
       </Row>
       <Row class="rowBottom">
@@ -141,33 +141,56 @@
           postData.speechcraft = vm.wordsTitle;
           postData.username = vm.wordsCreater;
           postData.type = vm.selectedType1;
-          vm.$refs.list.getData(postData);
+          vm.$refs.list.getData(postData,'first');
         },
         clear(){
           this.wordsTitle = "";
           this.wordsCreater = "";
           this.selectedType1 = [];
         },
+        validator(){
+          let vm = this;
+          let texts = "";
+          if(!vm.modalData.speechcraft){
+            texts = '请填写话术标题！';
+          }else if(!vm.modalData.auxiliary){
+            texts = '请填写话术辅助信息！';
+          }else if(!vm.modalData.type1){
+            texts = '请填写话术类别1！';
+          }
+
+          if (texts) {
+            vm.$Message.error({
+              content: texts,
+              duration: 3
+            });
+            return false;
+          } else {
+            return true;
+          }
+        },
         save(modalData){
           let vm = this;
 
-          this.$http({
-            method:"post",
-            url:vm.$commonTools.g_restUrl+'admin/speech/speech_edit',
-            data:vm.$qs.stringify(modalData)
-          })
-            .then(function(response) {
-              if(response.data.code == 200){
-                vm.$Notice.success({
-                  title: '保存成功！'
-                });
-                vm.curPage = 1;
-                vm.$refs.list.getData();
-              }
+          if(vm.validator()){
+            this.$http({
+              method:"post",
+              url:vm.$commonTools.g_restUrl+'admin/speech/speech_edit',
+              data:vm.$qs.stringify(modalData)
             })
-            .catch(function(error) {
-              console.log(error);
-            });
+              .then(function(response) {
+                if(response.data.code == 200){
+                  vm.$Notice.success({
+                    title: '保存成功！'
+                  });
+                  vm.curPage = 1;
+                  vm.$refs.list.getData();
+                }
+              })
+              .catch(function(error) {
+                console.log(error);
+              });
+          }
         },
         goDetail(id){
           let vm = this;

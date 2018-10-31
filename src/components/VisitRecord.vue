@@ -18,6 +18,7 @@
             data:[],
             columns:[],
             url:'',
+            tabType_C:this.tabType,
             loading:true,
             columns1: [
               {title:'序号',type: 'index',width: 60,align: 'center'},
@@ -161,7 +162,7 @@
       props:{
         postCommonH:'',
         tabType:'',
-        doctorId:''
+        doctorId_F:''
       },
       mounted(){
         this.getTableH();
@@ -170,6 +171,10 @@
       watch:{
         url: function (newQuestion, oldQuestion) {
           this.curPage = 1;
+        },
+        doctorId_F: function (newQuestion, oldQuestion) {
+          /*this.tabType_C = 1;*/
+          this.getRecordList();
         }
       },
       methods:{
@@ -183,19 +188,19 @@
         },
         getRecordList(){
           let vm = this;
-          if(vm.tabType == 1){
+          if(vm.tabType_C == 1){
             vm.columns = vm.columns1;
             vm.url = 'admin/visit/visit_list';
-          }else if(vm.tabType == 2){
+          }else if(vm.tabType_C == 2){
             vm.columns = vm.columns2;
             vm.url = 'admin/lesson/lesson_list';
-          }else if(vm.tabType == 3){
+          }else if(vm.tabType_C == 3){
             vm.columns = vm.columns3;
             vm.url = 'admin/doctors/score_list';
           }
           this.$http.get(vm.$commonTools.g_restUrl + vm.url,{
             params: {
-              doctors_id : vm.doctorId,
+              doctors_id : vm.doctorId_F,
               page:vm.curPage
             }
           })

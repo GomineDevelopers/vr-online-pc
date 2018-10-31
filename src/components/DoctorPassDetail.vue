@@ -21,7 +21,7 @@
           <Row class="doctor_detail_rowBottom">
             <Col span="8">手机号：<span class="spanFont" v-text="detailPassData.mobile"></span></Col>
             <Col span="8">邮箱：<span class="spanFont" v-text="detailPassData.email"></span></Col>
-            <Col span="8">负责销售：<span class="spanFont" v-text="detailPassData.sales"></span></Col>
+            <Col span="8">负责VR：<span class="spanFont" v-text="detailPassData.sales"></span></Col>
           </Row>
           <Row class="doctor_detail_rowBottom">
             <Col span="8">拜访记录：<span class="spanFont" v-text="detailPassData.visit_total"></span></Col>
@@ -40,20 +40,20 @@
       </Row>
     </div>
     <div class="doctor_detail_tab">
-      <Tabs value="1" @on-click="tabChange" :animated="false">
+      <Tabs v-model="selectedTab" @on-click="tabChange" :animated="false">
         <TabPane label="拜访记录" name="1">
           <div class="buttonDiv" ref="buttonDiv">
             <Button icon="md-albums" @click="addRecord('visit')">新增拜访记录</Button>
           </div>
-          <visit-record ref="c2" :postCommonH="commonHeight" :tabType="type" :doctorId="doctorId"
-                        @getRecordDetailC="getRecordDetail" v-if="commonHeight && type == 1"></visit-record>
+          <visit-record ref="c2" :postCommonH="commonHeight" :tabType="type" :doctorId_F="doctorId"
+                        @getRecordDetailC="getRecordDetail" v-if="commonHeight"></visit-record>
         </TabPane>
         <TabPane label="微课记录" name="2">
-          <visit-record ref="c2" :postCommonH="commonHeight" :tabType="type" :doctorId="doctorId"
+          <visit-record ref="c2" :postCommonH="commonHeight" :tabType="type" :doctorId_F="doctorId"
                         @getRecordDetailC="getRecordDetail" v-if="commonHeight && type == 2"></visit-record>
         </TabPane>
         <TabPane label="积分记录" name="3">
-          <visit-record :postCommonH="commonHeight" :tabType="type" :doctorId="doctorId"
+          <visit-record :postCommonH="commonHeight" :tabType="type" :doctorId_F="doctorId"
                         v-if="commonHeight && type == 3"></visit-record>
         </TabPane>
       </Tabs>
@@ -62,19 +62,19 @@
     <!--拜访记录的对话框start-->
     <Modal v-model="visit.addVisitModal" title="添加拜访记录" @on-ok="saveVisitRecord">
       <Row class="modalRow" type="flex" align="middle">
-        <Col span="3">拜访方式</Col>
+        <Col span="3"><span class="necessary">*</span>拜访方式</Col>
         <Col span="9">
           <Select v-model="visit.visitType" clearable ref="type">
             <Option v-for="item in visit.visitTypeList" :value="item.value" :key="item.value">{{ item.label }}</Option>
           </Select>
         </Col>
-        <Col span="3" offset="1">拜访时间</Col>
+        <Col span="3" offset="1"><span class="necessary">*</span>拜访时间</Col>
         <Col span="8">
           <DatePicker ref="date" type="datetime" v-model="visit.visitDate" :value="visit.visitDate" format="yyyy-MM-dd HH:mm" :options="visit.optionsDate"></DatePicker>
         </Col>
       </Row>
       <Row class="modalRow" type="flex" align="middle">
-        <Col span="3">拜访目的</Col>
+        <Col span="3"><span class="necessary">*</span>拜访目的</Col>
         <Col span="9">
           <Select v-model="visit.visitPurpose" clearable ref="purpose">
             <Option v-for="item in visit.visitPurposeList" :value="item.value" :key="item.value">{{ item.label }}</Option>
@@ -82,7 +82,7 @@
         </Col>
       </Row>
       <Row class="modalRow" type="flex" align="middle">
-        <Col span="3">拜访内容</Col>
+        <Col span="3"><span class="necessary">*</span>拜访内容</Col>
         <Col span="21">
           <Input v-model="visit.visitContent" type="textarea" :rows="4"/>
         </Col>
@@ -203,6 +203,7 @@
       name: "DoctorPassDetail",
       data(){
         return {
+          selectedTab:'1',
           doctorId:'',
           recordId:'',
           commonHeight:'',
@@ -220,7 +221,7 @@
           visit:{
             visitType:'',
             visitTypeList:[{value: '微信',label: '微信'},{value: '电话',label: '电话'},{value: '短信',label: '短信'},{value: '邮件',label: '邮件'},{value: '其他',label: '其他'}],
-            visitPurposeList:[{value: '破冰',label: '破冰'},{value: '转化',label: '转化'},{value: '提升',label: '提升'},{value: '调研',label: '调研'},{value: '活动',label: '活动'},{value: '其他',label: '其他'}],
+            visitPurposeList:[{value: '破冰',label: '破冰'},{value: '转化',label: '转化'},{value: '提升',label: '提升'},{value: '调研',label: '调研'},{value: '活动',label: '活动'},{value: '兑奖',label: '兑奖'},{value: '其他',label: '其他'}],
             visitDate:'',
             visitDate1:'',
             updateDate:'',
@@ -316,6 +317,9 @@
               if(response.data.code == 200){
                 vm.detailPassData = response.data.data;
                 vm.getCommonHeight();
+
+                //每次打开modal都从tab1开始
+                vm.selectedTab = '1';
               }
             })
             .catch(function(error) {
@@ -457,46 +461,71 @@
               console.log(error);
             });
         },
+        validator(){
+          let vm = this;
+          let texts = "";
+          if(!vm.visit.visitType){
+            texts = '请选择拜访方式！';
+          }else if(!vm.visit.visitDate){
+            texts = '请选择拜访时间！';
+          }else if(!vm.visit.visitPurpose){
+            texts = '请选择拜访目的！';
+          }else if(!vm.visit.visitContent){
+            texts = '请填写拜访内容！';
+          }
+
+          if (texts) {
+            vm.$Message.error({
+              content: texts,
+              duration: 3
+            });
+            return false;
+          } else {
+            return true;
+          }
+        },
         saveVisitRecord(){
           let vm = this;
-          let postData = {};
-          postData.visiting = vm.visit.visitType;
-          postData.visit_time = vm.visit.visitDate;
-          postData.purpose = vm.visit.visitPurpose;
-          postData.content = vm.visit.visitContent;
-          if(vm.visit.isEdit){
-            postData.id = vm.recordId;
-          }else{
-            postData.doctors_id = vm.doctorId;
-          }
-          vm.$refs.upload.fileList.forEach(function (ele,index,arr) {
-            if(ele.response == undefined){//已上传的图片
-              vm.imgNameList.push(ele.filename);
-            }else{//新上传的图片
-              vm.imgNameList.push(ele.name);
+          if(vm.validator()){
+            let postData = {};
+            postData.visiting = vm.visit.visitType;
+            postData.visit_time = vm.visit.visitDate;
+            postData.purpose = vm.visit.visitPurpose;
+            postData.content = vm.visit.visitContent;
+            if(vm.visit.isEdit){
+              postData.id = vm.recordId;
+            }else{
+              postData.doctors_id = vm.doctorId;
             }
-          });
-          postData.img = vm.imgNameList;
-          this.$http({
-            method:"post",
-            url:vm.$commonTools.g_restUrl+'admin/visit/visit_edit',
-            data:vm.$qs.stringify(postData)
-          })
-            .then(function(response) {
-              if(response.data.code == 200){
-                vm.$Notice.success({
-                  title: '记录提交成功！'
-                });
-                vm.$refs.c2.getRecordList();
-              }else{
-                vm.$Notice.error({
-                  title: '记录提交出错，请重试！'
-                });
+            vm.$refs.upload.fileList.forEach(function (ele,index,arr) {
+              if(ele.response == undefined){//已上传的图片
+                vm.imgNameList.push(ele.filename);
+              }else{//新上传的图片
+                vm.imgNameList.push(ele.name);
               }
-            })
-            .catch(function(error) {
-              console.log(error);
             });
+            postData.img = vm.imgNameList;
+            this.$http({
+              method:"post",
+              url:vm.$commonTools.g_restUrl+'admin/visit/visit_edit',
+              data:vm.$qs.stringify(postData)
+            })
+              .then(function(response) {
+                if(response.data.code == 200){
+                  vm.$Notice.success({
+                    title: '记录提交成功！'
+                  });
+                  vm.$refs.c2.getRecordList();
+                }else{
+                  vm.$Notice.error({
+                    title: '记录提交出错，请重试！'
+                  });
+                }
+              })
+              .catch(function(error) {
+                console.log(error);
+              });
+          }
         },
         /*上传start*/
         handleSuccess (res, file) {//图片上传成功
@@ -587,6 +616,8 @@
     border: 1px solid #e0e0e0;
     border-radius: 2px;
     padding: 10px;
+    height: 200px;
+    overflow-y: auto;
   }
 
   /*图片上传start*/
