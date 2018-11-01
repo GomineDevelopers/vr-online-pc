@@ -21,9 +21,9 @@
     </div>
     <div class="tableDiv" :style="{height:tableBgH+'px'}">
       <div class="buttonDiv" ref="buttonDiv">
-        <Button icon="md-add" @click="showLabelModal('add')">新增话术</Button>
+        <Button icon="md-add" @click="showLabelModal('add')" v-if="btnLimit.add">新增话术</Button>
       </div>
-      <table-list :htmlType="'wordsLib'" :fatherH = "fatherH" v-if="fatherH"
+      <table-list :htmlType="'wordsLib'" :fatherH = "fatherH" :btnLimit_F = "btnLimit_F" v-if="fatherH && btnLimit_F"
         @goDetail_C = "goDetail" @goEdit_C = "showLabelModal" ref="list"></table-list>
     </div>
 
@@ -93,7 +93,14 @@
               auxiliary:"",
               type1:"",
               type2:""
-            }
+            },
+            btnLimit:{
+              add:false,
+              del:false,
+              update:false,
+              detail:false
+            },
+            btnLimit_F:''
           }
       },
       components:{
@@ -103,8 +110,24 @@
       mounted(){
         this.getBgHeight();
         this.getType1();
+        this.getLimitData();
       },
       methods:{
+        getLimitData(){
+          let vm = this;
+          this.$commonTools.setBtnLimit(this.$route.name).forEach(function (ele) {
+            if(ele.icon == 'add'){
+              vm.btnLimit.add = ele.checked;
+            }else if(ele.icon == 'update'){
+              vm.btnLimit.update = ele.checked;
+            }else if(ele.icon == 'delete'){
+              vm.btnLimit.del = ele.checked;
+            }else if(ele.icon == 'detail'){
+              vm.btnLimit.detail = ele.checked;
+            }
+          });
+          vm.btnLimit_F = vm.btnLimit;
+        },
         getBgHeight() {
           let vm = this;
           vm.tableBgH = document.documentElement.clientHeight -64 -24 * 2 -(vm.$refs.title.$el.offsetHeight + 10) -(vm.$refs.searchCard.offsetHeight + 20) - 10;

@@ -3,7 +3,7 @@
     <page-title ref="title" :title="titleText"></page-title>
     <div class="tableDiv" :style="{height:tableBgH+'px'}">
       <div class="buttonDiv" ref="buttonDiv">
-        <Button icon="md-add" @click="addGroup('add')">添加群组</Button>
+        <Button icon="md-add" @click="addGroup('add')" v-if="btnLimit.add">添加群组</Button>
       </div>
       <Table ref="selection" :columns="columns" :data="data" :height="tableH" :loading="loading"></Table>
       <div class="pageDiv" ref="pageDiv">
@@ -72,7 +72,8 @@
                       size: 'small'
                     },
                     style: {
-                      marginRight: '5px'
+                      marginRight: '5px',
+                      display:this.btnLimit.authorize?'inline':'none'
                     },
                     on: {
                       click: () => {
@@ -85,7 +86,8 @@
                       size: 'small'
                     },
                     style: {
-                      marginRight: '5px'
+                      marginRight: '5px',
+                      display:this.btnLimit.update?'inline':'none'
                     },
                     on: {
                       click: () => {
@@ -98,7 +100,8 @@
                       size: 'small'
                     },
                     style: {
-                      marginRight: '5px'
+                      marginRight: '5px',
+                      display:this.btnLimit.del?'inline':'none'
                     },
                     on: {
                       click: () => {
@@ -128,6 +131,12 @@
             modal:false,
             data:[],
             postArr:[]
+          },
+          btnLimit:{
+            add:false,
+            del:false,
+            update:false,
+            authorize:false,
           }
         }
       },
@@ -137,8 +146,23 @@
       mounted() {
         this.getBgHeight();
         this.getGroupData();
+        this.getLimitData();
       },
       methods: {
+        getLimitData(){
+          let vm = this;
+          this.$commonTools.setBtnLimit(this.$route.name).forEach(function (ele) {
+            if(ele.icon == 'add'){
+              vm.btnLimit.add = ele.checked;
+            }else if(ele.icon == 'update'){
+              vm.btnLimit.update = ele.checked;
+            }else if(ele.icon == 'delete'){
+              vm.btnLimit.del = ele.checked;
+            }else if(ele.icon == 'authorize'){
+              vm.btnLimit.authorize = ele.checked;
+            }
+          });
+        },
         getBgHeight() {
           let vm = this;
           vm.tableBgH = document.documentElement.clientHeight - 64 - 24 * 2 - (vm.$refs.title.$el.offsetHeight + 10) - 18;

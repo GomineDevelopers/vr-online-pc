@@ -2,7 +2,7 @@
   <div>
     <div class="title" ref="title">资料库</div>
 
-    <div class="database-list" :style="{minHeight: conH + 'px' }">
+    <div class="database-list" :style="{height: conH + 'px' }">
       <Row>
         <Col span="24" class="search-row">
           <Button icon="md-add" class="add-content" @click="goDetail">添加资料</Button>
@@ -53,7 +53,6 @@
               </div>
             </Card>
           </div>
-
         </Row>
         <div class="page-wrapper">
           <Page :total="totalPage" show-elevator show-total @on-change="changePage"/>
@@ -92,7 +91,7 @@
         },
         getBgHeight() {
           let vm = this;
-          vm.conH = document.documentElement.clientHeight -64 -24 * 2 -(vm.$refs.title.offsetHeight + 10)-2;
+          vm.conH = document.documentElement.clientHeight -64 -24 * 2 -(vm.$refs.title.offsetHeight + 10);
         },
         getListData(){
           let vm = this;

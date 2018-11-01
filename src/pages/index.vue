@@ -88,6 +88,7 @@
               vm.menuList = response.data.list;
               vm.activeMenu = response.data.list[0].url;//默认选中第一个菜单
               vm.changeRouter(response.data.list[0].url);
+              window.localStorage.setItem("limits",JSON.stringify(response.data.list));
             }
           })
           .catch(function (error) {

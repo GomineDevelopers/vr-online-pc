@@ -3,7 +3,7 @@
     <div class="title" ref="title">互动记录</div>
     <div class="tableDiv" :style="{height:tableBgH+'px'}">
       <div class="buttonDiv" ref="buttonDiv">
-        <Button icon="icon iconfont icon-excel" @click="exportRecord">导出Excel</Button>
+        <Button icon="icon iconfont icon-excel" @click="exportRecord" v-if="btnLimit.exportStatus">导出Excel</Button>
       </div>
       <Table ref="selection" :columns="columns" :data="data" :height="tableH" :loading="loading"></Table>
       <div class="pageDiv" ref="pageDiv">
@@ -185,18 +185,22 @@
           visit:{
             viewVisitModal:false,
             data:""
+          },
+          btnLimit:{
+            exportStatus:''
           }
         }
       },
       mounted(){
         this.getBgHeight();
         this.getData();
+        this.btnLimit.exportStatus = this.$commonTools.setBtnLimit(this.$route.name)[0].checked;
       },
       methods:{
         getBgHeight() {
           let vm = this;
-          vm.tableBgH = document.documentElement.clientHeight -64 -24 * 2 -(vm.$refs.title.offsetHeight + 10) - 18;
-          vm.tableH = vm.tableBgH - (vm.$refs.buttonDiv.offsetHeight + 10 * 2) - (vm.$refs.pageDiv.offsetHeight + 10 * 2) - 10;
+          vm.tableBgH = document.documentElement.clientHeight -64 -24 * 2 -(vm.$refs.title.offsetHeight + 10) -20;
+          vm.tableH = vm.tableBgH - (vm.$refs.buttonDiv.offsetHeight + 10 * 2) - (vm.$refs.pageDiv.offsetHeight + 10 * 2) - 30;
         },
         changePage(curPage){
           this.curPage = curPage;
@@ -270,7 +274,7 @@
   .tableDiv {
     background-color: #fff;
     margin-top: 26px;
-    padding: 2vh;
+    padding: 10px;
   }
 
   .pageDiv {

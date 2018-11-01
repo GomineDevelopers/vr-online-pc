@@ -12,10 +12,10 @@
     <div class="problem_tab">
       <Tabs value="1" @on-click="tabChange" :animated="false">
         <TabPane label="已回答" name="1">
-          <problem-answered :postCommonH="commonHeight" :tabType="type" v-if="type == 1 && commonHeight != '' " ref="tab1"></problem-answered>
+          <problem-answered :postCommonH="commonHeight" :tabType="type" :btnLimit_F="btnLimit_F" v-if="type == 1 && commonHeight != ''&& btnLimit_F " ref="tab1"></problem-answered>
         </TabPane>
         <TabPane label="未回答" name="0">
-          <problem-no-answer :postCommonH="commonHeight" :tabType="type" v-if="type == 0 && commonHeight != ''" ref="tab0"></problem-no-answer>
+          <problem-no-answer :postCommonH="commonHeight" :tabType="type" :btnLimit_F="btnLimit_F" v-if="type == 0 && commonHeight != ''&& btnLimit_F" ref="tab0"></problem-no-answer>
         </TabPane>
       </Tabs>
     </div>
@@ -31,7 +31,13 @@
         return{
           commonHeight:"",
           type:1,
-          key:''
+          key:'',
+          btnLimit:{
+            detail:false,
+            del:false,
+            reply:false,
+          },
+          btnLimit_F:''
         }
       },
       components: {
@@ -40,8 +46,22 @@
       },
       mounted(){
         this.getCommonHeight();
+        this.getLimitData();
       },
       methods:{
+        getLimitData(){
+          let vm = this;
+          this.$commonTools.setBtnLimit(this.$route.name).forEach(function (ele) {
+            if(ele.icon == 'detail'){
+              vm.btnLimit.detail = ele.checked;
+            }else if(ele.icon == 'reply'){
+              vm.btnLimit.reply = ele.checked;
+            }else if(ele.icon == 'delete'){
+              vm.btnLimit.del = ele.checked;
+            }
+          });
+          vm.btnLimit_F = vm.btnLimit;
+        },
         tabChange(name){
           let vm = this;
           vm.type = name;

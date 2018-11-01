@@ -32,7 +32,7 @@
             <Col span="22">标签：
               <Tag v-for="item in detailPassData.label_name" :key="item.id" :name="item.name"
                    closable @on-close="delLabel(item.id)" color="primary">{{item.name}}</Tag>
-              <Button icon="ios-add" type="dashed" size="small" @click="showLabel">添加标签</Button>
+              <Button icon="ios-add" type="dashed" size="small" @click="showLabel" v-if="btnLimit_F.addTag">添加标签</Button>
             </Col>
           </Row>
         </Col>
@@ -43,10 +43,10 @@
       <Tabs v-model="selectedTab" @on-click="tabChange" :animated="false">
         <TabPane label="拜访记录" name="1">
           <div class="buttonDiv" ref="buttonDiv">
-            <Button icon="md-albums" @click="addRecord('visit')">新增拜访记录</Button>
+            <Button icon="md-albums" @click="addRecord('visit')" v-if="btnLimit_F.add">新增拜访记录</Button>
           </div>
           <visit-record ref="c2" :postCommonH="commonHeight" :tabType="type" :doctorId_F="doctorId"
-                        @getRecordDetailC="getRecordDetail" v-if="commonHeight"></visit-record>
+                        @getRecordDetailC="getRecordDetail" v-if="commonHeight" :btnLimit_FF="btnLimit_F"></visit-record>
         </TabPane>
         <TabPane label="微课记录" name="2">
           <visit-record ref="c2" :postCommonH="commonHeight" :tabType="type" :doctorId_F="doctorId"
@@ -190,7 +190,7 @@
     <!--微课记录的对话框end-->
 
     <!--给医生新增标签-->
-    <Modal v-model="labelModel" title="请选择您需要添加的标签" :mask-closable="false" @on-ok="addLabel" >
+    <Modal v-model="labelModel" title="请选择您需要添加的标签" :mask-closable="false" @on-ok="addLabel"  width="350px">
       <Cascader :data="tagData" v-model="tagValue" style="width: 400px"></Cascader>
     </Modal>
 
@@ -280,6 +280,9 @@
       },
       components: {
         'visit-record': VisitRecord
+      },
+      props:{
+        btnLimit_F:''
       },
       computed:{
         visitDate_C:function() {

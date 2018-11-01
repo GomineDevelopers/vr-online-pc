@@ -63,6 +63,23 @@
   padding: 14px 24px;
 }
 
+/*分页*/
+.ivu-page-item:hover {
+  border-color: #51b213;
+}
+
+.ivu-page-item-active {
+  border-color: #51b213;
+}
+
+.ivu-page-item-active a, .ivu-page-item-active:hover a {
+  color: #51b213;
+}
+
+.ivu-page-next:hover, .ivu-page-prev:hover {
+  border-color: #51b213;
+}
+
 /*全部的type为success的按钮样式*/
 .ivu-btn-success{
   background: -webkit-linear-gradient(left bottom, #65b901 , #3fab23); /* Safari 5.1 - 6.0 */

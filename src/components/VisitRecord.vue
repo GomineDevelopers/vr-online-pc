@@ -44,7 +44,8 @@
                         },
                         style: {
                           marginLeft: "5px",
-                          color: "#4fb115"
+                          color: "#4fb115",
+                          display:this.btnLimit_FF.detail ? 'inline':'none'
                         },
                         on: {
                           click: () => {
@@ -61,7 +62,8 @@
                         },
                         style: {
                           marginLeft: "5px",
-                          color: "#4fb115"
+                          color: "#4fb115",
+                          display:this.btnLimit_FF.update ? 'inline':'none'
                         },
                         on: {
                           click: () => {
@@ -77,7 +79,8 @@
                         },
                         style: {
                           marginLeft: "5px",
-                          color: "#4fb115"
+                          color: "#4fb115",
+                          display:this.btnLimit_FF.del ? 'inline':'none'
                         },
                         on: {
                           click: () => {
@@ -122,22 +125,6 @@
                           }
                         }
                       })
-                    ]),
-                    h("Tooltip",{props:{trigger:"hover",content:"删除",placement:"top"}},
-                      [h("Icon",{
-                        props: {
-                          custom: "icon iconfont icon-shanchu"
-                        },
-                        style: {
-                          marginLeft: "5px",
-                          color: "#4fb115"
-                        },
-                        on: {
-                          click: () => {
-                            this.del(params.row.id,'wk');
-                          }
-                        }
-                      })
                     ])
                   ]);
                 }
@@ -162,7 +149,8 @@
       props:{
         postCommonH:'',
         tabType:'',
-        doctorId_F:''
+        doctorId_F:'',
+        btnLimit_FF:''
       },
       mounted(){
         this.getTableH();
@@ -173,7 +161,6 @@
           this.curPage = 1;
         },
         doctorId_F: function (newQuestion, oldQuestion) {
-          /*this.tabType_C = 1;*/
           this.getRecordList();
         }
       },
@@ -223,8 +210,6 @@
           let url = "";
           if(temp == 'visit'){
             url = 'admin/visit/visit_del';
-          }else if(temp == 'wk'){
-            url = 'admin/lesson/lesson_del';
           }
           this.$Modal.confirm({
             title: '提示',

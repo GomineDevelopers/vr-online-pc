@@ -44,6 +44,22 @@ commonTools.formatDate3 = function (d) {
   var date1 = String(d.getDate() > 9 ? d.getDate() : "0" + d.getDate());
   return year + month + date1 ;
 }
+
+commonTools.setBtnLimit = function (name) {
+  var btnLimit = [];
+  JSON.parse(window.localStorage.getItem("limits")).forEach(function (ele,index,arr) {
+    if(ele.url != "" && ele.url == name){//只有一级菜单
+      btnLimit = ele.children;
+    }else if(ele.url == "" && ele.children.length>0){
+      ele.children.forEach(function (eleC) {
+        if(eleC.url == name){
+          btnLimit = eleC.children;
+        }
+      });
+    }
+  });
+  return btnLimit;
+}
 export {
   commonTools
 }

@@ -120,7 +120,8 @@
                     },
                     style: {
                       marginLeft: "5px",
-                      color: "#4fb115"
+                      color: "#4fb115",
+                      display:this.btnLimit_F.detail?'inline':'none'
                     },
                     on: {
                       click: () => {
@@ -136,6 +137,7 @@
                     style: {
                       color: "#4fb115",
                       marginLeft: "5px",
+                      display:this.btnLimit_F.del?'inline':'none'
                     },
                     on: {
                       click: () => {
@@ -151,7 +153,8 @@
                     style:{
                       marginLeft:'10px',
                       backgroundColor: "#ff9e0d",
-                      borderColor:"#ff9e0d"
+                      borderColor:"#ff9e0d",
+                      display:this.btnLimit_F.reply?'inline':'none'
                     },
                     on:{
                       click:() =>{
@@ -168,7 +171,8 @@
       },
       props:{
         postCommonH:'',
-        tabType:''
+        tabType:'',
+        btnLimit_F:''
       },
       mounted(){
         this.getTableH();

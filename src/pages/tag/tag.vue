@@ -3,7 +3,7 @@
     <Row>
       <Col span="12" class="tag_title">标签管理</Col>
       <Col span="12" class="tag_button">
-        <Button type="success" icon="icon iconfont icon-tianjia" @click="addLabel('add')">新增标签</Button>
+        <Button type="success" icon="icon iconfont icon-tianjia" @click="addLabel('add')" v-if="btnLimit.add">新增标签</Button>
       </Col>
     </Row>
     <div class="tag_cardTitle">
@@ -17,8 +17,8 @@
         <Row type="flex" align="middle">
           <Col span="10" class="tag_title_fir"><span v-text="item.name"></span></Col>
           <Col span="2" offset="3">
-            <Icon custom="icon iconfont icon-bianji" color="#4fb115" @click="addLabel('edit',item.id)"/>&emsp;
-            <Icon custom="icon iconfont icon-shanchu" color="#4fb115" @click="del(item.id,item.pid)"/>
+            <Icon custom="icon iconfont icon-bianji" color="#4fb115" @click="addLabel('edit',item.id)" v-if="btnLimit.update"/>&emsp;
+            <Icon custom="icon iconfont icon-shanchu" color="#4fb115" @click="del(item.id,item.pid)" v-if="btnLimit.del"/>
           </Col>
           <Col span="9" class="tag_icon">
             <Icon type="ios-arrow-down" size="26" color="#a1a99b" v-show="item.isShow" @click="changeClass(index,item)"/>
@@ -30,7 +30,7 @@
         <Row>
           <Col span="10" class="tag_title_se">{{cindex+1}}、<span v-text="citem.name"></span></Col>
           <Col span="3" offset="1">
-            <Icon custom="icon iconfont icon-shanchu" color="#4fb115" @click="del(citem.id,citem.pid)"/>
+            <Icon custom="icon iconfont icon-shanchu" color="#4fb115" @click="del(citem.id,citem.pid)" v-if="btnLimit.del"/>
           </Col>
         </Row>
       </div>
@@ -74,13 +74,31 @@
             postSecondList:[],
             curPage:1,
             totalPage:0,
-            editId:''
+            editId:'',
+            btnLimit:{
+              add:false,
+              del:false,
+              update:false
+            }
           }
       },
       mounted(){
         this.getLabelList();
+        this.getLimitData();
       },
       methods:{
+        getLimitData(){
+          let vm = this;
+          this.$commonTools.setBtnLimit(this.$route.name).forEach(function (ele) {
+            if(ele.icon == 'add'){
+              vm.btnLimit.add = ele.checked;
+            }else if(ele.icon == 'update'){
+              vm.btnLimit.update = ele.checked;
+            }else if(ele.icon == 'delete'){
+              vm.btnLimit.del = ele.checked;
+            }
+          });
+        },
         getLabelList(){
           let vm = this;
           vm.$http.get(vm.$commonTools.g_restUrl+'admin/label/label_list', {
@@ -255,7 +273,7 @@
 
   .tag_title_fir{
     font-size: 1rem;
-    color: #adb3a8;
+    color: #515a6e;
     text-align: left;
     padding-left: 15px;
   }

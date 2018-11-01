@@ -104,7 +104,8 @@
                       },
                       style: {
                         marginLeft: "5px",
-                        color: "#4fb115"
+                        color: "#4fb115",
+                        display:this.btnLimit_F.detail?'inline':'none'
                       },
                       on: {
                         click: () => {
@@ -120,7 +121,8 @@
                       },
                       style: {
                         marginLeft: "5px",
-                        color: "#4fb115"
+                        color: "#4fb115",
+                        display:this.btnLimit_F.del?'inline':'none'
                       },
                       on: {
                         click: () => {
@@ -145,7 +147,8 @@
       },
       props:{
         postCommonH:'',
-        tabType:''
+        tabType:'',
+        btnLimit_F:''
       },
       mounted(){
         this.getTableH();

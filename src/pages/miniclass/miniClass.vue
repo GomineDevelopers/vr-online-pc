@@ -3,7 +3,7 @@
       <div class="title" ref="title">微课管理</div>
       <div class="tableDiv" :style="{height:tableBgH+'px'}">
         <div class="buttonDiv" ref="buttonDiv">
-          <Button icon="md-add" @click="addWk">添加微课记录</Button>
+          <Button icon="md-add" @click="addWk" v-if="btnLimit.add">添加微课记录</Button>
         </div>
         <Table ref="selection" :columns="columns" :data="data" :height="tableH" :loading="loading"></Table>
         <div class="pageDiv" ref="pageDiv">
@@ -185,7 +185,8 @@
                         },
                         style: {
                           marginLeft: "5px",
-                          color: "#4fb115"
+                          color: "#4fb115",
+                          display:this.btnLimit.detail?'inline':'none'
                         },
                         on: {
                           click: () => {
@@ -202,7 +203,8 @@
                         },
                         style: {
                           marginLeft: "5px",
-                          color: "#4fb115"
+                          color: "#4fb115",
+                          display:this.btnLimit.update?'inline':'none'
                         },
                         on: {
                           click: () => {
@@ -218,7 +220,8 @@
                         },
                         style: {
                           marginLeft: "5px",
-                          color: "#4fb115"
+                          color: "#4fb115",
+                          display:this.btnLimit.del?'inline':'none'
                         },
                         on: {
                           click: () => {
@@ -301,6 +304,12 @@
                 groupList:[],
                 loading:true,
               }
+            },
+            btnLimit:{
+              add:false,
+              del:false,
+              update:false,
+              detail:false
             }
           }
       },
@@ -309,6 +318,7 @@
         this.getBgHeight();
         this.getData();
         this.wk.uploadList = this.$refs.uploadwk.fileList;
+        this.getLimitData();
       },
       computed:{
         date_C:function() {
@@ -316,10 +326,24 @@
         }
       },
       methods:{
+        getLimitData(){
+          let vm = this;
+          this.$commonTools.setBtnLimit(this.$route.name).forEach(function (ele) {
+            if(ele.icon == 'add'){
+              vm.btnLimit.add = ele.checked;
+            }else if(ele.icon == 'update'){
+              vm.btnLimit.update = ele.checked;
+            }else if(ele.icon == 'delete'){
+              vm.btnLimit.del = ele.checked;
+            }else if(ele.icon == 'detail'){
+              vm.btnLimit.detail = ele.checked;
+            }
+          });
+        },
         getBgHeight() {
           let vm = this;
           vm.tableBgH = document.documentElement.clientHeight -64 -24 * 2 -(vm.$refs.title.offsetHeight + 10) -18;
-          vm.tableH = vm.tableBgH - (vm.$refs.buttonDiv.offsetHeight + 10 * 2) - (vm.$refs.pageDiv.offsetHeight + 10 * 2) -10;
+          vm.tableH = vm.tableBgH - (vm.$refs.buttonDiv.offsetHeight + 10 * 2) - (vm.$refs.pageDiv.offsetHeight + 10 * 2) -30;
         },
         getData(){
           let vm = this;

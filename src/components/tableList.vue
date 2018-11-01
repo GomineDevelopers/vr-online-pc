@@ -41,7 +41,8 @@
                       },
                       style: {
                         marginLeft: "5px",
-                        color: "#4fb115"
+                        color: "#4fb115",
+                        display:this.btnLimit_F.detail?'inline':'none'
                       },
                       on: {
                         click: () => {
@@ -59,7 +60,7 @@
                       style: {
                         marginLeft: "5px",
                         color: "#4fb115",
-                        display:(params.row.is_registered == 0)?"none":"inline"
+                        display:(params.row.is_registered == 0)?"none":"inline" && (this.btnLimit_F.update?'inline':'none')
                       },
                       on: {
                         click: () => {
@@ -75,7 +76,8 @@
                       },
                       style: {
                         marginLeft: "5px",
-                        color: "#4fb115"
+                        color: "#4fb115",
+                        display:this.btnLimit_F.del?'inline':'none'
                       },
                       on: {
                         click: () => {
@@ -98,7 +100,8 @@
       },
       props:{
         htmlType:String,
-        fatherH:''
+        fatherH:'',
+        btnLimit_F:''
       },
       mounted(){
         let vm = this;

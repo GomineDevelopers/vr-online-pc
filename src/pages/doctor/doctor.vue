@@ -27,10 +27,10 @@
         </div>
         <div class="tableDiv" :style="{height:tableBgH+'px'}">
           <div class="buttonDiv" ref="buttonDiv">
-            <download-excel style="display: inline-block;" :data = "excelData" :fields="excelFileds" :name=" '医生管理'+ excelTime+'.xls'">
-              <Button icon="icon iconfont icon-excel" @click="exportRecord">导出Excel</Button>
+            <download-excel style="display: inline-block;" :data = "excelData" :fields="excelFileds" :name=" '医生管理'+ excelTime+'.xls'" v-if="btnLimit.export">
+              <Button icon="icon iconfont icon-excel" @click="exportRecord" v-if="btnLimit.export">导出Excel</Button>
             </download-excel>
-            <Button icon="md-add" @click="showLabelModal">添加标签</Button>
+            <Button icon="md-add" @click="showLabelModal" v-if="btnLimit.addTag">添加标签</Button>
           </div>
           <Table ref="selection" :columns="columns2" :data="data2" :height="tableH" :loading="loading"
                  @on-select="selected" @on-select-cancel="unSelected" @on-select-all="selectedAll" @on-select-all-cancel="unSelectedAll"></Table>
@@ -39,8 +39,8 @@
           </div>
         </div>
 
-        <Modal v-model="labelModel" title="请选择您需要添加的标签" @on-ok="addLabel" >
-          <Cascader :data="tagData" v-model="tagValue" style="width: 400px"></Cascader>
+        <Modal v-model="labelModel" title="请选择您需要添加的标签" @on-ok="addLabel" width="350px">
+          <Cascader :data="tagData" v-model="tagValue"></Cascader>
         </Modal>
         <Modal v-model="detailEditModel" @on-ok="save(detailData)">
           <Row class="detail_row">
@@ -85,12 +85,12 @@
           </Row>
           <Row class="detail_row">
             <Col span="12">
-              <span class="detail_title">微信号：</span>
-              <span class="detail_text" v-text="detailData.wechat"></span>
-            </Col>
-            <Col span="12">
               <span class="detail_title">昵称：</span>
               <span class="detail_text" v-text="detailData.nickname"></span>
+            </Col>
+            <Col span="12">
+              <span class="detail_title">状态：</span>
+              <span class="detail_text" v-text="detailData.is_registered"></span>
             </Col>
           </Row>
           <Row class="detail_row">
@@ -101,16 +101,10 @@
           </Row>
           <Row class="detail_row">
             <Col span="24">
-              <span class="detail_title">状态：</span>
-              <span class="detail_text" v-text="detailData.is_registered"></span>
+              <span class="detail_title">标签：</span>
+              <Tag v-for="item in detailData.label_name" :key="item.id" :name="item.name" color="primary">{{item.name}}</Tag>
             </Col>
           </Row>
-          <!--<Row>
-            <Col span="24">
-              <span class="detail_title">标签：</span>
-              <span></span>
-            </Col>
-          </Row>-->
         </Modal>
         <Modal v-model="detailModel" :footer-hide="true">
           <Row class="detail_row">
@@ -177,7 +171,7 @@
 
         </Modal>
         <Modal v-model="detailPassModel" :footer-hide="true" fullscreen class="fullModal" @on-cancel="getData2">
-          <doctor-pass-detail ref="c1"></doctor-pass-detail>
+          <doctor-pass-detail ref="c1" :btnLimit_F="btnLimit_F"></doctor-pass-detail>
         </Modal>
     </div>
 </template>
@@ -261,20 +255,27 @@ export default {
             },texts)
           }
         },
-        {title: "状态",key: "is_registered",
+        {title: "状态",key: "is_registered",width:94,align:"center",
           render:(h,params)=>{
             let texts = "";
+            let type = "";
             if(params.row.is_registered == 1){
               texts = "待审核";
+              type = 'blue';
             }else if(params.row.is_registered == 2){
               texts = "通过";
+              type = 'green';
             }else if(params.row.is_registered == 3){
               texts = "未通过";
+              type = 'red';
             }else if(params.row.is_registered == 0){
               texts = "未注册";
+              type = 'default';
             }
-            return h('span',{
-              props:{},
+            return h('Tag',{
+              props:{
+                color:type
+              },
             },texts)
           }
         },
@@ -320,7 +321,8 @@ export default {
                   },
                   style: {
                     marginLeft: "5px",
-                    color: "#4fb115"
+                    color: "#4fb115",
+                    display:this.btnLimit.detail ? 'inline':'none'
                   },
                   on: {
                     click: () => {
@@ -342,7 +344,7 @@ export default {
                   style: {
                     marginLeft: "5px",
                     color: "#4fb115",
-                    display:(params.row.is_registered == 0)?"none":"inline"
+                    display:((params.row.is_registered == 0)?"none":"inline") && (this.btnLimit.update ? 'inline':'none')
                   },
                   on: {
                     click: () => {
@@ -358,7 +360,8 @@ export default {
                   },
                   style: {
                     marginLeft: "5px",
-                    color: "#4fb115"
+                    color: "#4fb115",
+                    display:this.btnLimit.del ? 'inline':'none'
                   },
                   on: {
                     click: () => {
@@ -375,7 +378,16 @@ export default {
       tagValue:[],
       tagValue_search:[],
       selections: [],
-      cities: areaList
+      cities: areaList,
+      btnLimit:{
+        add:false,
+        del:false,
+        update:false,
+        detail:false,
+        export:false,
+        addTag:false
+      },
+      btnLimit_F:''
     };
   },
   components: {
@@ -385,12 +397,32 @@ export default {
     this.getBgHeight();
     this.getData2();
     this.getLabels();
+    this.getLimitData();
   },
   methods: {
+    getLimitData(){
+      let vm = this;
+      this.$commonTools.setBtnLimit(this.$route.name).forEach(function (ele) {
+        if(ele.icon == 'add'){
+          vm.btnLimit.add = ele.checked;
+        }else if(ele.icon == 'update'){
+          vm.btnLimit.update = ele.checked;
+        }else if(ele.icon == 'delete'){
+          vm.btnLimit.del = ele.checked;
+        }else if(ele.icon == 'detail'){
+          vm.btnLimit.detail = ele.checked;
+        }else if(ele.icon == 'export'){
+          vm.btnLimit.export = ele.checked;
+        }else if(ele.icon == 'addTag'){
+          vm.btnLimit.addTag = ele.checked;
+        }
+      });
+      vm.btnLimit_F = vm.btnLimit;
+    },
     getBgHeight() {
       let vm = this;
-      vm.tableBgH = document.documentElement.clientHeight -64 -24 * 2 -(vm.$refs.title.offsetHeight + 10) -(vm.$refs.searchCard.offsetHeight + 20) - 5;
-      vm.tableH = vm.tableBgH - (vm.$refs.buttonDiv.offsetHeight + 10 * 2) - (vm.$refs.pageDiv.offsetHeight + 10 * 2) -10;
+      vm.tableBgH = document.documentElement.clientHeight -64 -24 * 2 -(vm.$refs.title.offsetHeight + 10) -(vm.$refs.searchCard.offsetHeight + 20) - 9;
+      vm.tableH = vm.tableBgH - (vm.$refs.buttonDiv.offsetHeight + 10 * 2) - (vm.$refs.pageDiv.offsetHeight + 10 * 2) -40;
     },
     getData2() {
       let vm = this;
