@@ -3,7 +3,7 @@
     <page-title ref="title" :title="titleText"></page-title>
     <div class="tableDiv" :style="{height:tableBgH+'px'}">
       <div class="buttonDiv" ref="buttonDiv">
-        <Button icon="md-add" @click="addUser('add')">添加用户</Button>
+        <Button icon="md-add" @click="addUser('add')" v-if="btnLimit.add">添加用户</Button>
       </div>
       <Table ref="selection" :columns="columns" :data="data" :height="tableH" :loading="loading"></Table>
       <div class="pageDiv" ref="pageDiv">
@@ -32,9 +32,9 @@
 
     <Modal v-model="accredition.modal" title ='用户分组' @on-ok="saveAccredit" >
         <Row>
-          <Col span="24">请选择用户分组：</Col>
+          <Col span="24"><span class="textFont">请选择用户分组：</span></Col>
         </Row>
-        <Row>
+        <Row class="modalRow2">
           <Col span="24">
             <RadioGroup v-model="accredition.selected" v-for="item in accredit.list" :key="item.id">
               <Radio :label="item.id">{{item.title}}</Radio>
@@ -65,7 +65,8 @@
                         size: 'small'
                       },
                       style: {
-                        marginRight: '5px'
+                        marginRight: '5px',
+                        display:this.btnLimit.authorize?'inline':'none'
                       },
                       on: {
                         click: () => {
@@ -78,7 +79,8 @@
                         size: 'small'
                       },
                       style: {
-                        marginRight: '5px'
+                        marginRight: '5px',
+                        display:this.btnLimit.update?'inline':'none'
                       },
                       on: {
                         click: () => {
@@ -91,7 +93,8 @@
                         size: 'small'
                       },
                       style: {
-                        marginRight: '5px'
+                        marginRight: '5px',
+                        display:this.btnLimit.assignDoc?'inline':'none'
                       },
                       on: {
                         click: () => {
@@ -104,7 +107,8 @@
                         size: 'small'
                       },
                       style: {
-                        marginRight: '5px'
+                        marginRight: '5px',
+                        display:this.btnLimit.del?'inline':'none'
                       },
                       on: {
                         click: () => {
@@ -135,6 +139,13 @@
             modal:false,
             list:[],
             selected:''
+          },
+          btnLimit:{
+            add:false,
+            del:false,
+            update:false,
+            authorize:false,
+            assignDoc:false
           }
         }
       },
@@ -144,8 +155,25 @@
       mounted(){
         this.getBgHeight();
         this.getUserData();
+        this.getLimitData();
       },
       methods:{
+        getLimitData(){
+          let vm = this;
+          this.$commonTools.setBtnLimit(this.$route.name).forEach(function (ele) {
+            if(ele.icon == 'add'){
+              vm.btnLimit.add = ele.checked;
+            }else if(ele.icon == 'update'){
+              vm.btnLimit.update = ele.checked;
+            }else if(ele.icon == 'delete'){
+              vm.btnLimit.del = ele.checked;
+            }else if(ele.icon == 'assignDoc'){
+              vm.btnLimit.assignDoc = ele.checked;
+            }else if(ele.icon == 'authorize'){
+              vm.btnLimit.authorize = ele.checked;
+            }
+          });
+        },
         getBgHeight(){
           let vm = this;
           vm.tableBgH = document.documentElement.clientHeight -64 -24 * 2 -(vm.$refs.title.$el.offsetHeight + 10) - 18;
@@ -363,5 +391,13 @@
   }
   .modalRow{
     margin-bottom: 10px;
+  }
+
+  .modalRow2{
+    margin-top: 10px;
+  }
+
+  .textFont{
+    font-size: 14px;
   }
 </style>
