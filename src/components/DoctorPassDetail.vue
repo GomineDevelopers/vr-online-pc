@@ -191,7 +191,7 @@
 
     <!--给医生新增标签-->
     <Modal v-model="labelModel" title="请选择您需要添加的标签" :mask-closable="false" @on-ok="addLabel"  width="350px">
-      <Cascader :data="tagData" v-model="tagValue" style="width: 400px"></Cascader>
+      <Cascader :data="tagData" v-model="tagValue"></Cascader>
     </Modal>
 
   </div>
@@ -478,7 +478,7 @@
           }
 
           if (texts) {
-            vm.$Message.error({
+            vm.$Message.warning({
               content: texts,
               duration: 3
             });

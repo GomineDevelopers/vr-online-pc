@@ -5,8 +5,10 @@
       <div class="buttonDiv" ref="buttonDiv">
         <Button icon="icon iconfont icon-excel" @click="exportRecord" v-if="btnLimit.exportStatus">导出Excel</Button>
       </div>
-      <table-list :htmlType="'interaction'" :fatherH = "fatherH" v-if="fatherH" @goDetail_C="goDetail"
-                  ref="list"></table-list>
+      <Table ref="selection" :columns="columns" :data="data" :height="tableH" :loading="loading"></Table>
+      <div class="pageDiv" ref="pageDiv">
+        <Page :total="totalPage" show-elevator show-total :current="curPage" @on-change="changePage"/>
+      </div>
     </div>
 
     <Modal v-model="wk.viewWKModal" title="微课记录" width="850" :footer-hide="true">
@@ -87,13 +89,65 @@
 </template>
 
 <script>
-  import TableList from '../../components/tableList'
     export default {
       name: "interaction",
       data(){
         return{
           tableBgH:'',
-          fatherH:'',
+          tableH:'',
+          columns:[
+            {title:"序号",type:"index", width: 60, align: "center"},
+            {title:"负责VR",key:"vr",align: "center"},
+            {title:"互动类别",key:"type",align: "center",
+              render:(h,params) =>{
+                let texts = "";
+                if(params.row.type == 0){
+                  texts = "微课";
+                }else if(params.row.type == 1){
+                  texts = "拜访";
+                }
+                return h('span',{
+                  props:{},
+                },texts)
+              }
+            },
+            {title:"互动医生",key:"realname"},
+            {title:"医生城市",key:"citys"},
+            {title:"互动时间",key:"visit_time",
+              render:(h,params)=>{
+                let texts = '';
+                if(params.row.visit_time == null){
+                  texts = '-';
+                }else{
+                  texts = this.$commonTools.formatDate(params.row.visit_time);
+                }
+                return h('span',{
+                  props:{},
+                },texts)
+              }
+            },
+            {title:"操作",key: "action",align:"center",
+              render:(h, params) =>{
+                return h("div", [
+                  h("Tooltip",{props:{trigger:"hover",content:"详情", placement:"top"}},
+                    [h("Icon", {
+                      props: {
+                        type: "icon iconfont icon-ziliao"
+                      },
+                      style: {
+                        color: "#4fb115"
+                      },
+                      on: {
+                        click: () => {
+                          this.goDetail(params.row.type,params.row.interactive_id);
+                        }
+                      }
+                    })]
+                  )
+                ]);
+              }
+            }
+          ],
           data:[],
           loading:true,
           curPage:1,
@@ -137,24 +191,41 @@
           }
         }
       },
-      components:{
-        'table-list':TableList
-      },
       mounted(){
         this.getBgHeight();
+        this.getData();
         this.btnLimit.exportStatus = this.$commonTools.setBtnLimit(this.$route.name)[0].checked;
       },
       methods:{
         getBgHeight() {
           let vm = this;
           vm.tableBgH = document.documentElement.clientHeight -64 -24 * 2 -(vm.$refs.title.offsetHeight + 10) -20;
-          vm.fatherH = vm.tableBgH - (vm.$refs.buttonDiv.offsetHeight + 10 * 2) - 30;
+          vm.tableH = vm.tableBgH - (vm.$refs.buttonDiv.offsetHeight + 10 * 2) - (vm.$refs.pageDiv.offsetHeight + 10 * 2) - 30;
         },
         changePage(curPage){
           this.curPage = curPage;
           this.getData();
         },
-        goDetail(id,type){
+        getData(){
+          let vm = this;
+          vm.$http.get(vm.$commonTools.g_restUrl+'admin/interactive/interactive_list', {
+            params: {
+              page:vm.curPage
+            }
+          })
+            .then(function(response) {
+              if(response.data.code == 200){
+                vm.data = response.data.list.data;
+                vm.totalPage = response.data.list.total;
+                vm.loading = false;
+                vm.$Loading.finish();
+              }
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        },
+        goDetail(type,id){
           let vm = this;
           let url = '';
           if(type == 1){

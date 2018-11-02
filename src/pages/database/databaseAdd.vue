@@ -8,28 +8,28 @@
       <Col span="12">
       <Form :model="formItem" class="form-style" :label-width="80">
 
-        <FormItem class="form-label" label="标题：">
+        <FormItem class="form-label" label="标题：" prop="title">
           <Row>
             <Col span="12">
-          <Input v-model="formItem.title" placeholder="请输入标题"></Input>
+              <Input v-model="formItem.title" placeholder="请输入标题"></Input>
             </Col>
           </Row>
         </FormItem>
-        <FormItem label="作者：">
+        <FormItem label="作者：" prop="author">
           <Row>
             <Col span="12">
               <Input v-model="formItem.author" placeholder="请输入作者"></Input>
             </Col>
           </Row>
         </FormItem>
-        <FormItem label="关键词：">
+        <FormItem label="关键词：" prop="keyWords">
           <Row>
             <Col span="12">
               <Input v-model="formItem.keyWords" placeholder="请输入关键词"></Input>
             </Col>
           </Row>
         </FormItem>
-        <FormItem label="描述：">
+        <FormItem label="描述：" prop="description">
           <Input v-model="formItem.description" type="textarea" :autosize="{minRows: 4,maxRows: 6}" placeholder="请输入描述"></Input>
         </FormItem>
         <FormItem label="封面：">
@@ -50,7 +50,7 @@
         <FormItem v-if="postImgUrl" >
           <img :src="postImgUrl" class="thumb" />
         </FormItem>
-        <FormItem label="内容：">
+        <FormItem label="内容："  prop="postContent" >
           <vue-ueditor-wrap v-model="postContent" :config="myConfig"></vue-ueditor-wrap>
         </FormItem>
         <FormItem>
@@ -75,9 +75,7 @@
           author: '',
           keyWords: '',
           description: '',
-
         },
-
         postImgUrl:"",
         serverImgUrl:'http://icampaign.com.cn/customers/vrOnlinePc/backend/admin/images/add_images',
         visible: false,

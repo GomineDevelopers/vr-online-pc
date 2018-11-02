@@ -5,7 +5,7 @@
     <div class="database-list" :style="{height: conH + 'px' }">
       <Row>
         <Col span="24" class="search-row">
-          <Button icon="md-add" class="add-content" @click="goDetail">添加资料</Button>
+          <Button icon="md-add" class="add-content" @click="goDetail" v-if="btnLimit.add">添加资料</Button>
         </Col>
       </Row>
       <div class="rapper">
@@ -40,13 +40,13 @@
                   <Col span="9">
                     <div class="icon-wrapper" @click="goEdit(item.id)">
                       <Icon type="icon iconfont icon-bianji" size="14" color="#3fab23"/>
-                      <span class="number">编辑</span>
+                      <span class="number" v-if="btnLimit.update">编辑</span>
                     </div>
                   </Col>
                   <Col span="9">
                     <div class="icon-wrapper" @click="del(item.id)">
                       <Icon type="icon iconfont icon-shanchu" size="14" color="#3fab23"/>
-                      <span class="number">删除</span>
+                      <span class="number" v-if="btnLimit.del">删除</span>
                     </div>
                   </Col>
                 </Row>
@@ -76,14 +76,32 @@
             listData:[],
             conH:'',
             totalPage:0,
-            isRouterAlive: true
+            isRouterAlive: true,
+            btnLimit:{
+              add:false,
+              del:false,
+              update:false
+            }
           }
       },
       mounted(){
         this.getBgHeight();
         this.getListData();
+        this.getLimitData();
       },
       methods:{
+        getLimitData(){
+          let vm = this;
+          this.$commonTools.setBtnLimit(this.$route.name).forEach(function (ele) {
+            if(ele.icon == 'add'){
+              vm.btnLimit.add = ele.checked;
+            }else if(ele.icon == 'update'){
+              vm.btnLimit.update = ele.checked;
+            }else if(ele.icon == 'delete'){
+              vm.btnLimit.del = ele.checked;
+            }
+          });
+        },
         reload: function () {
           this.isRouterAlive = false;
           // 该方法会在dom更新后执行

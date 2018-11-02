@@ -187,7 +187,7 @@
                 console.log(error);
               });
           }else{
-            vm.$Message.error({
+            vm.$Message.warning({
               content:'请填写一级标签！',
               duration: 3
             });

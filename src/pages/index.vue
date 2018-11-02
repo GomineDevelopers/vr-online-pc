@@ -39,6 +39,12 @@
                 <span>{{item.title}}</span>
               </div>
             </MenuItem>
+            <MenuItem name="WeChatScan">
+              <div class="menuDiv">
+                <Icon custom="icon iconfont icon-weixin"></Icon>
+                <span>微信管理</span>
+              </div>
+            </MenuItem>
             <Submenu name="1" v-if="!item.url && item.checked" v-for="item in menuList" :key="item.id">
               <template slot="title">
                 <Icon :custom=" 'icon iconfont '+ item.icon"></Icon>
@@ -103,7 +109,20 @@
         this.$router.push({name: routerName});
       },
       loginOut() {
-        this.$router.replace({name: "Login"});
+        let vm = this;
+        vm.$http.get(vm.$commonTools.g_restUrl + 'admin/login/login_out', {
+          params: {}
+        })
+          .then(function (response) {
+            if (response.data.code == 200) {
+              window.localStorage.setItem("QR_id","");
+              window.localStorage.setItem("QR_img","");
+              vm.$router.replace({name: "Login"});
+            }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
       },
       getUserName() {
         this.username = window.localStorage.getItem("userName");

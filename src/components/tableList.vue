@@ -12,7 +12,8 @@
       name: "tableList",
       data(){
         return{
-          columns: [
+          columns:[],
+          columns1: [
             { title:"序号",type: "index", width: 60, align: "center" },
             {title: "话术标题", key: "speechcraft"},
             {title: "话术类别1", key: "type1",width:150},
@@ -90,12 +91,66 @@
               }
             }
           ],
+          columns2:[
+            {title:"序号",type:"index", width: 60, align: "center"},
+            {title:"负责VR",key:"vr",align: "center"},
+            {title:"互动类别",key:"type",align: "center",
+              render:(h,params) =>{
+                let texts = "";
+                if(params.row.type == 0){
+                  texts = "微课";
+                }else if(params.row.type == 1){
+                  texts = "拜访";
+                }
+                return h('span',{
+                  props:{},
+                },texts)
+              }
+            },
+            {title:"互动医生",key:"realname"},
+            {title:"医生城市",key:"citys"},
+            {title:"互动时间",key:"visit_time",
+              render:(h,params)=>{
+                let texts = '';
+                if(params.row.visit_time == null){
+                  texts = '-';
+                }else{
+                  texts = this.$commonTools.formatDate(params.row.visit_time);
+                }
+                return h('span',{
+                  props:{},
+                },texts)
+              }
+            },
+            {title:"操作",key: "action",align:"center",
+              render:(h, params) =>{
+                return h("div", [
+                  h("Tooltip",{props:{trigger:"hover",content:"详情", placement:"top"}},
+                    [h("Icon", {
+                      props: {
+                        type: "icon iconfont icon-ziliao"
+                      },
+                      style: {
+                        color: "#4fb115"
+                      },
+                      on: {
+                        click: () => {
+                          this.goDetail(params.row.interactive_id,params.row.type);
+                        }
+                      }
+                    })]
+                  )
+                ]);
+              }
+            }
+          ],
           data:[],
           curPage:1,
           totalPage:0,
           loading:true,
           tableH:'',
-          searchData:{}
+          searchData:{},
+          url:''
         }
       },
       props:{
@@ -107,8 +162,13 @@
         let vm = this;
         vm.tableH = vm.fatherH - (vm.$refs.pageDiv.offsetHeight + 10 * 2) -20;
         if(vm.htmlType == 'wordsLib'){
-          vm.getData();
+          vm.columns = vm.columns1;
+          vm.url = 'admin/speech/speech_list';
+        }else if(vm.htmlType == 'interaction'){
+          vm.columns = vm.columns2;
+          vm.url = 'admin/interactive/interactive_list';
         }
+        vm.getData();
       },
       methods:{
         getData(temp1,temp2){
@@ -122,13 +182,13 @@
           }else if(temp1 != undefined && temp2 == undefined){//从分页触发搜索
             postData = temp1;
             postData.page = vm.curPage;
-          }else{
+          }else{//第一次加载表格页面
             postData.page = vm.curPage;
           }
 
           this.$http({
             method:"post",
-            url:vm.$commonTools.g_restUrl+'admin/speech/speech_list',
+            url:vm.$commonTools.g_restUrl+ vm.url,
             data:vm.$qs.stringify(postData)
           })
             .then(function(response) {
@@ -144,8 +204,12 @@
               console.log(error);
             });
         },
-        goDetail(id){
-          this.$emit('goDetail_C', id);
+        goDetail(id,type){
+          if(type == undefined){
+            this.$emit('goDetail_C', id);
+          }else{
+            this.$emit('goDetail_C', id,type);
+          }
         },
         goEdit(temp,id){
           this.$emit('goEdit_C',temp,id);

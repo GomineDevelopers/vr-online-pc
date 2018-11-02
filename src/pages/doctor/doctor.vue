@@ -148,16 +148,12 @@
               <span class="detail_text" v-text="detailData.is_registered"></span>
             </Col>
             <Col span="12">
-              <span class="detail_title">微信号：</span>
-              <span class="detail_text" v-text="detailData.wechat"></span>
-            </Col>
-          </Row>
-          <Row class="detail_row">
-            <Col span="12">
               <span class="detail_title">手机号：</span>
               <span class="detail_text" v-text="detailData.mobile"></span>
             </Col>
-            <Col span="12">
+          </Row>
+          <Row class="detail_row">
+            <Col span="24">
               <span class="detail_title">邮箱：</span>
               <span class="detail_text" v-text="detailData.email"></span>
             </Col>
@@ -290,7 +286,7 @@ export default {
                   },
                   style: {
                     color: "#4fb115",
-                    display:(params.row.is_registered == 0 || params.row.is_registered == 2 || params.row.is_registered == 3)?"none":"inline"
+                    display:((params.row.is_registered == 0 || params.row.is_registered == 2 || params.row.is_registered == 3)&&this.btnLimit.review)?"none":"inline"
                   },
                   on: {
                     click: () => {
@@ -306,7 +302,7 @@ export default {
                   },
                   style: {
                     color: "red",
-                    display:(params.row.is_registered == 0 ||params.row.is_registered == 2 || params.row.is_registered == 3)?"none":"inline"
+                    display:((params.row.is_registered == 0 ||params.row.is_registered == 2 || params.row.is_registered == 3)&&this.btnLimit.review)?"none":"inline"
                   },
                   on: {
                     click: () => {
@@ -385,7 +381,8 @@ export default {
         update:false,
         detail:false,
         export:false,
-        addTag:false
+        addTag:false,
+        review:false
       },
       btnLimit_F:''
     };
@@ -415,6 +412,8 @@ export default {
           vm.btnLimit.export = ele.checked;
         }else if(ele.icon == 'addTag'){
           vm.btnLimit.addTag = ele.checked;
+        }else if(ele.icon == 'review'){
+          vm.btnLimit.review = ele.checked;
         }
       });
       vm.btnLimit_F = vm.btnLimit;
@@ -632,7 +631,7 @@ export default {
             console.log(error);
           });
       }else{
-        vm.$Message.error({
+        vm.$Message.warning({
           content: '请先选择标签后再保存！',
           duration: 3
         });

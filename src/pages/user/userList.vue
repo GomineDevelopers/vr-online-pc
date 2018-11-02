@@ -331,7 +331,7 @@
           }
 
           if (texts) {
-            vm.$Message.error({
+            vm.$Message.warning({
               content: texts,
               duration: 3
             });

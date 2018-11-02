@@ -31,23 +31,45 @@
             <Row>
               <Col span="8">标签：<span class="spanFont">老中医 全国十佳 省医院</span></Col>
             </Row>
+
           </Col>
           <Col span="6"><img src="../../../static/images/1.png" style="height: 20vh;"></Col>
         </Row>
       </div>
       <div class="tabDiv">
-        <Tabs value="name1">
-          <TabPane label="标签一" name="name1">标签一的内容</TabPane>
-          <TabPane label="标签二" name="name2">标签二的内容</TabPane>
-          <TabPane label="标签三" name="name3">标签三的内容</TabPane>
-        </Tabs>
+        <Button @click="add2">弹框</Button>
       </div>
+      <Modal v-model="modal2" fullscreen title="Fullscreen Modal">
+        <Button @click="add2">Modal2</Button>
+      </Modal>
+      <Modal
+        v-model="modal1"
+        title="Common Modal dialog box title"
+        >
+        <p>Content of dialog</p>
+        <p>Content of dialog</p>
+        <p>Content of dialog</p>
+      </Modal>
     </div>
 </template>
 
 <script>
     export default {
-        name: "demo03"
+        name: "demo03",
+      data () {
+        return {
+          modal1:false,
+          modal2:false,
+        }
+      },
+      methods:{
+        add(){
+          this.modal2 = true;
+        },
+        add2(){
+          this.modal1 = true;
+        }
+      }
     }
 </script>
 
