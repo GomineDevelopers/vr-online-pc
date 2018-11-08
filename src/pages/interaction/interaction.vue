@@ -1,12 +1,24 @@
 <template>
   <div>
-    <div class="title" ref="title">互动记录</div>
+    <page-title ref="title" :title="titleText"></page-title>
+    <div class="searchCard" ref="searchCard">
+      <Row type="flex" align="middle">
+        <Col span="2" class="searchFont">医生姓名</Col>
+        <Col span="4"><Input v-model="doctorName" clearable/></Col>
+        <Col span="2" class="searchFont">所属城市</Col>
+        <Col span="4"><Cascader :data="cities" v-model="citys" change-on-select></Cascader></Col>
+        <Col span="4" class="searchFont" offset="8">
+          <Button type="success" @click="search">搜索</Button>
+          <Button type="warning" @click="clear">重置</Button>
+        </Col>
+      </Row>
+    </div>
     <div class="tableDiv" :style="{height:tableBgH+'px'}">
       <div class="buttonDiv" ref="buttonDiv">
-        <Button icon="icon iconfont icon-excel" @click="exportRecord" v-if="btnLimit.exportStatus">导出Excel</Button>
+        <Button icon="icon iconfont icon-excel" @click="exportRecord" v-if="btnLimit.export">导出Excel</Button>
       </div>
-      <table-list :htmlType="'interaction'" :fatherH = "fatherH" v-if="fatherH" @goDetail_C="goDetail"
-                  ref="list"></table-list>
+      <table-list :htmlType="'interaction'" :fatherH = "fatherH" :btnLimit_F="btnLimit_F"  v-if="fatherH && btnLimit_F"
+                  @goDetail_C="goDetail" ref="list"></table-list>
     </div>
 
     <Modal v-model="wk.viewWKModal" title="微课记录" width="850" :footer-hide="true">
@@ -87,17 +99,16 @@
 </template>
 
 <script>
+  import PageTitle from '../../components/pageTitle'
   import TableList from '../../components/tableList'
+  import areaList from "../../../static/js/area2.js"
     export default {
       name: "interaction",
       data(){
         return{
+          titleText:'互动记录',
           tableBgH:'',
           fatherH:'',
-          data:[],
-          loading:true,
-          curPage:1,
-          totalPage:0,
           wk:{
             viewWKModal:false,
             data:"",
@@ -133,26 +144,40 @@
             data:""
           },
           btnLimit:{
-            exportStatus:''
-          }
+            detail:false,
+            export:false
+          },
+          btnLimit_F : '',
+          doctorName:'',
+          citys:[],
+          cities:areaList
         }
       },
       components:{
+        'page-title':PageTitle,
         'table-list':TableList
       },
       mounted(){
         this.getBgHeight();
-        this.btnLimit.exportStatus = this.$commonTools.setBtnLimit(this.$route.name)[0].checked;
+        this.getLimitData();
       },
       methods:{
+        getLimitData(){
+          let vm = this;
+          this.$commonTools.setBtnLimit(this.$route.name).forEach(function (ele) {
+            if(ele.icon == 'export'){
+              vm.btnLimit.export = ele.checked;
+            }else if(ele.icon == 'detail'){
+              vm.btnLimit.detail = ele.checked;
+            }
+
+            vm.btnLimit_F = vm.btnLimit;
+          });
+        },
         getBgHeight() {
           let vm = this;
-          vm.tableBgH = document.documentElement.clientHeight -64 -24 * 2 -(vm.$refs.title.offsetHeight + 10) -20;
+          vm.tableBgH = document.documentElement.clientHeight -64 -24 * 2 -(vm.$refs.title.$el.offsetHeight + 10) -(vm.$refs.searchCard.offsetHeight + 20) -20;
           vm.fatherH = vm.tableBgH - (vm.$refs.buttonDiv.offsetHeight + 10 * 2) - 30;
-        },
-        changePage(curPage){
-          this.curPage = curPage;
-          this.getData();
         },
         goDetail(id,type){
           let vm = this;
@@ -187,28 +212,28 @@
           window.open(item.url);
         },
         exportRecord(){
-          window.open( this.$commonTools.g_restUrl+"admin/interactive/interactive_export", "_blank");
+          window.open( this.$commonTools.g_restUrl+"admin/interactive/interactive_export?name="+this.doctorName+"&citys="+this.citys, "_blank");
+        },
+        search(){
+          let postData = {};
+          let vm = this;
+          postData.name = vm.doctorName;
+          postData.citys = vm.citys;
+          vm.$refs.list.getData(postData,'first');
+        },
+        clear(){
+          this.citys = [];
+          this.doctorName = "";
         }
       }
     }
 </script>
 
 <style scoped>
-  .title {
-    font-size: 1.25rem;
-    color: #adb3a8;
-    margin-bottom: 10px;
-  }
-
   .tableDiv {
     background-color: #fff;
     margin-top: 26px;
     padding: 10px;
-  }
-
-  .pageDiv {
-    margin: 10px;
-    text-align: right;
   }
 
   .buttonDiv {
@@ -221,8 +246,20 @@
   }
 
   .introDiv{
-    height: 200px;
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    padding: 10px;
+    max-height: 200px;
     overflow-y: auto;
+  }
+
+  .searchCard .searchFont{
+    text-align: center
+  }
+
+  .searchCard {
+    background-color: #fff;
+    padding: 10px 0;
   }
 
   /*图片上传start*/

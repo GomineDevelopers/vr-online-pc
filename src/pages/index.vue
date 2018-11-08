@@ -86,20 +86,8 @@
     methods: {
       getMeunData(){
         let vm = this;
-        vm.$http.get(vm.$commonTools.g_restUrl + 'admin/user/rule', {
-          params: {}
-        })
-          .then(function (response) {
-            if (response.data.code == 200) {
-              vm.menuList = response.data.list;
-              vm.activeMenu = response.data.list[0].url;//默认选中第一个菜单
-              vm.changeRouter(response.data.list[0].url);
-              window.localStorage.setItem("limits",JSON.stringify(response.data.list));
-            }
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
+        vm.menuList = JSON.parse(window.sessionStorage.getItem("limits"));
+        vm.activeMenu = vm.menuList[0].url;//默认选中第一个菜单
       },
       getMainHeight() {
         let headerHeight = this.$refs.header.offsetHeight;
@@ -115,8 +103,8 @@
         })
           .then(function (response) {
             if (response.data.code == 200) {
-              window.localStorage.setItem("QR_id","");
-              window.localStorage.setItem("QR_img","");
+              window.sessionStorage.removeItem("token");
+              window.sessionStorage.removeItem("UserData_name");
               vm.$router.replace({name: "Login"});
             }
           })
@@ -125,7 +113,7 @@
           });
       },
       getUserName() {
-        this.username = window.localStorage.getItem("userName");
+        this.username = window.sessionStorage.getItem("userName");
       }
     }
   }

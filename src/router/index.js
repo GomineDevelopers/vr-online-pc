@@ -16,10 +16,9 @@ import WordsLibrary from '@/pages/wordsLibrary/wordslibrary'
 import Interaction from '@/pages/interaction/interaction'
 import UserList from '@/pages/user/userList'
 import Role from '@/pages/user/role'
+import Case from '@/pages/case/caseList'
 
 import demo01 from '@/pages/demo/demo01'
-import demo02 from '@/pages/demo/demo02'
-import demo03 from '@/pages/demo/demo03'
 
 Vue.use(Router)
 
@@ -145,21 +144,18 @@ export default new Router({
           meta:{
             requiresAuth:true
           }
+        },{
+          path: 'case',
+          component: Case,
+          name:'Case',
+          meta:{
+            requiresAuth:true
+          }
         },
         {
           path: 'demo01',
           component: demo01,
           name:'demo01'
-        },
-        {
-          path: 'demo02',
-          component: demo02,
-          name:'demo02'
-        },
-        {
-          path: 'demo03',
-          component: demo03,
-          name:'demo03'
         }
       ]
     }

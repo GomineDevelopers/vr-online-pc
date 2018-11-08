@@ -296,7 +296,7 @@
         }
       },
       mounted(){
-        this.wk.creater = window.localStorage.getItem("UserData_name");
+        this.wk.creater = window.sessionStorage.getItem("UserData_name");
         this.uploadList = this.$refs.upload.fileList;
       },
       methods:{
@@ -619,7 +619,7 @@
     border: 1px solid #e0e0e0;
     border-radius: 2px;
     padding: 10px;
-    height: 200px;
+    max-height: 200px;
     overflow-y: auto;
   }
 

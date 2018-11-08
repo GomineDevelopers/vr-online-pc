@@ -43,7 +43,7 @@
         login(){
           let vm = this;
           if(vm.remUserName){
-            vm.setCookie(vm.userName, 7);
+            vm.setCookie(vm.userName);
           }
           let postData = {};
           postData.username = vm.userName;
@@ -56,9 +56,9 @@
           })
             .then(function (response) {
               if(response.data.code == 200){
-                window.localStorage.setItem("token",response.data.data.token);
-                window.localStorage.setItem("userName",response.data.data.username);
-                vm.$router.push({name:"Doctor"});
+                window.sessionStorage.setItem("token",response.data.data.token);
+                window.sessionStorage.setItem("userName",response.data.data.username);
+                vm.getMeunData();
               }else{
                 vm.$Notice.warning({
                   title: '提示',
@@ -70,21 +70,33 @@
               console.log(error);
             });
         },
+        getMeunData(){
+          let vm = this;
+          vm.$http.get(vm.$commonTools.g_restUrl + 'admin/user/rule', {
+            params: {}
+          })
+            .then(function (response) {
+              if (response.data.code == 200) {
+                window.sessionStorage.setItem("limits",JSON.stringify(response.data.list));
+                vm.$router.push({name:response.data.list[0].url});
+              }
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+        },
         changeStatus(status){
           let vm = this;
           vm.remUserName = status;
         },
         setCookie(c_name){
-          /*var exdate = new Date(); //获取时间
-          exdate.setTime(exdate.getTime() + 24 * 60 * 60 * 1000 * exdays); //保存的天数
-          window.document.cookie = "userName" + "=" + c_name + ";path=/;expires=" + exdate.toGMTString();*/
-          window.localStorage.setItem("userName",c_name);
+          window.sessionStorage.setItem("userName",c_name);
         },
         getCookie(){
           let vm = this;
-          if(window.localStorage.getItem("userName") != null && window.localStorage.getItem("userName") != ""){
+          if(window.sessionStorage.getItem("userName") != null && window.sessionStorage.getItem("userName") != ""){
             vm.remUserName = true;
-            vm.userName = window.localStorage.getItem("userName");
+            vm.userName = window.sessionStorage.getItem("userName");
           }
         }
       }

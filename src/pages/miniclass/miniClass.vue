@@ -314,7 +314,7 @@
           }
       },
       mounted() {
-        this.wk.creater = window.localStorage.getItem("UserData_name");
+        this.wk.creater = window.sessionStorage.getItem("UserData_name");
         this.getBgHeight();
         this.getData();
         this.wk.uploadList = this.$refs.uploadwk.fileList;
@@ -349,7 +349,7 @@
           let vm = this;
           this.$http.get(vm.$commonTools.g_restUrl + 'admin/lesson/lesson_Login',{
             params: {
-              current_page:vm.curPage
+              page:vm.curPage
             }
           })
             .then(function(response) {
@@ -466,6 +466,7 @@
           if(vm.validator()){
             let postData = {};
             vm.wk.members = [];
+            vm.wk.matcherror = [];
             if(vm.isAdd){
               postData.id = "";
             }else{
@@ -592,14 +593,14 @@
           let vm = this;
           this.$http.get(vm.$commonTools.g_restUrl +'admin/wxbot/scanState',{
             params: {
-              bot_id:window.localStorage.getItem("QR_id")
+              bot_id:window.sessionStorage.getItem("QR_id")
             }
           })
             .then(function(response) {
               if(response.data.code == 200){
                 vm.$http.get('http://icampaign.com.cn:9080/api/get_group_list/',{
                   params: {
-                    bot_id:window.localStorage.getItem("QR_id")
+                    bot_id:window.sessionStorage.getItem("QR_id")
                   }
                 })
                   .then(function(response) {
@@ -612,7 +613,7 @@
                               ele.isShow = true;
                               vm.$http.get('http://icampaign.com.cn:9080/api/get_group_members/',{
                                 params: {
-                                  bot_id:window.localStorage.getItem("QR_id")
+                                  bot_id:window.sessionStorage.getItem("QR_id")
                                 }
                               })
                                 .then(function(response) {
@@ -712,7 +713,7 @@
           });
           this.$http.get('http://icampaign.com.cn:9080/api/get_group_members/',{
             params: {
-              bot_id:window.localStorage.getItem("QR_id")
+              bot_id:window.sessionStorage.getItem("QR_id")
             }
           })
             .then(function(response) {
@@ -771,7 +772,7 @@
     border: 1px solid #e0e0e0;
     border-radius: 2px;
     padding: 10px;
-    height: 200px;
+    max-height: 200px;
     overflow-y: auto;
   }
 

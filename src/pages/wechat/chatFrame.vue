@@ -83,7 +83,7 @@
           }
       },
       mounted(){
-        this.name = window.localStorage.getItem("UserData_name");
+        this.name = window.sessionStorage.getItem("UserData_name");
         this.getBgHeight();
       },
       methods:{
@@ -98,7 +98,7 @@
           let vm = this;
           this.$http.get('http://icampaign.com.cn:9080/api/send_msg_by_uid/',{
             params: {
-              bot_id:window.localStorage.getItem("QR_id"),
+              bot_id:window.sessionStorage.getItem("QR_id"),
               word:vm.sendCon,
               uid:vm.$route.params.id
             }

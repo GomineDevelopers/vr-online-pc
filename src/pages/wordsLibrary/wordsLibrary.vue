@@ -131,7 +131,7 @@
         getBgHeight() {
           let vm = this;
           vm.tableBgH = document.documentElement.clientHeight -64 -24 * 2 -(vm.$refs.title.$el.offsetHeight + 10) -(vm.$refs.searchCard.offsetHeight + 20) - 10;
-          vm.fatherH = vm.tableBgH - (vm.$refs.buttonDiv.offsetHeight + 10 * 2);
+          vm.fatherH = vm.tableBgH - (vm.$refs.buttonDiv.offsetHeight + 10 * 2)-40;
         },
         getType1(){
           let vm = this;
@@ -161,7 +161,7 @@
         search(){
           let postData = {};
           let vm = this;
-          postData.speechcraft = vm.wordsTitle;
+          postData.speechcraft = vm.wordsTitle;1
           postData.username = vm.wordsCreater;
           postData.type = vm.selectedType1;
           vm.$refs.list.getData(postData,'first');

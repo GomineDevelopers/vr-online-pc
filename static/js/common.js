@@ -38,16 +38,22 @@ commonTools.formatDate2 = function (date) {
 }
 
 commonTools.formatDate3 = function (d) {
-  /*var d = new Date(parseInt(date)*1000);*/
   var year = String(d.getFullYear());
   var month = String(d.getMonth() + 1 > 9 ? d.getMonth() + 1 : "0" + (d.getMonth() + 1));
   var date1 = String(d.getDate() > 9 ? d.getDate() : "0" + d.getDate());
   return year + month + date1 ;
 }
 
+commonTools.formatDate4 = function (d) {
+  var year = String(d.getFullYear());
+  var month = String(d.getMonth() + 1 > 9 ? d.getMonth() + 1 : "0" + (d.getMonth() + 1));
+  var date1 = String(d.getDate() > 9 ? d.getDate() : "0" + d.getDate());
+  return year + '-' + month + '-' +  date1 ;
+}
+
 commonTools.setBtnLimit = function (name) {
   var btnLimit = [];
-  JSON.parse(window.localStorage.getItem("limits")).forEach(function (ele,index,arr) {
+  JSON.parse(window.sessionStorage.getItem("limits")).forEach(function (ele,index,arr) {
     if(ele.url != "" && ele.url == name){//只有一级菜单
       btnLimit = ele.children;
     }else if(ele.url == "" && ele.children.length>0){

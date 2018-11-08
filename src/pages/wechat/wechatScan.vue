@@ -17,7 +17,7 @@
         }
       },
       mounted(){
-        this.name = window.localStorage.getItem("UserData_name");
+        this.name = window.sessionStorage.getItem("UserData_name");
         this.$Loading.finish();
       },
       methods:{
@@ -31,8 +31,8 @@
               if(response.data.code == 200){
                 let QRId = response.data.data.bot_id;
                 let QRImg = response.data.data.login_qr;
-                window.localStorage.setItem("QR_id",QRId);
-                window.localStorage.setItem("QR_img",QRImg);
+                window.sessionStorage.setItem("QR_id",QRId);
+                window.sessionStorage.setItem("QR_img",QRImg);
                 vm.$Loading.finish();
                 vm.$router.push({name:'QRcode'});
               }

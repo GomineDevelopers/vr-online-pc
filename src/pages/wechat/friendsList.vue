@@ -67,7 +67,7 @@
         }
       },
       mounted(){
-        this.name = window.localStorage.getItem("UserData_name");
+        this.name = window.sessionStorage.getItem("UserData_name");
         this.getBgHeight();
         this.watchStatus();
         this.getUserData();
@@ -88,7 +88,7 @@
           let vm = this;
           this.$http.get('http://icampaign.com.cn:9080/api/get_my_account/',{
             params: {
-              bot_id:window.localStorage.getItem("QR_id")
+              bot_id:window.sessionStorage.getItem("QR_id")
             }
           })
             .then(function(response) {
@@ -116,7 +116,7 @@
           if(!vm.isloading){
             this.$http.get(vm.$commonTools.g_restUrl + 'admin/wxbot/get_contact_list',{
               params: {
-                bot_id:window.localStorage.getItem("QR_id")
+                bot_id:window.sessionStorage.getItem("QR_id")
               }
             })
               .then(function(response) {
@@ -141,7 +141,7 @@
           vm.$Loading.start();
           this.$http.get('http://icampaign.com.cn:9080/api/get_group_list/',{
             params: {
-              bot_id:window.localStorage.getItem("QR_id")
+              bot_id:window.sessionStorage.getItem("QR_id")
             }
           })
             .then(function(response) {

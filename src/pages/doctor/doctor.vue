@@ -286,7 +286,7 @@ export default {
                   },
                   style: {
                     color: "#4fb115",
-                    display:((params.row.is_registered == 0 || params.row.is_registered == 2 || params.row.is_registered == 3)&&this.btnLimit.review)?"none":"inline"
+                    display:((params.row.is_registered == 1)&&this.btnLimit.review)?"inline":"none"
                   },
                   on: {
                     click: () => {
@@ -301,8 +301,8 @@ export default {
                     size:"16"
                   },
                   style: {
-                    color: "red",
-                    display:((params.row.is_registered == 0 ||params.row.is_registered == 2 || params.row.is_registered == 3)&&this.btnLimit.review)?"none":"inline"
+                    color: "red",//0是未注册 1 审核中 2 通过 3 拒绝
+                    display:((params.row.is_registered == 1)&&this.btnLimit.review)?"inline":"none"
                   },
                   on: {
                     click: () => {
@@ -444,6 +444,10 @@ export default {
             vm.totalPage = response.data.list.total;
             vm.loading = false;
             vm.$Loading.finish();
+          }else if(response.data.code == 202){
+            vm.$Notice.info({
+              title: '请先去微信管理页面扫码登录微信！'
+            });
           }
         })
         .catch(function(error) {
@@ -673,6 +677,7 @@ export default {
         'VR':'vr',
         '拜访记录':'visit_total',
         '微课记录':'lesson_total',
+        '标签':'label_name',
         '积分':'score',
         '注册时间':'reg_time'
       };

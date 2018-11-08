@@ -25,7 +25,7 @@
       },
       mounted(){
         let vm = this;
-        let img = window.localStorage.getItem("QR_img");
+        let img = window.sessionStorage.getItem("QR_img");
         vm.QRcode = 'http://icampaign.com.cn:9080'+ img;
         this.watchStatus();
       },
@@ -45,7 +45,7 @@
             vm.isloading=true;
           this.$http.get(vm.$commonTools.g_restUrl + 'admin/wxbot/scanState',{
             params: {
-              bot_id:window.localStorage.getItem("QR_id")
+              bot_id:window.sessionStorage.getItem("QR_id")
             }
           })
             .then(function(response) {

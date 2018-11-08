@@ -131,11 +131,55 @@
                         type: "icon iconfont icon-ziliao"
                       },
                       style: {
-                        color: "#4fb115"
+                        color: "#4fb115",
+                        display:this.btnLimit_F.detail?'inline':'none'
                       },
                       on: {
                         click: () => {
                           this.goDetail(params.row.interactive_id,params.row.type);
+                        }
+                      }
+                    })]
+                  )
+                ]);
+              }
+            }
+          ],
+          columns3:[
+            {title:"序号",type:"index", width: 60, align: "center"},
+            {title:"医生姓名",key:"realname",align: "center"},
+            {title:"所属医院",key:"hospital"},
+            {title:"城市",key:"citys",align: "center"},
+            {title:"就诊日期",key:"visit_time",align: "center",width:100,
+              render:(h,params)=>{
+                let texts = '';
+                if(params.row.visit_time == null){
+                  texts = '-';
+                }else{
+                  texts = this.$commonTools.formatDate(params.row.visit_time);
+                }
+                return h('span',{
+                  props:{},
+                },texts)
+              }
+            },
+            {title:"分组",key:"group"},
+            {title:"主述与病史",key:"illness"},
+            {title:"操作",key: "action",align:"center",
+              render:(h, params) =>{
+                return h("div", [
+                  h("Tooltip",{props:{trigger:"hover",content:"详情", placement:"top"}},
+                    [h("Icon", {
+                      props: {
+                        type: "icon iconfont icon-ziliao"
+                      },
+                      style: {
+                        color: "#4fb115",
+                        display:this.btnLimit_F.detail?'inline':'none'
+                      },
+                      on: {
+                        click: () => {
+                          this.goDetail(params.row.id);
                         }
                       }
                     })]
@@ -167,6 +211,9 @@
         }else if(vm.htmlType == 'interaction'){
           vm.columns = vm.columns2;
           vm.url = 'admin/interactive/interactive_list';
+        }else if(vm.htmlType == 'case'){
+          vm.columns = vm.columns3;
+          vm.url = 'admin/cases/cases_list';
         }
         vm.getData();
       },
