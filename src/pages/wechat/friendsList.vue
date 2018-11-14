@@ -122,9 +122,6 @@
               .then(function(response) {
                 if(response.data.code == 200){
                   vm.friends = response.data.info;
-                  /*vm.friends.forEach(function (ele) {
-                    ele.HeadImgUrl = 'http://icampaign.com.cn/customers/Wxbot_r/temp/'+ele.HeadImgUrl;
-                  });*/
                   vm.isloading = true;
                   vm.$Loading.finish();
                 }else{

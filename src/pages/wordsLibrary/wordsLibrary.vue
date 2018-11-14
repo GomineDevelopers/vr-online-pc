@@ -2,9 +2,17 @@
   <div class="wordsLib">
     <page-title ref="title" :title="titleText"></page-title>
     <div class="searchCard" ref="searchCard">
-      <Row>
+      <Row type="flex" align="middle" class="search_row search_row_bottom">
+        <Col span="2" class="searchFont">产品名称</Col>
+        <Col span="4">
+          <Select v-model="selectdProduct" filterable @on-change="changePro">
+            <Option v-for="item in products" :value="item.value" :key="item.value">{{ item.label }}</Option>
+          </Select>
+        </Col>
+      </Row>
+      <Row type="flex" align="middle" class="search_row">
         <Col span="2" class="searchFont">话术标题</Col>
-        <Col span="6"><Input v-model="wordsTitle" clearable/></Col>
+        <Col span="4"><Input v-model="wordsTitle" clearable/></Col>
         <Col span="2" class="searchFont">创建人</Col>
         <Col span="4"><Input v-model="wordsCreater" clearable/></Col>
         <Col span="2" class="searchFont">类别1</Col>
@@ -13,7 +21,7 @@
             <Option v-for="item in type1" :value="item.value" :key="item.value">{{ item.label }}</Option>
           </Select>
         </Col>
-        <Col span="4" class="searchFont">
+        <Col span="5" class="searchFont" offset="1">
           <Button type="success" @click="search">搜索</Button>
           <Button type="warning" @click="clear">重置</Button>
         </Col>
@@ -23,7 +31,7 @@
       <div class="buttonDiv" ref="buttonDiv">
         <Button icon="md-add" @click="showLabelModal('add')" v-if="btnLimit.add">新增话术</Button>
       </div>
-      <table-list :htmlType="'wordsLib'" :fatherH = "fatherH" :btnLimit_F = "btnLimit_F" v-if="fatherH && btnLimit_F"
+      <table-list :htmlType="'wordsLib'" :fatherH = "fatherH" :btnLimit_F = "btnLimit_F" :product="selectdProduct" v-if="fatherH && btnLimit_F &&selectdProduct"
         @goDetail_C = "goDetail" @goEdit_C = "showLabelModal" ref="list"></table-list>
     </div>
 
@@ -78,6 +86,8 @@
             wordsTitle:'',
             wordsCreater:'',
             selectedType1:[],
+            products:[],
+            selectdProduct:'',
             type1:[],
             tableBgH:'',
             fatherH:'',
@@ -109,7 +119,7 @@
       },
       mounted(){
         this.getBgHeight();
-        this.getType1();
+        this.getTypeProduct();
         this.getLimitData();
       },
       methods:{
@@ -133,7 +143,7 @@
           vm.tableBgH = document.documentElement.clientHeight -64 -24 * 2 -(vm.$refs.title.$el.offsetHeight + 10) -(vm.$refs.searchCard.offsetHeight + 20) - 10;
           vm.fatherH = vm.tableBgH - (vm.$refs.buttonDiv.offsetHeight + 10 * 2)-40;
         },
-        getType1(){
+        getTypeProduct(){
           let vm = this;
           this.$http.get(vm.$commonTools.g_restUrl+"admin/speech/speech_type",{
             params: {}
@@ -141,11 +151,18 @@
             .then(function(response) {
               if(response.data.code == 200){
                 vm.type1 = response.data.data;
+                vm.products = response.data.product;
+                if(vm.products.length>0){//默认选中第一项
+                  vm.selectdProduct = vm.products[0].value;
+                }
               }
             })
             .catch(function(error) {
               console.log(error);
             });
+        },
+        changePro(){
+          this.search();
         },
         showLabelModal(temp,id){
           let vm = this;
@@ -164,6 +181,7 @@
           postData.speechcraft = vm.wordsTitle;1
           postData.username = vm.wordsCreater;
           postData.type = vm.selectedType1;
+          postData.product = vm.selectdProduct;
           vm.$refs.list.getData(postData,'first');
         },
         clear(){
@@ -194,7 +212,6 @@
         },
         save(modalData){
           let vm = this;
-
           if(vm.validator()){
             this.$http({
               method:"post",
@@ -244,8 +261,6 @@
 <style scoped>
   .searchCard {
     background-color: #fff;
-    height: 54px;
-    line-height: 54px;
   }
 
   .searchCard .searchFont{
@@ -269,5 +284,13 @@
 
   .titleFont{
     font-weight: 600;
+  }
+
+  .search_row{
+    padding:10px 0;
+  }
+
+  .search_row_bottom{
+    border-bottom: 1px dashed #dcdee2;
   }
 </style>

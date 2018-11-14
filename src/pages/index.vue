@@ -39,12 +39,6 @@
                 <span>{{item.title}}</span>
               </div>
             </MenuItem>
-            <MenuItem name="WeChatScan">
-              <div class="menuDiv">
-                <Icon custom="icon iconfont icon-weixin"></Icon>
-                <span>微信管理</span>
-              </div>
-            </MenuItem>
             <Submenu name="1" v-if="!item.url && item.checked" v-for="item in menuList" :key="item.id">
               <template slot="title">
                 <Icon :custom=" 'icon iconfont '+ item.icon"></Icon>

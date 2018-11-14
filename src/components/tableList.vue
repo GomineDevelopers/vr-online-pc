@@ -150,7 +150,7 @@
             {title:"医生姓名",key:"realname",align: "center"},
             {title:"所属医院",key:"hospital"},
             {title:"城市",key:"citys",align: "center"},
-            {title:"就诊日期",key:"visit_time",align: "center",width:100,
+            {title:"就诊日期",key:"visit_time",align: "center",width:150,
               render:(h,params)=>{
                 let texts = '';
                 if(params.row.visit_time == null){
@@ -165,6 +165,19 @@
             },
             {title:"分组",key:"group"},
             {title:"主述与病史",key:"illness"},
+            {title:"上传日期",key:"create_time",align: "center",width:150,
+              render:(h,params)=>{
+                let texts = '';
+                if(params.row.create_time == null){
+                  texts = '-';
+                }else{
+                  texts = this.$commonTools.formatDate(params.row.create_time);
+                }
+                return h('span',{
+                  props:{},
+                },texts)
+              }
+            },
             {title:"操作",key: "action",align:"center",
               render:(h, params) =>{
                 return h("div", [
@@ -200,7 +213,8 @@
       props:{
         htmlType:String,
         fatherH:'',
-        btnLimit_F:''
+        btnLimit_F:'',
+        product:''
       },
       mounted(){
         let vm = this;
@@ -225,13 +239,15 @@
           if(temp1 != undefined && temp2 == 'first' ) {//点击搜索按钮
             postData = temp1;
             vm.curPage = 1;
-            postData.page = vm.curPage;
           }else if(temp1 != undefined && temp2 == undefined){//从分页触发搜索
             postData = temp1;
-            postData.page = vm.curPage;
           }else{//第一次加载表格页面
-            postData.page = vm.curPage;
+            if(vm.product != undefined){//话术资料库页面有默认一级搜索
+              postData.product = vm.product;
+            }
           }
+
+          postData.page = vm.curPage;
 
           this.$http({
             method:"post",

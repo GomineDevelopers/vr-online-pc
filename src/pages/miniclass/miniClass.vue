@@ -760,10 +760,6 @@
     text-align: right;
   }
 
-  .modalRow{
-    margin-bottom: 10px;
-  }
-
   .groupCard{
     padding: 5px 0;
   }

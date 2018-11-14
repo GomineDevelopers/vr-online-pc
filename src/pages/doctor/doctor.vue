@@ -94,6 +94,14 @@
             </Col>
           </Row>
           <Row class="detail_row">
+            <Col span="12">
+              <span class="detail_title">V R：</span>
+              <Select v-model="detailData.vr" filterable class="inputStyle">
+                <Option v-for="item in detailData.vrarr" :value="item.value" :key="item.value">{{ item.label }}</Option>
+              </Select>
+            </Col>
+          </Row>
+          <Row class="detail_row">
             <Col span="24">
               <span class="detail_title">所在城市：</span>
               <span class="detail_text" v-text="detailData.citys"></span>
@@ -109,7 +117,7 @@
         <Modal v-model="detailModel" :footer-hide="true">
           <Row class="detail_row">
             <Col span="8" class="detail_img"><img :src="detailData.avatar"></Col>
-            <Col span="12">
+            <Col span="16">
               <div class="detail_row">
                 <span class="detail_title">姓名：</span>
                 <span class="detail_text" v-text="detailData.realname"></span>

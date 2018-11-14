@@ -287,10 +287,6 @@
     margin-bottom: 10px;
   }
 
-  .modalRow{
-    margin-bottom: 10px;
-  }
-
   .introDiv{
     height: 200px;
     overflow-y: auto;

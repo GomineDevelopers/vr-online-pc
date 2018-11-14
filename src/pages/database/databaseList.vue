@@ -20,7 +20,7 @@
                 <Row>
                   <Col span="6">
                     <div class="icon-wrapper">
-                      <Icon type="ios-redo" size="18" color="#8d8d8d"/>
+                      <Icon type="ios-redo" size="18" color="#8d8d8d" @click="share(item.id)"/>
                       <span class="number" v-text="item.forward"></span>
                     </div>
                   </Col>
@@ -59,6 +59,16 @@
         </div>
       </div>
     </div>
+    <Modal v-model="shareModal" title="好友列表" @on-ok="sendShare"  width="350px">
+        <div class="introDiv">
+          <CheckboxGroup v-model="selectedFrineds">
+            <Checkbox :label="item.UserName" v-for="(item,index) in friends" :key="index" class="checkboxRow">
+              <Avatar shape="square" :src='"http://icampaign.com.cn/customers/Wxbot_r/temp/" + item.HeadImgUrl'></Avatar>
+              <span>{{item.RemarkName}}</span>
+            </Checkbox>
+          </CheckboxGroup>
+        </div>
+    </Modal>
   </div>
 </template>
 
@@ -81,7 +91,11 @@
               add:false,
               del:false,
               update:false
-            }
+            },
+            shareModal:false,
+            friends:'',
+            selectedFrineds:[],
+            recordId:''
           }
       },
       mounted(){
@@ -169,6 +183,60 @@
             name: 'DataBaseAdd',
             params: { editId: id }
           })
+        },
+        share(id){
+          let vm = this;
+          vm.recordId = id;
+          vm.selectedFrineds = [];
+          if(window.sessionStorage.getItem("QR_id") == null){
+            vm.$Notice.info({
+              title: '请先去微信管理页面扫码登录微信！'
+            });
+          }else {
+            vm.shareModal = true;
+            this.$http.get(vm.$commonTools.g_restUrl + 'admin/wxbot/get_contact_list', {
+              params: {
+                bot_id: window.sessionStorage.getItem("QR_id")
+              }
+            })
+              .then(function (response) {
+                if (response.data.code == 200) {
+                  vm.friends = response.data.info;
+                }
+              })
+              .catch(function (error) {
+                console.log(error);
+              });
+          }
+        },
+        sendShare(){
+          let vm = this;
+          if(vm.selectedFrineds.length > 0){
+            for(let i = 0 ;i<vm.selectedFrineds.length;i++){
+              vm.sendMessage(vm.selectedFrineds[i]);
+            }
+          }
+        },
+        sendMessage(uid){
+          let vm = this;
+          this.$http.get('http://icampaign.com.cn:9080/api/send_msg_by_uid/',{
+            params: {
+              bot_id:window.sessionStorage.getItem("QR_id"),
+              word:"http://icampaign.com.cn/customers/vrOnlinePc/backend/admin/database/detail?id="+vm.recordId,
+              uid:uid
+            }
+          })
+            .then(function(response) {
+              if(response.data.code == 200 && response.data.data == true){}
+              else{
+                vm.$Notice.error({
+                  title: '分享失败!'
+                });
+              }
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
         }
       }
     }
@@ -196,8 +264,7 @@
     color: #ffffff;
   }
   .rapper{
-    padding: 0 1vh;
-    padding-bottom: 13vh;
+    padding: 0 1vh 13vh 1vh;
   }
   .card-wrapper{
     width: 18%;
@@ -250,5 +317,15 @@
   }
   .update-time{
     margin-left: 5px;
+  }
+
+  .introDiv{
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .checkboxRow{
+    display: block;
+    margin: 10px 0;
   }
 </style>

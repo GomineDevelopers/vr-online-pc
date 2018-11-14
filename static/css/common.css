@@ -4,6 +4,11 @@
   font-weight: 600;
 }
 
+/*弹出框中row之间的距离*/
+.modalRow{
+  margin-bottom: 10px;
+}
+
 /*登录页面的输入框 start*/
 .login_field .ivu-input{
   border-radius: 0;
