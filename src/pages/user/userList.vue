@@ -389,9 +389,6 @@
     text-align: right;
     margin-bottom: 10px;
   }
-  .modalRow{
-    margin-bottom: 10px;
-  }
 
   .modalRow2{
     margin-top: 10px;

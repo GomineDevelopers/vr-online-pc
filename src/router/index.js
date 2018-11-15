@@ -17,6 +17,7 @@ import Interaction from '@/pages/interaction/interaction'
 import UserList from '@/pages/user/userList'
 import Role from '@/pages/user/role'
 import Case from '@/pages/case/caseList'
+import Statistics from '@/pages/statistics/statistics'
 
 import demo01 from '@/pages/demo/demo01'
 
@@ -148,6 +149,14 @@ export default new Router({
           path: 'case',
           component: Case,
           name:'Case',
+          meta:{
+            requiresAuth:true
+          }
+        },
+        {
+          path: 'statistics',
+          component: Statistics,
+          name:'Statistics',
           meta:{
             requiresAuth:true
           }

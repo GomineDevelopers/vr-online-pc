@@ -369,9 +369,6 @@
     text-align: right;
     margin-bottom: 10px;
   }
-  .modalRow{
-    margin-bottom: 10px;
-  }
 
   .treeDiv{
     max-height: 400px;

@@ -2,7 +2,7 @@
     <div>
       <page-title ref="title" :title="titleText"></page-title>
       <div class="searchCard" ref="searchCard">
-        <Row type="flex" align="middle">
+        <Row type="flex" align="middle" class="modalRow">
           <Col span="2" class="searchFont">医生姓名</Col>
           <Col span="4"><Input v-model="doctorName" clearable/></Col>
           <Col span="2" class="searchFont">所属城市</Col>
@@ -11,7 +11,13 @@
           <Col span="4">
             <DatePicker type="daterange" placement="bottom-end" v-model="dateRange" format="yyyy-MM-dd"></DatePicker>
           </Col>
-          <Col span="4" class="searchFont" offset="2">
+          <Col span="2" class="searchFont">上传日期</Col>
+          <Col span="4">
+            <DatePicker type="daterange" placement="bottom-end" v-model="dateRange2" format="yyyy-MM-dd"></DatePicker>
+          </Col>
+        </Row>
+        <Row>
+          <Col span="4" class="searchFont" offset="20">
             <Button type="success" @click="search">搜索</Button>
             <Button type="warning" @click="clear">重置</Button>
           </Col>
@@ -26,6 +32,18 @@
       </div>
 
       <Modal v-model="caseModal" title="病例详情" :footer-hide="true">
+        <Row type="flex" align="middle" class="modalRow">
+          <Col span="3" class="titleFont">医生姓名</Col>
+          <Col span="5"><span v-text="caseDetail.realname"></span></Col>
+          <Col span="3" class="titleFont" offset="1">所属医院</Col>
+          <Col span="12"><span v-text="caseDetail.hospital"></span></Col>
+        </Row>
+        <Row type="flex" align="middle" class="modalRow">
+          <Col span="3" class="titleFont">上传日期</Col>
+          <Col span="5"><span v-text="$commonTools.formatDate(caseDetail.create_time)"></span></Col>
+          <Col span="3" class="titleFont" offset="1">所在城市</Col>
+          <Col span="12"><span v-text="caseDetail.citys"></span></Col>
+        </Row>
         <Row type="flex" align="middle" class="modalRow">
           <Col span="3" class="titleFont">就诊日期</Col>
           <Col span="5"><span v-text="$commonTools.formatDate(caseDetail.visit_time)"></span></Col>
@@ -97,6 +115,7 @@
           caseModal:false,
           caseDetail:'',
           dateRange:'',
+          dateRange2:'',
           btnLimit:{
             detail:false,
             export:false
@@ -154,16 +173,21 @@
           postData.citys = vm.citys;
           postData.start_time = vm.dateRange[0];
           postData.end_time = vm.dateRange[1];
+          postData.startcreate_time = vm.dateRange2[0];
+          postData.endcreate_time = vm.dateRange2[1];
           vm.$refs.list.getData(postData,'first');
         },
         clear(){
           this.doctorName = "";
           this.citys = [];
           this.dateRange = "";
+          this.dateRange2 = "";
         },
         exportRecord(){
           let s_time = '';
           let e_time = '';
+          let s_time2 = '';
+          let e_time2 = '';
           let city_d = '';
           let vm = this;
           if(vm.citys.length >0){
@@ -173,8 +197,14 @@
             s_time = vm.$commonTools.formatDate4(vm.dateRange[0]);
             e_time = vm.$commonTools.formatDate4(vm.dateRange[1]);
           }
-          window.open( this.$commonTools.g_restUrl+"admin/cases/cases_export?realname="
-                       +vm.doctorName+"&citys="+city_d+"&start_time="+ s_time+"&end_time="+ e_time, "_blank");
+
+          if(this.dateRange2[0] != ""){
+            s_time2 = vm.$commonTools.formatDate4(vm.dateRange2[0]);
+            e_time2 = vm.$commonTools.formatDate4(vm.dateRange2[1]);
+          }
+          window.open( this.$commonTools.g_restUrl+"admin/cases/cases_export?realname=" +vm.doctorName
+                       +"&citys="+city_d+"&start_time="+ s_time+"&end_time="+ e_time
+                       +"&startcreate_time="+ s_time2+"&endcreate_time="+ e_time2, "_blank");
         },
         handleView (url) {
           window.open(url);
@@ -201,10 +231,6 @@
 
   .buttonDiv {
     text-align: right;
-    margin-bottom: 10px;
-  }
-
-  .modalRow{
     margin-bottom: 10px;
   }
 
