@@ -1,7 +1,6 @@
 <template>
   <div>
     <div class="title" ref="title">资料库</div>
-
     <div class="database-list" :style="{height: conH + 'px' }">
       <Row>
         <Col span="24" class="search-row">
@@ -21,12 +20,12 @@
                   <Col span="6">
                     <div class="icon-wrapper">
                       <Icon type="ios-redo" size="18" color="#8d8d8d" @click="share(item.id)"/>
-                      <span class="number" v-text="item.forward"></span>
+                      <span class="number" v-text="item.click"></span>
                     </div>
                   </Col>
                   <Col span="6">
                     <div class="icon-wrapper">
-                      <Icon type="md-eye" size="18" color="#8d8d8d"/>
+                      <Icon type="icon iconfont icon-haoyou" size="18" color="#8d8d8d"/>
                       <span class="number" v-text="item.click"></span>
                     </div>
                   </Col>
@@ -60,14 +59,17 @@
       </div>
     </div>
     <Modal v-model="shareModal" title="好友列表" @on-ok="sendShare"  width="350px">
-        <div class="introDiv">
-          <CheckboxGroup v-model="selectedFrineds">
-            <Checkbox :label="item.UserName" v-for="(item,index) in friends" :key="index" class="checkboxRow">
-              <Avatar shape="square" :src='"http://icampaign.com.cn/customers/Wxbot_r/temp/" + item.HeadImgUrl'></Avatar>
-              <span>{{item.RemarkName}}</span>
-            </Checkbox>
-          </CheckboxGroup>
-        </div>
+      <Row class="modalRow">
+        <Col span="17"><Input v-model="keyword"/></Col>
+      </Row>
+      <div class="introDiv">
+        <CheckboxGroup v-model="selectedFriends">
+          <Checkbox :label="item.UserName" v-for="(item,index) in filteredFriends" :key="index" class="checkboxRow">
+            <Avatar shape="square" :src='"http://icampaign.com.cn/customers/Wxbot_r/temp/" + item.HeadImgUrl'></Avatar>
+            <span>{{item.RemarkName}}</span>
+          </Checkbox>
+        </CheckboxGroup>
+      </div>
     </Modal>
   </div>
 </template>
@@ -93,15 +95,24 @@
               update:false
             },
             shareModal:false,
-            friends:'',
-            selectedFrineds:[],
-            recordId:''
+            friends:[],
+            selectedFriends:[],
+            recordId:'',
+            successFriends:[],
+            keyword:''
           }
       },
       mounted(){
         this.getBgHeight();
         this.getListData();
         this.getLimitData();
+      },
+      computed:{
+        filteredFriends:function () {
+          return this.friends.filter((friend) =>{
+            return friend.RemarkName.match(this.keyword);
+          })
+        }
       },
       methods:{
         getLimitData(){
@@ -187,13 +198,14 @@
         share(id){
           let vm = this;
           vm.recordId = id;
-          vm.selectedFrineds = [];
+          vm.selectedFriends = [];
           if(window.sessionStorage.getItem("QR_id") == null){
             vm.$Notice.info({
               title: '请先去微信管理页面扫码登录微信！'
             });
           }else {
             vm.shareModal = true;
+            vm.keyword = "";
             this.$http.get(vm.$commonTools.g_restUrl + 'admin/wxbot/get_contact_list', {
               params: {
                 bot_id: window.sessionStorage.getItem("QR_id")
@@ -211,15 +223,42 @@
         },
         sendShare(){
           let vm = this;
-          if(vm.selectedFrineds.length > 0){
-            for(let i = 0 ;i<vm.selectedFrineds.length;i++){
-              vm.sendMessage(vm.selectedFrineds[i]);
+          let arr = [];
+          if(vm.selectedFriends.length > 0){
+            for(let i = 0 ;i<vm.selectedFriends.length;i++){
+              arr.push(vm.sendMessage(vm.selectedFriends[i]));
             }
+            vm.$http.all(arr)
+              .then(vm.$http.spread(function (acct, perms) {
+                // 两个请求现在都执行完成
+                /*分享成功之后走这个方法*/
+                let postData = {};
+                postData.id = vm.recordId;
+                postData.friends = vm.successFriends;
+                vm.$http({
+                  method:"post",
+                  url:vm.$commonTools.g_restUrl+'admin/database/add_click',
+                  data:vm.$qs.stringify(postData)
+                })
+                  .then(function(response) {
+                    if(response.data.code == 200){
+                      vm.getListData();
+                    }
+                  })
+                  .catch(function(error) {
+                    console.log(error);
+                  });
+              }));
+          }else{
+            vm.$Notice.info({
+              title: '请先选择需要分享的好友!'
+            });
           }
+
         },
         sendMessage(uid){
           let vm = this;
-          this.$http.get('http://icampaign.com.cn:9080/api/send_msg_by_uid/',{
+          return this.$http.get('http://icampaign.com.cn:9080/api/send_msg_by_uid/',{
             params: {
               bot_id:window.sessionStorage.getItem("QR_id"),
               word:"http://icampaign.com.cn/customers/vrOnlinePc/backend/admin/database/detail?id="+vm.recordId,
@@ -227,7 +266,9 @@
             }
           })
             .then(function(response) {
-              if(response.data.code == 200 && response.data.data == true){}
+              if(response.data.code == 200 && response.data.data == true){
+                vm.successFriends.push(uid);
+              }
               else{
                 vm.$Notice.error({
                   title: '分享失败!'

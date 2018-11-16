@@ -35,6 +35,8 @@
 .ivu-layout-header{
   background: #fff;
   padding: 0;
+  height: 60px;
+  line-height: 60px;
 }
 
 /*左边菜单栏*/

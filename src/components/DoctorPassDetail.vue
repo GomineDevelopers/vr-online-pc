@@ -220,7 +220,7 @@
           /*图片上传相关end*/
           visit:{
             visitType:'',
-            visitTypeList:[{value: '微信',label: '微信'},{value: '电话',label: '电话'},{value: '短信',label: '短信'},{value: '邮件',label: '邮件'},{value: '其他',label: '其他'}],
+            visitTypeList:[{value: '微信',label: '微信'},{value: '电话',label: '电话'},{value: '短信',label: '短信'},{value: '邮件',label: '邮件'},{value: '群发',label: '群发'},{value: '其他',label: '其他'}],
             visitPurposeList:[{value: '破冰',label: '破冰'},{value: '转化',label: '转化'},{value: '提升',label: '提升'},{value: '调研',label: '调研'},{value: '活动',label: '活动'},{value: '兑奖',label: '兑奖'},{value: '其他',label: '其他'}],
             visitDate:'',
             visitDate1:'',

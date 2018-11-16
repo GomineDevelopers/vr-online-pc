@@ -99,6 +99,7 @@
             if (response.data.code == 200) {
               window.sessionStorage.removeItem("token");
               window.sessionStorage.removeItem("UserData_name");
+              window.sessionStorage.removeItem("QR_id");
               vm.$router.replace({name: "Login"});
             }
           })

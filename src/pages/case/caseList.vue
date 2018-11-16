@@ -31,7 +31,7 @@
                     ref="list"></table-list>
       </div>
 
-      <Modal v-model="caseModal" title="病例详情" :footer-hide="true">
+      <Modal v-model="caseModal" title="病例详情" @on-ok="saveStatus">
         <Row type="flex" align="middle" class="modalRow">
           <Col span="3" class="titleFont">医生姓名</Col>
           <Col span="5"><span v-text="caseDetail.realname"></span></Col>
@@ -94,6 +94,17 @@
             <div v-else>无</div>
           </Col>
         </Row>
+        <Row class="modalRow">
+          <Col span="5" class="titleFont">是否合格</Col>
+        </Row>
+        <Row class="modalRow">
+          <Col span="24" >
+            <RadioGroup v-model="checkStatus">
+              <Radio label="合格"></Radio>
+              <Radio label="不合格"></Radio>
+            </RadioGroup>
+          </Col>
+        </Row>
       </Modal>
     </div>
 </template>
@@ -120,7 +131,9 @@
             detail:false,
             export:false
           },
-          btnLimit_F : ''
+          btnLimit_F : '',
+          checkStatus:"",
+          recordId:''
         }
       },
       components:{
@@ -146,11 +159,12 @@
         },
         getBgHeight() {
           let vm = this;
-          vm.tableBgH = document.documentElement.clientHeight -64 -24 * 2 -(vm.$refs.title.$el.offsetHeight + 10) -(vm.$refs.searchCard.offsetHeight + 20) -20;
-          vm.fatherH = vm.tableBgH - (vm.$refs.buttonDiv.offsetHeight + 10 * 2);
+          vm.tableBgH = document.documentElement.clientHeight -64 -24 * 2 -(vm.$refs.title.$el.offsetHeight + 10) -(vm.$refs.searchCard.offsetHeight + 20) -3;
+          vm.fatherH = vm.tableBgH - (vm.$refs.buttonDiv.offsetHeight + 10 * 2) - 20;
         },
         goDetail(id){
           let vm = this;
+          vm.recordId = id;
           this.$http.get(vm.$commonTools.g_restUrl+ 'admin/cases/cases_detail',{
             params: {
               id : id
@@ -159,6 +173,7 @@
             .then(function(response) {
               if(response.data.code == 200){
                 vm.caseDetail = response.data.data;
+                vm.checkStatus = response.data.data.check == '1'?"不合格":"合格";
                 vm.caseModal = true;
               }
             })
@@ -209,6 +224,24 @@
         handleView (url) {
           window.open(url);
         },
+        saveStatus(){
+          let vm = this;
+          this.$http.get(vm.$commonTools.g_restUrl+ 'admin/cases/cases_check_change',{
+            params: {
+              id : vm.recordId,
+              check:vm.checkStatus == '合格'?'0':'1'
+            }
+          })
+            .then(function(response) {
+              if(response.data.code == 200){
+                vm.search();
+              }
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+
+        }
       }
     }
 </script>

@@ -20,7 +20,7 @@
                         <span v-text="item.RemarkName"></span>
                       </Col>
                       <Col span="4" offset="10" class="friends_list_btn">
-                        <Button @click="goChat(item.UserName)">发起会话</Button>
+                        <Button @click="goChat(item.UserName,item.NickName,item.RemarkName)">发起会话</Button>
                       </Col>
                     </Row>
                   </div>
@@ -153,8 +153,8 @@
               console.log(error);
             });
         },
-        goChat(id){
-          this.$router.push({name:'ChatFrame',params:{id:id}});
+        goChat(id,NickName,RemarkName){
+          this.$router.push({name:'ChatFrame',params:{id:id,nickName:NickName,remarkName:RemarkName}});
         }
       }
     }

@@ -178,7 +178,7 @@
         search(){
           let postData = {};
           let vm = this;
-          postData.speechcraft = vm.wordsTitle;1
+          postData.speechcraft = vm.wordsTitle;
           postData.username = vm.wordsCreater;
           postData.type = vm.selectedType1;
           postData.product = vm.selectdProduct;

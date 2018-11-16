@@ -4,7 +4,14 @@
     <div class="chat_bg" :style="{height: bgH + 'px' }">
       <div class="chat_text" ref="chatText">您好，<span class="nameFont" v-text="name"></span>。目前您正在使用网页版微信。</div>
       <div class="chat_main" :style="{height: mainH + 'px' }">
-        <div class="chat_main_user" ref="user">刘菲菲（北京大学第一附属医院）</div>
+        <div class="chat_main_user" ref="user">
+          <Row>
+            <Col span="2"><div @click="backTo"><Icon type="md-arrow-round-back" /></div></Col>
+            <Col span="22" style="text-align: center">
+              <span v-text="$route.params.remarkName == ''?$route.params.nickName:$route.params.remarkName"></span>
+            </Col>
+          </Row>
+        </div>
         <Row>
           <Col span="18">
             <div class="chat_main_left" :style="{height: conH + 'px' }">
@@ -53,18 +60,24 @@
           </Col>
           <Col span="6">
             <div class="chat_main_right" :style="{height: conH + 'px' }">
-              <div class="speech_title">话术资料库</div>
+              <div class="speech_title" ref="speech_title">话术资料库</div>
               <div class="speech_con">
-                <Input search enter-button/>
-                <div class="speech_list">
-                  *常见医药销售话术
+                <div ref="speech_input"><Input v-model="keyWord" search enter-button @on-search="search"/></div>
+                <div class="speech_list_div" :style="{height: wordH + 'px' }">
+                  <div class="speech_list" v-for="item in wordData" :key="item.id">
+                    <Poptip confirm title="复制该话术内容" @on-ok="copyCon(item.auxiliary)">
+                      *<span v-text="item.speechcraft"></span>
+                    </Poptip>
+                  </div>
                 </div>
+              </div>
+              <div class="pageDiv" ref="pageDiv">
+                <Page :total="total" :current="curPage" size="small" show-total simple @on-change="changePage"/>
               </div>
             </div>
           </Col>
         </Row>
       </div>
-
     </div>
   </div>
 </template>
@@ -79,12 +92,19 @@
             mainH:'',
             conH:'',
             leftTopH:'',
-            sendCon:''
+            sendCon:'',
+            wordH:'',
+            loading:true,
+            wordData:[],
+            total:0,
+            curPage:1,
+            keyWord:''
           }
       },
       mounted(){
         this.name = window.sessionStorage.getItem("UserData_name");
         this.getBgHeight();
+        this.getWordLibrary();
       },
       methods:{
         getBgHeight(){
@@ -93,6 +113,50 @@
           vm.mainH = vm.bgH -(vm.$refs.chatText.offsetHeight + 20);
           vm.conH = vm.mainH -(vm.$refs.user.offsetHeight);
           vm.leftTopH = vm.mainH -(vm.$refs.user.offsetHeight)-180;
+          vm.wordH = vm.conH -(vm.$refs.speech_title.offsetHeight)-(vm.$refs.speech_input.offsetHeight)-(vm.$refs.pageDiv.offsetHeight) -20;
+        },
+        getWordLibrary(){
+          let vm = this;
+          let postData = {};
+          postData.page = vm.curPage;
+          postData.speechcraft = vm.keyWord;
+          this.$http({
+            method:"post",
+            url:vm.$commonTools.g_restUrl+ 'admin/speech/speech_list',
+            data:vm.$qs.stringify(postData)
+          })
+            .then(function(response) {
+              if(response.data.code == 200){
+                vm.wordData = response.data.list.data;
+                vm.total = response.data.list.total;
+                vm.loading = false;
+                vm.$Loading.finish();
+              }
+            })
+            .catch(function(error) {
+              vm.$Loading.error();
+              console.log(error);
+            });
+        },
+        changePage(curpage){
+          this.curPage = curpage;
+          this.getWordLibrary();
+        },
+        search(){
+          this.curPage = 1;
+          this.getWordLibrary();
+        },
+        copyCon(message){
+          let vm = this;
+          vm.$copyText(message).then(function (e) {
+            vm.$Notice.success({
+              title: '复制成功，右键粘贴!'
+            });
+          }, function (e) {
+            vm.$Notice.error({
+              title: '复制失败!'
+            });
+          })
         },
         sendMessage(){
           let vm = this;
@@ -117,6 +181,9 @@
             .catch(function(error) {
               console.log(error);
             });
+        },
+        backTo(){
+          this.$router.go(-1);
         }
       }
     }
@@ -136,7 +203,7 @@
   .chat_text{
     font-weight: 600;
     font-size: 14px;
-    padding: 20px 0 0 20px;
+    padding: 20px 0 5px 20px;
   }
 
   .chat_text .nameFont{
@@ -154,7 +221,7 @@
     background-color: #79a34f;
     color: white;
     font-size: 16px;
-    text-align: center;
+    /*text-align: center;*/
     padding: 10px;
   }
 
@@ -170,6 +237,7 @@
     border-left: 1px solid #e3e3e3;
     border-bottom: 1px solid #e3e3e3;
     border-right: 1px solid #e3e3e3;
+    position: relative;
   }
 
   .chat_main_right .speech_title{
@@ -179,6 +247,11 @@
 
   .chat_main_right .speech_con{
     padding: 0px 20px 10px 20px;
+  }
+
+  .chat_main_right .speech_list_div{
+    padding-top: 10px;
+    overflow-y: auto;
   }
 
   .chat_main_right .speech_list{
@@ -283,4 +356,10 @@
     word-break: normal;
   }
   /*对话起泡end*/
+  .pageDiv{
+    padding: 0 20px;
+    position: absolute;
+    bottom: 16px;
+    right: 0;
+  }
 </style>

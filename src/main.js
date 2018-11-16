@@ -7,6 +7,7 @@ import router from './router'
 import axios from 'axios';
 import qs from 'qs';
 import JsonExcel from 'vue-json-excel'
+import VueClipboard from 'vue-clipboard2'
 import {commonTools} from '../static/js/common';
 import iView from 'iview'
 import 'iview/dist/styles/iview.css'
@@ -19,8 +20,9 @@ Vue.prototype.$http = axios;
 Vue.prototype.$commonTools = commonTools;
 Vue.prototype.$qs = qs;
 Vue.use(iView);
-Vue.component('downloadExcel',JsonExcel)
+Vue.component('downloadExcel',JsonExcel);
 Vue.use(VCharts);
+Vue.use(VueClipboard);
 
 router.beforeEach((to, from, next) => {
   iView.LoadingBar.start();

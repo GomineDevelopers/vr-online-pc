@@ -165,6 +165,24 @@
             },
             {title:"分组",key:"group"},
             {title:"主述与病史",key:"illness"},
+            {title: "状态",key: "check",width:94,align:"center",
+              render:(h,params)=>{
+                let texts = '';
+                let type = "";
+                if(params.row.check == '0'){
+                  texts = '合格';
+                  type = 'green';
+                }else if(params.row.check == '1'){
+                  texts = '不合格';
+                  type = 'red';
+                }
+                return h('Tag',{
+                  props:{
+                    color:type
+                  },
+                },texts)
+              }
+            },
             {title:"上传日期",key:"create_time",align: "center",width:150,
               render:(h,params)=>{
                 let texts = '';

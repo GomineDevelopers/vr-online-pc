@@ -21,7 +21,7 @@ import Statistics from '@/pages/statistics/statistics'
 
 import demo01 from '@/pages/demo/demo01'
 
-Vue.use(Router)
+Vue.use(Router);
 
 export default new Router({
   routes: [
@@ -83,7 +83,7 @@ export default new Router({
           }
         },
         {
-          path: 'chatframe/:id',
+          path: 'chatframe/:id/:nickName/:remarkName',
           component: ChatFrame,
           name:'ChatFrame',
           meta:{
