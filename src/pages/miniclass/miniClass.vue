@@ -88,7 +88,8 @@
           </Col>
         </Row>
         <Row>
-          <Col span="24" offset="2"><Button type="dashed" @click="addAttend">+添加</Button></Col>
+          <Col span="2" offset="2"><Button type="dashed" @click="addAttend">+添加</Button></Col>
+          <Col span="20"><Button type="dashed" @click="addAttendHand">+手动添加</Button></Col>
         </Row>
       </Modal>
       <Modal v-model="wk.viewWKModal" title="微课记录" width="850" :footer-hide="true">
@@ -145,11 +146,29 @@
                 <Icon type="ios-arrow-up" size="26" color="#a1a99b" v-show="!item.isShow" @click="showTable(index,item)"/>
               </Col>
             </Row>
-            <Table v-if="item.isShow" border ref="selection" :columns="wk.docList.columns" :data="wk.docList.data"
+            <Table v-if="item.isShow" border ref="selection" :columns="wk.docList.columns_view" :data="wk.docList.data"
                    height="300" :loading="wk.docList.loading"
                    @on-select="onSelect" @on-select-cancel="onSelectRemove" @on-select-all="selectAll" @on-select-all-cancel="cancelAll"></Table>
           </div>
         </div>
+      </Modal>
+
+      <Modal v-model="wk.docList.doctorListModal_hand" draggable title="平台所有人" @on-ok="saveAttend_hand">
+        <Row  type="flex" align="middle" class="modalRow">
+          <Col span="3">姓名/昵称</Col>
+          <Col span="7">
+            <Input v-model="wk.docList.name"/>
+          </Col>
+          <Col span="2" offset="1">医院</Col>
+          <Col span="7">
+            <Input v-model="wk.docList.hospital"/>
+          </Col>
+          <Col span="3" offset="1">
+            <Button type="success" @click="search">搜索</Button>
+          </Col>
+        </Row>
+        <Table ref="selection" :columns="wk.docList.columns_hand" :data="wk.docList.data_hand" :loading="wk.docList.loading_hand" height="400"
+               @on-select="selected_hand" @on-select-cancel="unSelected_hand" @on-select-all="selectedAll_hand" @on-select-all-cancel="unSelectedAll_hand"></Table>
       </Modal>
     </div>
 </template>
@@ -159,6 +178,7 @@
       name: "miniClass",
       data(){
           return{
+            handAdd:0,
             tableBgH:'',
             tableH:'',
             columns: [
@@ -267,7 +287,46 @@
                   }},
                 {title:'所属医院',key:'hospital'},
                 {title:'科室',key:'department'},
-                {title:'职称',key:'job'},
+                {title:'昵称',key:'nickname'},
+                {title:'城市',key:'citys'},
+                {title:"操作",key: "action",align:"center",
+                  render:(h, params) =>{
+                    return h("div", [
+                      h("Tooltip",{props:{trigger:"hover",content:"删除", placement:"top"}},
+                        [h("Icon", {
+                          props: {
+                            type: "icon iconfont icon-shanchu"
+                          },
+                          style: {
+                            color: "#4fb115",
+                          },
+                          on: {
+                            click: () => {
+                              this.delAttend(params.row);
+                            }
+                          }
+                        })]
+                      )
+                    ]);
+                  }
+                }
+              ],
+              columns_view:[
+                {title:'姓名',key:'realname',
+                  render:(h,params)=>{
+                    let texts = "";
+                    if(params.row.uid == 0 || params.row.realname == ""){//uid是0的话是未匹配到，uid不为0但是realname为空是只关注未注册
+                      texts = params.row.nickname;
+                    }else{
+                      texts = params.row.realname;
+                    }
+                    return h('span',{
+                      props:{},
+                    },texts)
+                  }},
+                {title:'所属医院',key:'hospital'},
+                {title:'科室',key:'department'},
+                {title:'昵称',key:'nickname'},
                 {title:'城市',key:'citys'}
               ],
               data2:[],
@@ -292,17 +351,42 @@
                 data:[],
               },
               updateDate:'',
-              docList:{
-                doctorListModal:false,
+              docList: {
+                doctorListModal: false,
                 columns: [
-                  {type: 'selection',width: 60,align: 'center'},
-                  {title: '微信备注',key: 'NickName'}
+                  {type: 'selection', width: 60, align: 'center'},
+                  {title: '微信备注', key: 'NickName'}
                 ],
                 data: [],
-                selectedList:[],
-                postList:[],
-                groupList:[],
-                loading:true,
+                selectedList: [],
+                postList: [],
+                groupList: [],
+                loading: true,
+                doctorListModal_hand: false,
+                columns_hand: [
+                  {title: "序号", type: "selection", width: 50, align: "center"},
+                  {title: "头像", key: "avatar", width: 60,
+                    render: (h, params) => {
+                      return h("img", {
+                        props: {},
+                        attrs: {
+                          src: params.row.avatar
+                        },
+                        style: {
+                          width: "32px",
+                        }
+                      })
+                    }
+                  },
+                  {title: "姓名", key: "realname"},
+                  {title: "昵称", key: "nickname"},
+                  {title: "医院", key: "hospital"},
+                ],
+                data_hand: [],
+                selectedList_hand: [],
+                loading_hand: true,
+                name: '',
+                hospital: ''
               }
             },
             btnLimit:{
@@ -509,6 +593,7 @@
               postData.group = "";
             }
 
+
             this.$http({
               method:"post",
               url:vm.$commonTools.g_restUrl+'admin/lesson/lesson_edit',
@@ -549,7 +634,7 @@
           vm.wk.num = "";
           vm.wk.intro = "";
           vm.wk.title = "";
-          vm.wk.doctor.name = "",
+          vm.wk.doctor.name = "";
           vm.wk.doctor.hospital = "";
           vm.wk.doctor.department = "";
           vm.wk.doctor.title = "";
@@ -561,6 +646,7 @@
           });
           vm.wk.data2 = [];
           vm.wk.docList.selectedList = [];
+          vm.handAdd = 0;//为了一次新增就要把所有人员列表去掉之前已选中的
         },
         del(id){
           let vm = this;
@@ -589,6 +675,8 @@
             }
           });
         },
+
+        /*关于参会人员的操作*/
         addAttend(){
           let vm = this;
           this.$http.get(vm.$commonTools.g_restUrl +'admin/wxbot/scanState',{
@@ -667,6 +755,87 @@
             });
 
 
+        },
+        addAttendHand(){
+          ++this.handAdd;
+          this.search();
+          this.wk.docList.doctorListModal_hand = true;
+        },
+        search(){
+          let vm = this;
+          vm.$http.get(vm.$commonTools.g_restUrl+'admin/wxbot/doctors_list', {
+            params: {
+              name: vm.wk.docList.name,
+              hospital: vm.wk.docList.hospital
+            }
+          })
+            .then(function(response) {
+              if(response.data.code == 200){
+                if(vm.handAdd == 1){
+                  vm.wk.docList.data_hand = response.data.list;
+                }else{
+                  if(vm.wk.docList.selectedList_hand.length >0){
+                    vm.wk.docList.selectedList_hand.forEach(function (selectedEle) {
+                      response.data.list.forEach(function (ele) {
+                        if(selectedEle.nickname === ele.nickname){
+                          ele._checked = true;
+                        }
+                      });
+                    });
+                  }
+                  vm.wk.docList.data_hand = response.data.list;
+                }
+
+
+                vm.wk.docList.loading_hand = false;
+              }
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        },
+        saveAttend_hand(){
+          let vm = this;
+          if(vm.wk.docList.selectedList_hand.length>0){
+            for(let i = 0; i < vm.wk.docList.selectedList_hand.length; i++){
+              let repeat = false;
+              for(let j = 0; j < vm.wk.data2.length; j++){
+                if(vm.wk.docList.selectedList_hand[i].uid == vm.wk.data2[j].uid){
+                  repeat = true;
+                  break;
+                }
+              }
+              if(!repeat){
+                vm.wk.data2.push(vm.wk.docList.selectedList_hand[i]);
+              }
+            }
+          }
+        },
+        selected_hand(selection, row) {
+          this.wk.docList.selectedList_hand = selection;
+        },
+        unSelected_hand(selection, row) {
+          this.wk.docList.selectedList_hand = selection;
+        },
+        selectedAll_hand(selection){
+          this.wk.docList.selectedList_hand = selection;
+        },
+        unSelectedAll_hand(selection){
+          this.wk.docList.selectedList_hand = selection;
+        },
+        delAttend(row){
+          let vm = this;
+          vm.wk.data2.forEach(function (ele,index,array) {
+            if(row.nickname === ele.nickname){
+              vm.wk.data2.splice(index,1);
+            }
+          });
+
+          vm.wk.docList.selectedList_hand.forEach(function (ele,index,array) {
+            if(row.nickname === ele.nickname){
+              vm.wk.docList.selectedList_hand.splice(index,1);
+            }
+          });
         },
         onSelect(selection,row){
           this.wk.docList.selectedList = selection;

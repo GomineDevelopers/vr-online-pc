@@ -19,7 +19,7 @@
                 <Row>
                   <Col span="6">
                     <div class="icon-wrapper">
-                      <Icon type="ios-redo" size="18" color="#8d8d8d" @click="share(item.id)"/>
+                      <Icon type="ios-redo" size="18" color="#8d8d8d" @click="share(item.id,item.description)"/>
                       <span class="number" v-text="item.click"></span>
                     </div>
                   </Col>
@@ -98,6 +98,7 @@
             friends:[],
             selectedFriends:[],
             recordId:'',
+            description:'',
             successFriends:[],
             keyword:''
           }
@@ -195,9 +196,10 @@
             params: { editId: id }
           })
         },
-        share(id){
+        share(id,description){
           let vm = this;
           vm.recordId = id;
+          vm.description = description;
           vm.selectedFriends = [];
           if(window.sessionStorage.getItem("QR_id") == null){
             vm.$Notice.info({
@@ -261,7 +263,7 @@
           return this.$http.get('http://icampaign.com.cn:9080/api/send_msg_by_uid/',{
             params: {
               bot_id:window.sessionStorage.getItem("QR_id"),
-              word:"http://icampaign.com.cn/customers/vrOnlinePc/backend/admin/database/detail?id="+vm.recordId,
+              word:"http://icampaign.com.cn/customers/vrOnlinePc/backend/admin/database/detail?id="+vm.recordId+'  '+vm.description,
               uid:uid
             }
           })

@@ -86,7 +86,7 @@
           </Col>
         </Row>
         <Row class="modalRow">
-          <Col span="5" class="titleFont">其他信息</Col>
+          <Col span="5" class="titleFont">随访情况</Col>
         </Row>
         <Row class="modalRow">
           <Col span="24" >

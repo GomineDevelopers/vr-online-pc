@@ -54,7 +54,7 @@
       </Row>
     </Modal>
 
-    <Modal v-model="libModalView" title="话术详情" :footer-hide="true">
+    <Modal v-model="libModalView" title="话术详情" :footer-hide="true" @on-cancel="cancel">
       <Row class="rowBottom">
         <Col span="4" class="titleFont">话术标题</Col>
         <Col span="20"><span v-text="modalData.speechcraft"></span></Col>
@@ -241,7 +241,8 @@
           let vm = this;
           this.$http.get(vm.$commonTools.g_restUrl+"admin/speech/speech_detail",{
             params: {
-              id : id
+              id : id,
+              operate:'detail'
             }
           })
             .then(function(response) {
@@ -252,6 +253,15 @@
             .catch(function(error) {
               console.log(error);
             });
+        },
+        cancel(){
+          let postData = {};
+          let vm = this;
+          postData.speechcraft = vm.wordsTitle;
+          postData.username = vm.wordsCreater;
+          postData.type = vm.selectedType1;
+          postData.product = vm.selectdProduct;
+          vm.$refs.list.getData(postData);
         }
 
       }

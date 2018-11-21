@@ -9,6 +9,12 @@
             <Col span="4"><Input v-model="doctorName" clearable/></Col>
             <Col span="2" class="searchFont">微信昵称</Col>
             <Col span="4"><Input v-model="nickName" clearable/></Col>
+            <Col span="2" class="searchFont">状态</Col>
+            <Col span="4">
+              <Select v-model="status">
+                <Option v-for="item in statusList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+              </Select>
+            </Col>
           </Row>
           <Row type="flex" align="middle" class="search_row">
             <Col span="2" class="searchFont">标签</Col>
@@ -25,17 +31,18 @@
             </Col>
           </Row>
         </div>
-        <div class="tableDiv" :style="{height:tableBgH+'px'}">
+        <div class="tableDiv">
           <div class="buttonDiv" ref="buttonDiv">
             <download-excel style="display: inline-block;" :data = "excelData" :fields="excelFileds" :name=" '医生管理'+ excelTime+'.xls'" v-if="btnLimit.export">
               <Button icon="icon iconfont icon-excel" @click="exportRecord" v-if="btnLimit.export">导出Excel</Button>
             </download-excel>
             <Button icon="md-add" @click="showLabelModal" v-if="btnLimit.addTag">添加标签</Button>
+            <Button icon="md-add" @click="showVisitModal">添加群发拜访</Button>
           </div>
-          <Table ref="selection" :columns="columns2" :data="data2" :height="tableH" :loading="loading"
+          <Table ref="selection" :columns="columns2" :data="data2" :loading="loading"
                  @on-select="selected" @on-select-cancel="unSelected" @on-select-all="selectedAll" @on-select-all-cancel="unSelectedAll"></Table>
           <div class="pageDiv" ref="pageDiv">
-            <Page :total="totalPage" show-elevator show-total :current="curPage" @on-change="changePage"/>
+            <Page :total="totalPage" show-elevator show-total :current="curPage" :page-size="perPage" @on-change="changePage"/>
           </div>
         </div>
 
@@ -177,12 +184,64 @@
         <Modal v-model="detailPassModel" :footer-hide="true" fullscreen class="fullModal" @on-cancel="getData2">
           <doctor-pass-detail ref="c1" :btnLimit_F="btnLimit_F"></doctor-pass-detail>
         </Modal>
+        <Modal v-model="visit.addVisitModal" title="添加群发拜访记录" @on-ok="saveVisitRecord">
+          <Row class="modalRow" type="flex" align="middle">
+            <Col span="3"><span class="necessary">*</span>拜访方式</Col>
+            <Col span="9">
+              <Input v-model="visit.type" readonly="readonly"/>
+            </Col>
+            <Col span="3" offset="1"><span class="necessary">*</span>拜访时间</Col>
+            <Col span="8">
+              <DatePicker ref="date" type="datetime" v-model="visit.visitDate" :value="visit.visitDate" format="yyyy-MM-dd HH:mm" :options="visit.optionsDate"></DatePicker>
+            </Col>
+          </Row>
+          <Row class="modalRow" type="flex" align="middle">
+            <Col span="3"><span class="necessary">*</span>拜访目的</Col>
+            <Col span="9">
+              <Select v-model="visit.visitPurpose" clearable ref="purpose">
+                <Option v-for="item in visit.visitPurposeList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+              </Select>
+            </Col>
+          </Row>
+          <Row class="modalRow" type="flex" align="middle">
+            <Col span="3"><span class="necessary">*</span>拜访内容</Col>
+            <Col span="21">
+              <Input v-model="visit.visitContent" type="textarea" :rows="4"/>
+            </Col>
+          </Row>
+          <Row>
+            <Col span="21" offset="3">
+              <div class="upload-list" v-for="item in visit.uploadList">
+                <template v-if="item.status === 'finished'">
+                  <img :src="item.url">
+                  <div class="upload-list-cover">
+                    <Icon type="ios-eye-outline" @click.native="handleView(item)"></Icon>
+                    <Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>
+                  </div>
+                </template>
+                <template v-else>
+                  <Progress v-if="item.showProgress" :percent="item.percentage" hide-info></Progress>
+                </template>
+              </div>
+              <Upload ref="upload" :show-upload-list="false"
+                      :on-success="handleSuccess" :format="['jpg','jpeg','png']" :max-size="2048"
+                      :on-format-error="handleFormatError" :on-exceeded-size="handleMaxSize"
+                      :before-upload="handleBeforeUpload" multiple type="drag"
+                      :action = visit.serverImgUrl
+                      style="display: inline-block;width:58px;">
+                <div style="width: 58px;height:58px;line-height: 58px;">
+                  <Icon type="ios-camera" size="20"></Icon>
+                </div>
+              </Upload>
+            </Col>
+          </Row>
+        </Modal>
     </div>
 </template>
 
 <script>
   import DoctorPassDetail from '@/components/DoctorPassDetail.vue'
-  import areaList from "../../../static/js/area.js"
+  import areaList from "../../../static/js/area2.js"
 export default {
   name: "doctor",
   data() {
@@ -196,9 +255,10 @@ export default {
       nickName:'',
       city:[],
       vr:'',
-      tableBgH: "",
-      tableH: "",
+      status:'',
+      statusList: [],
       curPage:1,
+      perPage:10,
       data2: [],
       totalPage:0,
       loading:true,
@@ -392,17 +452,30 @@ export default {
         addTag:false,
         review:false
       },
-      btnLimit_F:''
+      btnLimit_F:'',
+      visit:{
+        addVisitModal:false,
+        type:'群发',
+        visitDate:'',
+        visitPurpose:'',
+        visitPurposeList:[{value: '破冰',label: '破冰'},{value: '转化',label: '转化'},{value: '提升',label: '提升'},{value: '调研',label: '调研'},{value: '活动',label: '活动'},{value: '兑奖',label: '兑奖'},{value: '其他',label: '其他'}],
+        visitContent:'',
+        /*图片上传相关start*/
+        serverImgUrl:'http://icampaign.com.cn/customers/vrOnlinePc/backend/admin/images/add_images',
+        imgNameList:[],
+        uploadList: [],
+        /*图片上传相关end*/
+      }
     };
   },
   components: {
     'doctor-pass-detail': DoctorPassDetail
   },
   mounted() {
-    this.getBgHeight();
     this.getData2();
     this.getLabels();
     this.getLimitData();
+    this.visit.uploadList = this.$refs.upload.fileList;
   },
   methods: {
     getLimitData(){
@@ -426,11 +499,6 @@ export default {
       });
       vm.btnLimit_F = vm.btnLimit;
     },
-    getBgHeight() {
-      let vm = this;
-      vm.tableBgH = document.documentElement.clientHeight -64 -24 * 2 -(vm.$refs.title.offsetHeight + 10) -(vm.$refs.searchCard.offsetHeight + 20) - 9;
-      vm.tableH = vm.tableBgH - (vm.$refs.buttonDiv.offsetHeight + 10 * 2) - (vm.$refs.pageDiv.offsetHeight + 10 * 2) -40;
-    },
     getData2() {
       let vm = this;
       let postData = {};
@@ -441,6 +509,7 @@ export default {
       postData.label = vm.tagValue_search;
       postData.citys = vm.city;
       postData.vr = vm.vr;
+      postData.is_registered = vm.status;
       this.$http({
         method:"post",
         url:vm.$commonTools.g_restUrl+'admin/doctors/doctors_list',
@@ -450,6 +519,7 @@ export default {
           if(response.data.code == 200){
             vm.data2 = response.data.list.data;
             vm.totalPage = response.data.list.total;
+            vm.perPage = response.data.list.per_page;
             vm.loading = false;
             vm.$Loading.finish();
           }else if(response.data.code == 202){
@@ -476,6 +546,7 @@ export default {
       vm.tagValue_search = [];
       vm.city = [];
       vm.vr = "";
+      vm.status = "";
     },
     isPass(id,status){//通过or拒绝
       let vm = this;
@@ -599,6 +670,7 @@ export default {
         .then(function(response) {
           if(response.data.code == 200){
             vm.tagData = response.data.list;
+            vm.statusList = response.data.is_registered;
           }
         })
         .catch(function(error) {
@@ -649,6 +721,122 @@ export default {
         });
       }
     },
+    /*群发拜访相关start*/
+    showVisitModal(){
+      let vm = this;
+      vm.clear();
+      if(vm.selections.length == 0){
+        vm.$Notice.info({
+          title: '请先选择需要群发拜访的医生！'
+        });
+      }else{
+        vm.visit.addVisitModal = true;
+      }
+    },
+    validator(){
+      let vm = this;
+      let texts = "";
+      if(!vm.visit.visitDate){
+        texts = '请选择拜访时间！';
+      }else if(!vm.visit.visitPurpose){
+        texts = '请选择拜访目的！';
+      }else if(!vm.visit.visitContent){
+        texts = '请填写拜访内容！';
+      }
+
+      if (texts) {
+        vm.$Message.warning({
+          content: texts,
+          duration: 3
+        });
+        return false;
+      } else {
+        return true;
+      }
+    },
+    saveVisitRecord(){
+      let vm = this;
+      if(vm.validator()){
+        let postData = {};
+        let doctorIds = [];
+        vm.selections.forEach(function (value, index, array) {
+          doctorIds.push(value.id);
+        });
+        postData.visiting = vm.visit.type;
+        postData.visit_time = vm.visit.visitDate;
+        postData.purpose = vm.visit.visitPurpose;
+        postData.content = vm.visit.visitContent;
+        postData.doctors_id = doctorIds;
+        vm.$refs.upload.fileList.forEach(function (ele,index,arr) {
+          vm.imgNameList.push(ele.name);
+        });
+        postData.img = vm.imgNameList;
+        this.$http({
+          method:"post",
+          url:vm.$commonTools.g_restUrl+'admin/visit/visit_edit',
+          data:vm.$qs.stringify(postData)
+        })
+          .then(function(response) {
+            if(response.data.code == 200){
+              vm.$Notice.success({
+                title: '记录提交成功！'
+              });
+            }else{
+              vm.$Notice.error({
+                title: '记录提交出错，请重试！'
+              });
+            }
+          })
+          .catch(function(error) {
+            console.log(error);
+          });
+      }
+    },
+    clear(){
+      let vm = this;
+      vm.$refs.date.handleClear();
+      vm.$refs.purpose.clearSingleSelect();
+      vm.$refs.upload.fileList.forEach(function (ele,index,arr) {
+        vm.$refs.upload.fileList.splice(0,arr.length);
+      });
+      vm.imgNameList = [];
+      vm.visit.visitContent = "";
+    },
+    /*上传start*/
+    handleSuccess (res, file) {//图片上传成功
+      file.url = res.path;
+      file.name = res.filename;
+    },
+    handleView (item) {
+      window.open(item.url);
+    },
+    handleRemove (file) {
+      const fileList = this.$refs.upload.fileList;
+      this.$refs.upload.fileList.splice(fileList.indexOf(file), 1);
+    },
+    handleFormatError (file) {
+      this.$Notice.warning({
+        title: '文件格式错误',
+        desc:  file.name + ' 不是jpg或者png'
+      });
+    },
+    handleMaxSize (file) {
+      this.$Notice.warning({
+        title: '文件大小超出限制',
+        desc: file.name + '不能大于2M'
+      });
+    },
+    handleBeforeUpload () {
+      const check = this.visit.uploadList.length < 5;
+      if (!check) {
+        this.$Notice.warning({
+          title: '最多只能上传5个附件'
+        });
+      }
+      return check;
+    },
+    /*上传end*/
+    /*群发拜访相关end*/
     selected(selection, row) {
       this.selections = selection;
     },
@@ -661,6 +849,7 @@ export default {
     unSelectedAll(selection){
       this.selections = selection;
     },
+    //导出excel
     exportRecord(){
       let vm= this;
       let postData = {};
@@ -668,8 +857,10 @@ export default {
       postData.hospital = vm.hospitalName;
       postData.nickname = vm.nickName;
       postData.realname = vm.doctorName;
-      postData.label = vm.tagValue;
+      postData.label = vm.tagValue_search;
       postData.citys = vm.city;
+      postData.vr = vm.vr;
+      postData.is_registered = vm.status;
 
       vm.excelFileds = {
         '编号':'numbers',
@@ -680,6 +871,7 @@ export default {
         '省':'province',
         '市':'city',
         '区':'county',
+        '医院':'hospital',
         '医院科室':'department',
         '职称':'job',
         'VR':'vr',
@@ -763,6 +955,44 @@ export default {
     font-weight: 600;
   }
 
+/*图片上传start*/
+.upload-list{
+  display: inline-block;
+  width: 60px;
+  height: 60px;
+  text-align: center;
+  line-height: 60px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #fff;
+  position: relative;
+  box-shadow: 0 1px 1px rgba(0,0,0,.2);
+  margin-right: 4px;
+}
+.upload-list img{
+  width: 100%;
+  height: 100%;
+}
+.upload-list-cover{
+  display: none;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0,0,0,.6);
+}
+.upload-list:hover .upload-list-cover{
+  display: block;
+}
+.upload-list-cover i{
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  margin: 0 2px;
+}
+/*图片上传end*/
 </style>
 <style>
   .iconfont.icon-excel{

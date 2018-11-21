@@ -31,7 +31,7 @@
                 },texts)
               }
             },
-            {title: "被引用次数", key: "frequency", align: "center",width:100},
+            {title: "查看次数", key: "frequency", align: "center",width:100},
             {title: "操作", key: "action",width: 150,align: "center",
               render: (h, params) => {
                 return h("div", [
