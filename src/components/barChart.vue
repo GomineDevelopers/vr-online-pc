@@ -10,8 +10,13 @@
           series: {
             label: { show: true, position: "top",color:'#000'},
             itemStyle:{color:'#49c0c7'}
+          },
+          xAxis:{
+          axisLabel:{
+            interval:0
           }
         }
+        };
         return{
           chartData: {
             columns: [],
@@ -30,17 +35,15 @@
           let vm = this;
           let url = "";
           if(vm.tabType == '1'){
-            url = 'admin/statistics/getcitys';
+            url = 'admin/statistics/getcitys?time=today';
           }else if(vm.tabType == '3'){
             url = 'admin/statistics/getcitys';
           }else if(vm.tabType == '4'){
             url = 'admin/statistics/getcitys';
           }
 
-          this.$http({
-            method:"post",
-            url:vm.$commonTools.g_restUrl+ url,
-            /*data:vm.$qs.stringify(postData)*/
+          vm.$http.get(vm.$commonTools.g_restUrl+ url, {
+            params: {}
           })
             .then(function(response) {
               if(response.data.code == 200){
@@ -51,6 +54,21 @@
             .catch(function(error) {
               console.log(error);
             });
+
+          /*this.$http({
+            method:"post",
+            url:vm.$commonTools.g_restUrl+ url,
+            /!*data:vm.$qs.stringify(postData)*!/
+          })
+            .then(function(response) {
+              if(response.data.code == 200){
+                vm.chartData.rows = response.data.list.rows;
+                vm.chartData.columns = response.data.list.columns;
+              }
+            })
+            .catch(function(error) {
+              console.log(error);
+            });*/
 
         }
       }

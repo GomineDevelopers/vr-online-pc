@@ -37,7 +37,7 @@
               <Button icon="icon iconfont icon-excel" @click="exportRecord" v-if="btnLimit.export">导出Excel</Button>
             </download-excel>
             <Button icon="md-add" @click="showLabelModal" v-if="btnLimit.addTag">添加标签</Button>
-            <Button icon="md-add" @click="showVisitModal">添加群发拜访</Button>
+            <Button icon="md-add" @click="showVisitModal" v-if="btnLimit.addGroupSend">添加群发拜访</Button>
           </div>
           <Table ref="selection" :columns="columns2" :data="data2" :loading="loading"
                  @on-select="selected" @on-select-cancel="unSelected" @on-select-all="selectedAll" @on-select-all-cancel="unSelectedAll"></Table>
@@ -450,7 +450,8 @@ export default {
         detail:false,
         export:false,
         addTag:false,
-        review:false
+        review:false,
+        addGroupSend:false
       },
       btnLimit_F:'',
       visit:{
@@ -495,6 +496,8 @@ export default {
           vm.btnLimit.addTag = ele.checked;
         }else if(ele.icon == 'review'){
           vm.btnLimit.review = ele.checked;
+        }else if(ele.icon == 'addGroupSend'){
+          vm.btnLimit.addGroupSend = ele.checked;
         }
       });
       vm.btnLimit_F = vm.btnLimit;
@@ -724,7 +727,7 @@ export default {
     /*群发拜访相关start*/
     showVisitModal(){
       let vm = this;
-      vm.clear();
+      vm.clearVisit();
       if(vm.selections.length == 0){
         vm.$Notice.info({
           title: '请先选择需要群发拜访的医生！'
@@ -792,7 +795,7 @@ export default {
           });
       }
     },
-    clear(){
+    clearVisit(){
       let vm = this;
       vm.$refs.date.handleClear();
       vm.$refs.purpose.clearSingleSelect();
@@ -892,6 +895,10 @@ export default {
               ele.reg_time = vm.$commonTools.formatDate(ele.reg_time);
             });
             vm.excelData = response.data.list;
+          }else if(response.data.code == 202){
+            vm.$Notice.warning({
+              title: '下载无数据！'
+            });
           }
         })
         .catch(function(error) {

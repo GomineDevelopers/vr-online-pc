@@ -14,22 +14,22 @@
             <div class="registerCard_left">
               <div class="font1">
                 累计注册&emsp;<span class="font2" v-text="registerDoctor.count"></span>
-                {{registerDoctor.today_add}}&nbsp;({{registerDoctor.today_percentage}}%)
+                <!--{{registerDoctor.today_add}}&nbsp;({{registerDoctor.today_percentage}}%)
                 <div class="rotatetop" v-if="registerDoctor.today_status == '1'"><i class="icon iconfont icon-jiantou-top"></i></div>
                 <div class="rotatedown" v-else-if="registerDoctor.today_status == '0'"><i class="icon iconfont icon-jiantou-top"></i></div>
-                <div v-else="registerDoctor.today_status == ''">-</div>
+                <div v-else="registerDoctor.today_status == ''">-</div>-->
               </div>
-              <div>[好友医生：<span class="font3">？</span>]</div>
+              <!--<div>[好友医生：<span class="font3">？</span>]</div>-->
             </div>
           </Col>
           <Col span="12">
             <div class="registerCard_right">
               <div class="font1">
                 本月新增&emsp;<span class="font2" v-text="registerDoctor.month_add"></span>
-                {{registerDoctor.last_add}}&nbsp;({{registerDoctor.month_percentage}}%)
+                <!--{{registerDoctor.last_add}}&nbsp;({{registerDoctor.month_percentage}}%)
                 <div class="rotatetop" v-if="registerDoctor.month_status == '1'"><i class="icon iconfont icon-jiantou-top"></i></div>
                 <div class="rotatedown" v-else-if="registerDoctor.month_status == '0'"><i class="icon iconfont icon-jiantou-top"></i></div>
-                <div v-else="registerDoctor.month_status == ''">-</div>
+                <div v-else="registerDoctor.month_status == ''">-</div>-->
               </div>
             </div>
           </Col>
@@ -85,14 +85,24 @@
           series: {
             label: { show: true, position: "top",color:'#000'},
             itemStyle:{color:'#3fab23'}
-          }
-        },
-          this.chartExtend2 = {
-            series: {
-              label: { show: true, position: "top",color:'#000'},
-              itemStyle:{color:'#f37d38'}
+          },
+          xAxis:{
+            axisLabel:{
+              interval:0
             }
           }
+        };
+        this.chartExtend2 = {
+          series: {
+            label: { show: true, position: "top",color:'#000'},
+            itemStyle:{color:'#f37d38'}
+          },
+          xAxis:{
+            axisLabel:{
+              interval:0
+            }
+          }
+        };
           return{
             titleText:'统计分析',
             chartData: {
@@ -163,14 +173,13 @@
               console.log(error);
             });
         },
-        getBarData1(){
+        getBarData1(selectedDate){
           let vm = this;
-          let postData = {};
-          /*postData.time = vm.selectedPro;*/
-          this.$http({
-            method:"post",
-            url:vm.$commonTools.g_restUrl+'admin/statistics/getcitys',
-            /*data:vm.$qs.stringify(postData)*/
+
+          this.$http.get(vm.$commonTools.g_restUrl+ 'admin/statistics/getcitys', {
+            params: {
+              time:selectedDate
+            }
           })
             .then(function(response) {
               if(response.data.code == 200){
@@ -202,7 +211,7 @@
             });
         },
         changeDate(e){
-          console.info(e)
+          this.getBarData1(e);
         },
         tabChange(name){
           let vm = this;
