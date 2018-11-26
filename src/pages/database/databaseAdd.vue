@@ -11,26 +11,26 @@
         <FormItem class="form-label" label="标题：" prop="title">
           <Row>
             <Col span="12">
-              <Input v-model="formItem.title" placeholder="请输入标题"></Input>
+              <Input v-model.trim="formItem.title" placeholder="请输入标题"></Input>
             </Col>
           </Row>
         </FormItem>
         <FormItem label="作者：" prop="author">
           <Row>
             <Col span="12">
-              <Input v-model="formItem.author" placeholder="请输入作者"></Input>
+              <Input v-model.trim="formItem.author" placeholder="请输入作者"></Input>
             </Col>
           </Row>
         </FormItem>
         <FormItem label="关键词：" prop="keyWords">
           <Row>
             <Col span="12">
-              <Input v-model="formItem.keyWords" placeholder="请输入关键词"></Input>
+              <Input v-model.trim="formItem.keyWords" placeholder="请输入关键词"></Input>
             </Col>
           </Row>
         </FormItem>
         <FormItem label="描述：" prop="description">
-          <Input v-model="formItem.description" type="textarea" :autosize="{minRows: 4,maxRows: 6}" placeholder="请输入描述"></Input>
+          <Input v-model.trim="formItem.description" type="textarea" :autosize="{minRows: 4,maxRows: 6}" placeholder="请输入描述"></Input>
         </FormItem>
         <FormItem label="封面：">
           <Upload

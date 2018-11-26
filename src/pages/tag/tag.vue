@@ -42,17 +42,17 @@
     <Modal v-model="labelModel" draggable scrollable :title="modalTitle" @on-ok="saveLabel">
       <Row class="tag_modelRow">
         <Col span="8" class="tag_inputName"><span class="necessary">*</span>一级标签：</Col>
-        <Col span="16"><Input v-model="firstLabelName" clearable class="tag_input"/></Col>
+        <Col span="16"><Input v-model.trim="firstLabelName" clearable class="tag_input"/></Col>
       </Row>
       <Row class="tag_modelRow">
         <Col span="8" class="tag_inputName">二级标签：</Col>
         <Col span="16">
-          <Input v-model="secondLabelName" class="tag_input" icon="md-add" @on-click="addSeLabel"/>
+          <Input v-model.trim="secondLabelName" class="tag_input" icon="md-add" @on-click="addSeLabel"/>
         </Col>
       </Row>
       <Row class="input_top" v-for="(item,index) in secondList" :key="index">
         <Col span="16" offset="8">
-          <Input v-model="item.name" class="tag_input" icon="md-remove" @on-click="delSeLabel(index)"/>
+          <Input v-model.trim="item.name" class="tag_input" icon="md-remove" @on-click="delSeLabel(index)"/>
         </Col>
       </Row>
     </Modal>

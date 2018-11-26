@@ -11,12 +11,12 @@
           <div class="login_field">
             <div class="title">登录</div>
             <div class="userName">用户名</div>
-            <Input prefix="md-person" class="login_input" v-model="userName"/>
+            <Input prefix="md-person" class="login_input" v-model.trim="userName"/>
             <div class="password">密码</div>
-            <Input prefix="md-lock" class="login_input" v-model="password" type="password" @keyup.enter.native="login"/>
+            <Input prefix="md-lock" class="login_input" v-model.trim="password" type="password" @keyup.enter.native="login"/>
             <Row class="login_row">
               <Col span="12"><div class="login_rem"><Checkbox v-model="remUserName" @on-change="changeStatus">记住用户名</Checkbox></div></Col>
-              <Col span="12"><div class="login_for">忘记密码？</div></Col>
+              <Col span="12"><div class="login_for" @click="forget">忘记密码？</div></Col>
             </Row>
             <Button shape="circle" type="success" long class="login_btn" @click="login">登录</Button>
           </div>
@@ -69,6 +69,11 @@
             .catch(function (error) {
               console.log(error);
             });
+        },
+        forget(){
+          this.$Notice.warning({
+            title: '请联系系统管理员！'
+          });
         },
         getMeunData(){
           let vm = this;

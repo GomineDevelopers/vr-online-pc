@@ -12,9 +12,9 @@
       </Row>
       <Row type="flex" align="middle" class="search_row">
         <Col span="2" class="searchFont">话术标题</Col>
-        <Col span="4"><Input v-model="wordsTitle" clearable/></Col>
+        <Col span="4"><Input v-model.trim="wordsTitle" clearable/></Col>
         <Col span="2" class="searchFont">创建人</Col>
-        <Col span="4"><Input v-model="wordsCreater" clearable/></Col>
+        <Col span="4"><Input v-model.trim="wordsCreater" clearable/></Col>
         <Col span="2" class="searchFont">类别1</Col>
         <Col span="4">
           <Select v-model="selectedType1">

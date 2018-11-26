@@ -84,7 +84,7 @@
       <Row class="modalRow" type="flex" align="middle">
         <Col span="3"><span class="necessary">*</span>拜访内容</Col>
         <Col span="21">
-          <Input v-model="visit.visitContent" type="textarea" :rows="4"/>
+          <Input v-model.trim="visit.visitContent" type="textarea" :rows="4"/>
         </Col>
       </Row>
       <Row>

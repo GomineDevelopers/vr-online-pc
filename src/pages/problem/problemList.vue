@@ -5,7 +5,7 @@
       <Row type="flex" justify="center">
         <Col span="12" >
           <Input class="search" size="large" search enter-button="搜索" placeholder="请输入您要搜索的关键字"
-                 v-model="key" @on-search="searchFather"/>
+                 v-model.trim="key" @on-search="searchFather"/>
         </Col>
       </Row>
     </div>

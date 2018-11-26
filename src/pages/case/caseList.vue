@@ -4,7 +4,7 @@
       <div class="searchCard" ref="searchCard">
         <Row type="flex" align="middle" class="modalRow">
           <Col span="2" class="searchFont">医生姓名</Col>
-          <Col span="4"><Input v-model="doctorName" clearable/></Col>
+          <Col span="4"><Input v-model.trim="doctorName" clearable/></Col>
           <Col span="2" class="searchFont">所属城市</Col>
           <Col span="4"><Cascader :data="cities" v-model="citys" change-on-select></Cascader></Col>
           <Col span="2" class="searchFont">就诊日期</Col>

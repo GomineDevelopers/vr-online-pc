@@ -4,11 +4,11 @@
         <div class="searchCard" ref="searchCard">
           <Row type="flex" align="middle" class="search_row">
             <Col span="2" class="searchFont">所属医院</Col>
-            <Col span="4"><Input v-model="hospitalName" clearable/></Col>
+            <Col span="4"><Input v-model.trim="hospitalName" clearable/></Col>
             <Col span="2" class="searchFont">医生姓名</Col>
-            <Col span="4"><Input v-model="doctorName" clearable/></Col>
+            <Col span="4"><Input v-model.trim="doctorName" clearable/></Col>
             <Col span="2" class="searchFont">微信昵称</Col>
-            <Col span="4"><Input v-model="nickName" clearable/></Col>
+            <Col span="4"><Input v-model.trim="nickName" clearable/></Col>
             <Col span="2" class="searchFont">状态</Col>
             <Col span="4">
               <Select v-model="status">
@@ -24,7 +24,7 @@
             <Col span="2" class="searchFont">城市</Col>
             <Col span="4"><Cascader :data="cities" v-model="city" change-on-select></Cascader></Col>
             <Col span="2" class="searchFont">VR</Col>
-            <Col span="4"><Input v-model="vr" clearable/></Col>
+            <Col span="4"><Input v-model.trim="vr" clearable/></Col>
             <Col span="5" style="text-align: center">
               <Button type="success" @click="search">搜索</Button>
               <Button type="warning" @click="clear">重置</Button>
@@ -63,17 +63,17 @@
           <Row class="detail_row">
             <Col span="12">
               <span class="detail_title">医院：</span>
-              <Input v-model="detailData.hospital" class="inputStyle"/>
+              <Input v-model.trim="detailData.hospital" class="inputStyle"/>
             </Col>
             <Col span="12">
               <span class="detail_title">科室：</span>
-              <Input v-model="detailData.department" class="inputStyle"/>
+              <Input v-model.trim="detailData.department" class="inputStyle"/>
             </Col>
           </Row>
           <Row class="detail_row">
             <Col span="12">
               <span class="detail_title">职称：</span>
-              <Input v-model="detailData.job" class="inputStyle"/>
+              <Input v-model.trim="detailData.job" class="inputStyle"/>
             </Col>
             <Col span="12">
               <span class="detail_title">注册时间：</span>
@@ -83,11 +83,11 @@
           <Row class="detail_row">
             <Col span="12">
               <span class="detail_title">手机：</span>
-              <Input v-model="detailData.mobile"class="inputStyle"/>
+              <Input v-model.trim="detailData.mobile"class="inputStyle"/>
             </Col>
             <Col span="12">
               <span class="detail_title">邮箱：</span>
-              <Input v-model="detailData.email" class="inputStyle"/>
+              <Input v-model.trim="detailData.email" class="inputStyle"/>
             </Col>
           </Row>
           <Row class="detail_row">
@@ -188,7 +188,7 @@
           <Row class="modalRow" type="flex" align="middle">
             <Col span="3"><span class="necessary">*</span>拜访方式</Col>
             <Col span="9">
-              <Input v-model="visit.type" readonly="readonly"/>
+              <Input v-model.trim="visit.type" readonly="readonly"/>
             </Col>
             <Col span="3" offset="1"><span class="necessary">*</span>拜访时间</Col>
             <Col span="8">
@@ -206,7 +206,7 @@
           <Row class="modalRow" type="flex" align="middle">
             <Col span="3"><span class="necessary">*</span>拜访内容</Col>
             <Col span="21">
-              <Input v-model="visit.visitContent" type="textarea" :rows="4"/>
+              <Input v-model.trim="visit.visitContent" type="textarea" :rows="4"/>
             </Col>
           </Row>
           <Row>

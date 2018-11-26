@@ -14,9 +14,9 @@
       <Modal v-model="wk.addWKModal" title="添加微课记录" width="850" @on-ok="saveWkRecord">
         <Row type="flex" align="middle" class="modalRow">
           <Col span="2"><span class="necessary">*</span>微课标题</Col>
-          <Col span="4"><Input v-model="wk.title"/></Col>
+          <Col span="4"><Input v-model.trim="wk.title"/></Col>
           <Col span="2" offset="1"><span class="necessary">*</span>微课编号</Col>
-          <Col span="4"><Input v-model="wk.num"/></Col>
+          <Col span="4"><Input v-model.trim="wk.num"/></Col>
           <Col span="2" offset="1"><span class="necessary">*</span>微课时间</Col>
           <Col span="4">
             <DatePicker ref="datewk" type="datetime" v-model="wk.date" :value="wk.date" format="yyyy-MM-dd HH:mm"></DatePicker>
@@ -28,24 +28,24 @@
           <Col span="22">
             <Row class="modalRow" type="flex" align="middle">
               <Col span="1"><span class="necessary">*</span>姓名</Col>
-              <Col span="5"><Input v-model="wk.doctor.name"/></Col>
+              <Col span="5"><Input v-model.trim="wk.doctor.name"/></Col>
               <Col span="2" offset="1"><span class="necessary">*</span>所属医院</Col>
-              <Col span="6"><Input v-model="wk.doctor.hospital"/></Col>
+              <Col span="6"><Input v-model.trim="wk.doctor.hospital"/></Col>
               <Col span="1" offset="1"><span class="necessary">*</span>科室</Col>
-              <Col span="5"><Input v-model="wk.doctor.department"/></Col>
+              <Col span="5"><Input v-model.trim="wk.doctor.department"/></Col>
             </Row>
             <Row class="modalRow" type="flex" align="middle">
               <Col span="1"><span class="necessary">*</span>职称</Col>
-              <Col span="5"><Input v-model="wk.doctor.title"/></Col>
+              <Col span="5"><Input v-model.trim="wk.doctor.title"/></Col>
               <Col span="2" offset="1"><span class="necessary">*</span>身份证号</Col>
-              <Col span="6"><Input v-model="wk.doctor.IDcard"/></Col>
+              <Col span="6"><Input v-model.trim="wk.doctor.IDcard"/></Col>
             </Row>
           </Col>
         </Row>
         <Row class="modalRow">
           <Col span="2"><span class="necessary">*</span>微课简介</Col>
           <Col span="22">
-            <Input v-model="wk.intro" type="textarea" :rows="4"/>
+            <Input v-model.trim="wk.intro" type="textarea" :rows="4"/>
           </Col>
         </Row>
         <Row class="modalRow">
@@ -157,11 +157,11 @@
         <Row  type="flex" align="middle" class="modalRow">
           <Col span="3">姓名/昵称</Col>
           <Col span="7">
-            <Input v-model="wk.docList.name"/>
+            <Input v-model.trim="wk.docList.name"/>
           </Col>
           <Col span="2" offset="1">医院</Col>
           <Col span="7">
-            <Input v-model="wk.docList.hospital"/>
+            <Input v-model.trim="wk.docList.hospital"/>
           </Col>
           <Col span="3" offset="1">
             <Button type="success" @click="search">搜索</Button>
