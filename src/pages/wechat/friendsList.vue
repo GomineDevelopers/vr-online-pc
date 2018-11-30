@@ -13,7 +13,7 @@
             <Tabs :animated="false" @on-click="changeTab">
               <TabPane label="我的好友" name="1">
                 <div class="friends_list_lists_main" :style="{height: listRightH + 'px' }">
-                  <div class="friends_list_lists" v-for="item in friends">
+                  <div class="friends_list_lists" v-for="(item,index) in friends" :key="index">
                     <Row>
                       <Col span="10">
                         <Avatar :src='"http://icampaign.com.cn/customers/Wxbot_r/temp/" + item.HeadImgUrl'></Avatar>
@@ -28,14 +28,14 @@
               </TabPane>
               <TabPane label="我的群组" name="2">
                 <div class="friends_list_lists_main" :style="{height: listRightH + 'px' }">
-                  <div class="friends_list_lists" v-for="(item,index) in groups">
+                  <div class="friends_list_lists" v-for="(item,index) in groups" :key="index">
                     <Row>
                       <Col span="10">
                         <Avatar style="color: #f56a00;background-color: #fde3cf;"></Avatar>
                         <span>{{item.NickName}}</span>
                       </Col>
                       <Col span="4" offset="10" class="friends_list_btn">
-                        <Button @click="">发起会话</Button>
+                        <Button @click="goChat(item.UserName,item.NickName)">发起会话</Button>
                       </Col>
                     </Row>
                   </div>

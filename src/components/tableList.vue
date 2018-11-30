@@ -147,9 +147,9 @@
           ],
           columns3:[
             {title:"序号",type:"index", width: 60, align: "center"},
-            {title:"医生姓名",key:"realname",align: "center"},
+            {title:"医生姓名",key:"realname",width:100,align:"center"},
             {title:"所属医院",key:"hospital"},
-            {title:"城市",key:"citys",align: "center"},
+            {title:"城市",key:"citys"},
             {title:"就诊日期",key:"visit_time",align: "center",width:150,
               render:(h,params)=>{
                 let texts = '';
@@ -163,7 +163,7 @@
                 },texts)
               }
             },
-            {title:"分组",key:"group"},
+            {title:"分组",key:"group",width:90,align:"center"},
             {title:"主述与病史",key:"illness"},
             {title: "状态",key: "check",width:94,align:"center",
               render:(h,params)=>{
@@ -196,7 +196,7 @@
                 },texts)
               }
             },
-            {title:"操作",key: "action",align:"center",
+            {title:"操作",key: "action",width:80,align:"center",
               render:(h, params) =>{
                 return h("div", [
                   h("Tooltip",{props:{trigger:"hover",content:"详情", placement:"top"}},

@@ -65,7 +65,7 @@ commonTools.setBtnLimit = function (name) {
     }
   });
   return btnLimit;
-}
+};
 export {
   commonTools
 }

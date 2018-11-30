@@ -8,49 +8,35 @@
           <Row>
             <Col span="2"><div @click="backTo"><Icon type="md-arrow-round-back" /></div></Col>
             <Col span="22" style="text-align: center">
-              <span v-text="$route.params.remarkName == ''?$route.params.nickName:$route.params.remarkName"></span>
+              <span v-text="($route.params.remarkName == ''||$route.params.remarkName == undefined)?$route.params.nickName:$route.params.remarkName"></span>
             </Col>
           </Row>
         </div>
         <Row>
           <Col span="18">
             <div class="chat_main_left" :style="{height: conH + 'px' }">
-              <div class="chat_main_left_top" :style="{height: leftTopH + 'px' }">
-                <div class="message">
-                  <Avatar style="color: #f56a00;background-color: #fde3cf">U</Avatar>
+              <div id="dialog_box" class="chat_main_left_top" :style="{height: leftTopH + 'px' }">
+                <div :class="['message',item.flowType == 'left' ? '':'me']" v-for="(item,index) in dialogueFlow"  :key="index">
+                  <Avatar style="color: #f56a00;background-color: #fde3cf" v-if="item.flowType == 'left'">U</Avatar>
                   <div class="content">
-                    <div class="content">
-                      <div class="bubble bubble-default left">
-                        <div class="bubble_cont">
-                          <div class="plain">
-                            <pre>现在超也得</pre>
-                          </div>
+                    <div :class="['bubble',item.flowType == 'left'?'bubble-default left':'bubble_primary right']">
+                      <div class="bubble_cont">
+                        <div class="plain">
+                          <pre v-text="item.data"></pre>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                <div class="message me">
-                  <div class="content">
-                    <div class="content">
-                      <div class="bubble bubble_primary right">
-                        <div class="bubble_cont">
-                          <div class="plain">
-                            <pre>回复消息</pre>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <Avatar style="color: #f56a00;background-color: #fde3cf">U</Avatar>
+                  <Avatar style="color: #f56a00;background-color: #fde3cf" v-if="item.flowType == 'right'">U</Avatar>
                 </div>
               </div>
+
               <div class="chat_main_left_bottom">
                 <div class="send_file">
                   <Icon type="ios-folder-outline" size="26"/>
                 </div>
                 <div class="send_con">
-                  <Input v-model="sendCon" type="textarea" :rows="4" />
+                  <Input v-model="sendCon" type="textarea" :rows="4" @keyup.enter.native="sendMessage"/>
                 </div>
                 <div class="send_btn">
                   <Button type="success" size="large" @click="sendMessage">&emsp;发送&emsp;</Button>
@@ -98,13 +84,28 @@
             wordData:[],
             total:0,
             curPage:1,
-            keyWord:''
+            keyWord:'',
+            startTime:'',
+            dialogueFlow:[],
+            dialogueFlowLeft:[],
+            dialogueFlowRight:[],
+            enterTime:''//进入聊天框的时间
           }
       },
       mounted(){
         this.name = window.sessionStorage.getItem("UserData_name");
         this.getBgHeight();
         this.getWordLibrary();
+        this.watchStatus();
+        this.enterTime = Date.parse(new Date())/1000;
+        if(window.sessionStorage.getItem("dialogueFlowRight") != null){
+          window.sessionStorage.removeItem("dialogueFlowRight");
+        }
+      },
+      beforeDestroy() {
+        if(this.timer) { //如果定时器还在运行 或者直接关闭，不用判断
+          clearInterval(this.timer); //关闭
+        }
       },
       methods:{
         getBgHeight(){
@@ -114,6 +115,72 @@
           vm.conH = vm.mainH -(vm.$refs.user.offsetHeight);
           vm.leftTopH = vm.mainH -(vm.$refs.user.offsetHeight)-180;
           vm.wordH = vm.conH -(vm.$refs.speech_title.offsetHeight)-(vm.$refs.speech_input.offsetHeight)-(vm.$refs.pageDiv.offsetHeight) -20;
+        },
+        watchStatus(){
+          this.timer = setInterval(this.getDialogueFlow, 10000);
+        },
+        sendMessage(){
+          let vm = this;
+          this.$http.get('http://icampaign.com.cn:9080/api/send_msg_by_uid/',{
+            params: {
+              bot_id:window.sessionStorage.getItem("QR_id"),
+              word:vm.sendCon,
+              uid:vm.$route.params.id
+            }
+          })
+            .then(function(response) {
+              if(response.data.code == 200 && response.data.data == true){
+                vm.$Notice.success({
+                  title: '信息发生成功!'
+                });
+                let str = {};
+                str.data = vm.sendCon;
+                str.flowType = 'right';
+                str.timestamp = Date.parse(new Date())/1000;
+                vm.dialogueFlowRight.push(str);
+                window.sessionStorage.setItem("dialogueFlowRight",JSON.stringify(vm.dialogueFlowRight));
+                vm.sendCon = "";//发送成功之后消息框清空
+                vm.getDialogueFlow();
+              }else{
+                vm.$Notice.error({
+                  title: '信息发生失败!'
+                });
+              }
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        },
+        getDialogueFlow(){
+          let vm = this;
+          this.$http.get('http://icampaign.com.cn:9080/api/get_messages/',{
+            params: {
+              bot_id:window.sessionStorage.getItem("QR_id"),
+              time:vm.enterTime,
+              username:vm.$route.params.id
+            }
+          })
+            .then(function(response) {
+              if(response.data.code == 200){
+                if(response.data.list.length > 0){
+                  response.data.list.forEach(function (ele,index,arr) {
+                    ele.flowType = 'left';
+                  });
+                }
+                vm.dialogueFlowLeft = response.data.list;
+                if(window.sessionStorage.getItem("dialogueFlowRight") != null){
+                  vm.dialogueFlowRight = JSON.parse(window.sessionStorage.getItem("dialogueFlowRight"));
+                  vm.dialogueFlow = vm.dialogueFlowLeft.concat(vm.dialogueFlowRight);
+                  vm.dialogueFlow.sort(function(a, b){ return a.timestamp - b.timestamp; });
+                }else{
+                  vm.dialogueFlow = vm.dialogueFlowLeft.concat(vm.dialogueFlowRight);
+                }
+                vm.scrollToBottom();
+              }
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
         },
         getWordLibrary(){
           let vm = this;
@@ -158,32 +225,15 @@
             });
           })
         },
-        sendMessage(){
-          let vm = this;
-          this.$http.get('http://icampaign.com.cn:9080/api/send_msg_by_uid/',{
-            params: {
-              bot_id:window.sessionStorage.getItem("QR_id"),
-              word:vm.sendCon,
-              uid:vm.$route.params.id
-            }
-          })
-            .then(function(response) {
-              if(response.data.code == 200 && response.data.data == true){
-                vm.$Notice.success({
-                  title: '信息发生成功!'
-                });
-              }else{
-                vm.$Notice.error({
-                  title: '信息发生失败!'
-                });
-              }
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
-        },
         backTo(){
           this.$router.go(-1);
+        },
+        scrollToBottom(){
+          let vm = this;
+          vm.$nextTick(function(){
+            let div = document.getElementById('dialog_box');
+            div.scrollTop = div.scrollHeight;
+          })
         }
       }
     }
@@ -262,6 +312,8 @@
     bottom: 180px;
     width: 100%;
     padding: 10px;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 
   .chat_main_left .chat_main_left_bottom{
