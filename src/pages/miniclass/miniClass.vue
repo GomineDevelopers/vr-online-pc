@@ -146,7 +146,7 @@
                 <Icon type="ios-arrow-up" size="26" color="#a1a99b" v-show="!item.isShow" @click="showTable(index,item)"/>
               </Col>
             </Row>
-            <Table v-if="item.isShow" border ref="selection" :columns="wk.docList.columns_view" :data="wk.docList.data"
+            <Table v-if="item.isShow" border ref="selection" :columns="wk.docList.columns" :data="wk.docList.data"
                    height="300" :loading="wk.docList.loading"
                    @on-select="onSelect" @on-select-cancel="onSelectRemove" @on-select-all="selectAll" @on-select-all-cancel="cancelAll"></Table>
           </div>
@@ -310,24 +310,6 @@
                     ]);
                   }
                 }
-              ],
-              columns_view:[
-                {title:'姓名',key:'realname',
-                  render:(h,params)=>{
-                    let texts = "";
-                    if(params.row.uid == 0 || params.row.realname == ""){//uid是0的话是未匹配到，uid不为0但是realname为空是只关注未注册
-                      texts = params.row.nickname;
-                    }else{
-                      texts = params.row.realname;
-                    }
-                    return h('span',{
-                      props:{},
-                    },texts)
-                  }},
-                {title:'所属医院',key:'hospital'},
-                {title:'科室',key:'department'},
-                {title:'昵称',key:'nickname'},
-                {title:'城市',key:'citys'}
               ],
               data2:[],
               members:[],
@@ -695,7 +677,7 @@
                     if(response.data.code == 200){//请求成功200
                       if(response.data.data.group_list.length > 0){//请求成功，但是第一次有可能无数据
                         vm.wk.docList.doctorListModal = true;//打开Modal
-                        response.data.data.group_list.forEach(function (ele,index,arr) {
+                        response.data.data.group_list.forEach(function (ele,index,arr) {//---------------------群组的循环
                           if(vm.wk.data2.length != 0){
                             if(vm.wk.data2[0].group == ele.NickName){//编辑的时候默认展开已选择的群
                               ele.isShow = true;
@@ -707,7 +689,7 @@
                                 .then(function(response) {
                                   if(response.data.code == 200){
                                     vm.wk.docList.loading = false;
-                                    for(var key in response.data.data.group_members){
+                                    for(var key in response.data.data.group_members){//--------------------------群成员的循环
                                       if(key == ele.UserName){
                                         vm.wk.docList.data = response.data.data.group_members[key];
                                       }
