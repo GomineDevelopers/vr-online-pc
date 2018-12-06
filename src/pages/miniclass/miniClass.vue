@@ -409,7 +409,7 @@
         getBgHeight() {
           let vm = this;
           vm.tableBgH = document.documentElement.clientHeight -64 -24 * 2 -(vm.$refs.title.offsetHeight + 10) -18;
-          vm.tableH = vm.tableBgH - (vm.$refs.buttonDiv.offsetHeight + 10 * 2) - (vm.$refs.pageDiv.offsetHeight + 10 * 2) -30;
+          vm.tableH = vm.tableBgH - (vm.$refs.buttonDiv.offsetHeight + 10 * 2) - (vm.$refs.pageDiv.offsetHeight + 10 * 2) -40;
         },
         getData(){
           let vm = this;
@@ -679,7 +679,7 @@
                         vm.wk.docList.doctorListModal = true;//打开Modal
                         response.data.data.group_list.forEach(function (ele,index,arr) {//---------------------群组的循环
                           if(vm.wk.data2.length != 0){
-                            if(vm.wk.data2[0].group == ele.NickName){//编辑的时候默认展开已选择的群
+                            if(vm.wk.data2[0].group === ele.NickName){//编辑的时候默认展开已选择的群
                               ele.isShow = true;
                               vm.$http.get('http://icampaign.com.cn:9080/api/get_group_members/',{
                                 params: {
@@ -697,8 +697,8 @@
                                   }
                                   vm.wk.docList.data.forEach(function (value, index, array) {//将群名放入群成员中,默认选中已存在的
                                     value.groupName = ele.NickName;
-                                    vm.wk.data2.forEach(function (ele,index,array) {
-                                      if(ele.nickname == value.NickName){
+                                    vm.wk.data2.forEach(function (ele2,index,array) {
+                                      if(ele2.nickname == value.NickName){
                                         value._checked = true;
                                       }
                                     });
@@ -854,7 +854,7 @@
               console.log(error);
             });
         },
-        showTable(index_g,item_g){//点击展开获取群成员列表
+        showTable(index_g,item_g){//-------------------------------------------------点击展开获取群成员列表
           let vm = this;
           vm.wk.docList.groupList.forEach(function (value, index, array) {
             value.isShow = false;

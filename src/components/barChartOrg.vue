@@ -2,7 +2,7 @@
   <div>
     <Row>
       <Col span="4" offset="1">
-        <DatePicker type="month" v-model="NewDate" placeholder="请选择月份" @on-change="changeNewDate"></DatePicker>
+        <DatePicker type="year" v-model="NewYear" placeholder="请选择年份" @on-change="changeNewYear"></DatePicker>
       </Col>
     </Row>
     <ve-histogram :data="chartData" :extend="chartExtend" :legend-visible="false" v-if="chartData.rows.length > 0"></ve-histogram>
@@ -12,57 +12,48 @@
 
 <script>
     export default {
-      name: "barChart",
+      name: "barChartOrg",
       data(){
         this.chartExtend = {
           series: {
             label: { show: true, position: "top",color:'#000'},
-            itemStyle:{color:'#49c0c7'}
+            itemStyle:{color:'#f37d38'}
           },
           xAxis:{
-          axisLabel:{
-            interval:0
+            axisLabel:{
+              interval:0
+            }
           }
-        }
         };
         return{
           chartData: {
             columns: [],
             rows: []
           },
-          NewDate:'',
-          postDate:''
+          NewYear:''
         }
-      },
-      props:{
-        tabType:''
       },
       mounted(){
         this.getBarData();
       },
+      props:{
+        tabType:''
+      },
       methods:{
-        getBarData(newDate){
+        getBarData(newYear){
           let vm = this;
-          vm.postDate = "";
-          if(newDate == undefined){
-            vm.postDate = "";
-          }else{
-            vm.postDate = newDate;
-          }
-          let url = "";
+          let url = '';
           if(vm.tabType == '1'){
-            url = 'admin/statistics/getcitys';
+            url = 'admin/statistics/getinteractive';
+          }else if(vm.tabType == '2'){
+            url = 'admin/statistics/getinteractiveavg?type=avg';
           }else if(vm.tabType == '3'){
-            url = 'admin/visit/get_visits';
-          }else if(vm.tabType == '4'){
-            url = 'admin/lesson/get_lessons';
-          }else if(vm.tabType == '5'){
-            url = 'admin/cases/get_cases';
+            url = 'admin/statistics/getinteractiveavg?type=totalavg';
           }
 
           vm.$http.get(vm.$commonTools.g_restUrl+ url, {
             params: {
-              time:vm.postDate
+              time:newYear == ''?undefined:newYear
             }
           })
             .then(function(response) {
@@ -74,18 +65,17 @@
             .catch(function(error) {
               console.log(error);
             });
-
         },
-        changeNewDate(e){
+        changeNewYear(e){
           this.getBarData(e);
-        },
+        }
       }
     }
 </script>
 
 <style scoped>
   .dataEmpty{
-    height: 350px;
+    height: 400px;
     display: flex;
     font-size: 18px;
     font-weight: 600;

@@ -38,22 +38,33 @@
       <div class="contentCard chartHeight">
         <div class="subtitleCard">医生分布</div>
         <div class="searchCard">
-          <DatePicker type="month" v-model="doctorDate" placeholder="请选择时间" style="width: 200px" @on-change="changeDate"></DatePicker>
+          <Row>
+            <Col span="4" offset="1">
+              <DatePicker type="month" v-model="doctorDate" placeholder="请选择月份" @on-change="changeDate"></DatePicker>
+            </Col>
+            <Col span="3">
+              <Select clearable v-model="province" @on-change="changeProvince">
+                <Option v-for="item in provinces" :value="item.value" :key="item.value">{{ item.label }}</Option>
+              </Select>
+            </Col>
+          </Row>
         </div>
-        <!--<bar-chart :barType='"doctor_city"'></bar-chart>-->
-        <ve-histogram :data="chartData1" :extend="chartExtend1" :legend-visible="false" v-if="chartData1.columns.length > 0"></ve-histogram>
+        <bar-chart-green ref="c1"></bar-chart-green>
       </div>
       <div class="contentCard chartHeight">
         <Tabs value="1" @on-click="tabChange" :animated="false">
           <TabPane label="新增医生" name="1">
             <bar-chart :tabType="type" v-if="type == 1"></bar-chart>
           </TabPane>
-          <TabPane label="流失医生" name="2">待开发</TabPane>
+          <!--<TabPane label="流失医生" name="2">待开发</TabPane>-->
           <TabPane label="新增拜访" name="3">
             <bar-chart :tabType="type" v-if="type == 3"></bar-chart>
           </TabPane>
           <TabPane label="新增微课" name="4">
             <bar-chart :tabType="type" v-if="type == 4"></bar-chart>
+          </TabPane>
+          <TabPane label="新增病例" name="5">
+            <bar-chart :tabType="type" v-if="type == 5"></bar-chart>
           </TabPane>
         </Tabs>
       </div>
@@ -61,14 +72,27 @@
         <div class="contentCard pieChart">
           <div class="subtitleCard">登录频次</div>
           <div class="searchCard">
-            <DatePicker type="date" v-model="loginDate" placeholder="请选择时间" style="width: 200px"></DatePicker>
+            <Row>
+              <Col span="9" offset="2">
+                <DatePicker type="month" v-model="loginDate" placeholder="请选择月份" @on-change="changeDateLogin"></DatePicker>
+              </Col>
+            </Row>
           </div>
-          <ve-pie :data="chartData"></ve-pie>
+          <ve-pie :data="chartData" :extend="chartExtend" v-if="chartData.rows.length > 0"></ve-pie>
+          <div class="dataEmpty" v-if="chartData.rows.length == 0">暂无数据</div>
         </div>
         <div class="contentCard barChart">
-          <div class="subtitleCard">互动人均</div>
-          <!--<bar-chart :barType='"interaction"'></bar-chart>-->
-          <ve-histogram :data="chartData2" :extend="chartExtend2" :legend-visible="false" v-if="chartData2.columns.length > 0"></ve-histogram>
+          <Tabs value="1" @on-click="tabChangeOrg" :animated="false">
+            <TabPane label="总互动" name="1">
+              <bar-chart-org :tabType="typeOrg" v-if="typeOrg == 1"></bar-chart-org>
+            </TabPane>
+            <TabPane label="人均互动" name="2">
+              <bar-chart-org :tabType="typeOrg" v-if="typeOrg == 2"></bar-chart-org>
+            </TabPane>
+            <TabPane label="总人均" name="3">
+              <bar-chart-org :tabType="typeOrg" v-if="typeOrg == 3"></bar-chart-org>
+            </TabPane>
+          </Tabs>
         </div>
       </div>
     </div>
@@ -78,62 +102,44 @@
 <script>
   import PageTitle from '@/components/pageTitle'
   import barChart from '@/components/barChart'
+  import barChartGreen from '@/components/barChartGreen'
+  import barChartOrg from '@/components/barChartOrg'
+  import areaList from "../../../static/js/area3.js"
     export default {
       name: "statistics",
       data(){
-        this.chartExtend1 = {
-          series: {
-            label: { show: true, position: "top",color:'#000'},
-            itemStyle:{color:'#3fab23'}
-          },
-          xAxis:{
-            axisLabel:{
-              interval:0
-            }
-          }
-        };
-        this.chartExtend2 = {
-          series: {
-            label: { show: true, position: "top",color:'#000'},
-            itemStyle:{color:'#f37d38'}
-          },
-          xAxis:{
-            axisLabel:{
-              interval:0
-            }
+        this.chartExtend = {
+          legend: {
+            show:false
           }
         };
           return{
             titleText:'统计分析',
+            selectedPro:'银杏',
+            projects:[{value: '银杏',label: '银杏'}],
+            province:'',
+            provinces:areaList,
+            doctorDate:'',
             chartData: {
               columns: [],
               rows: []
             },
-            chartData1:{
-              columns: [],
-              rows: []
-            },
-            chartData2:{
-              columns: [],
-              rows: []
-            },
-            selectedPro:'银杏',
-            projects:[{value: '银杏',label: '银杏'}],
             registerDoctor:'',
-            doctorDate:'',
             loginDate:'',
-            type:1
+            postDatePie:'',
+            type:1,
+            typeOrg:1,
           }
       },
       components:{
         'bar-chart':barChart,
-        'page-title':PageTitle
+        'page-title':PageTitle,
+        'bar-chart-green':barChartGreen,
+        'bar-chart-org':barChartOrg
       },
       mounted(){
         this.getRegisterData();
         this.getPieData();
-        this.getBarData1();
-        this.getBarData2();
       },
       methods:{
         getRegisterData(){
@@ -154,56 +160,18 @@
               console.log(error);
             });
         },
-        getPieData(){
+        getPieData(pieDate){
           let vm = this;
-          let postData = {};
-          /*postData.time = vm.selectedPro;*/
-          this.$http({
-            method:"post",
-            url:vm.$commonTools.g_restUrl+'admin/statistics/getlogin',
-            /*data:vm.$qs.stringify(postData)*/
+          vm.$http.get(vm.$commonTools.g_restUrl+ 'admin/statistics/getlogin', {
+            params: {
+              time:pieDate == ''?undefined:pieDate
+            }
           })
             .then(function(response) {
               if(response.data.code == 200){
                 vm.chartData.rows = response.data.list.rows;
                 vm.chartData.columns = response.data.list.columns;
-              }
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
-        },
-        getBarData1(selectedDate){
-          let vm = this;
-
-          this.$http.get(vm.$commonTools.g_restUrl+ 'admin/statistics/getcitys', {
-            params: {
-              time:selectedDate
-            }
-          })
-            .then(function(response) {
-              if(response.data.code == 200){
-                vm.chartData1.rows = response.data.list.rows;
-                vm.chartData1.columns = response.data.list.columns;
-              }
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
-        },
-        getBarData2(){
-          let vm = this;
-          let postData = {};
-          /*postData.time = vm.selectedPro;*/
-          this.$http({
-            method:"post",
-            url:vm.$commonTools.g_restUrl+'admin/statistics/getinteractive',
-            /*data:vm.$qs.stringify(postData)*/
-          })
-            .then(function(response) {
-              if(response.data.code == 200){
-                vm.chartData2.rows = response.data.list.rows;
-                vm.chartData2.columns = response.data.list.columns;
+                vm.$Loading.finish();
               }
             })
             .catch(function(error) {
@@ -211,12 +179,24 @@
             });
         },
         changeDate(e){
-          this.getBarData1(e);
+          this.doctorDate = e;
+          this.$refs.c1.getBarData(this.doctorDate,this.province);
+        },
+        changeProvince(e){
+          this.province = e;
+          this.$refs.c1.getBarData(this.doctorDate,this.province);
+        },
+        changeDateLogin(e){
+          this.getPieData(e);
         },
         tabChange(name){
           let vm = this;
           vm.type = name;
         },
+        tabChangeOrg(name){
+          let vm = this;
+          vm.typeOrg = name;
+        }
       }
     }
 </script>
@@ -275,29 +255,29 @@
     color:#f99a34;
   }
 
-  .font3{
+  /*.font3{
     color:#f99a34;
-  }
+  }*/
 
   .searchCard{
-    text-align: right;
+    /*text-align: right;*/
     padding-top: 5px;
   }
 
-  .rotatetop{
+  /*.rotatetop{
     color: #51b213;
     display: inline-block;
-  }
+  }*/
 
-  .rotatedown{
+  /*.rotatedown{
     transform:rotate(180deg);
-    -ms-transform:rotate(180deg); /* Internet Explorer */
-    -moz-transform:rotate(180deg); /* Firefox */
-    -webkit-transform:rotate(180deg); /* Safari 和 Chrome */
-    -o-transform:rotate(180deg); /* Opera */
+    -ms-transform:rotate(180deg); !* Internet Explorer *!
+    -moz-transform:rotate(180deg); !* Firefox *!
+    -webkit-transform:rotate(180deg); !* Safari 和 Chrome *!
+    -o-transform:rotate(180deg); !* Opera *!
     color:#d75e42;
     display: inline-block;
-  }
+  }*/
 
   .bottom{
     display: flex;
@@ -310,5 +290,14 @@
 
   .bottom .barChart{
     width: 69%;
+  }
+
+  .dataEmpty{
+    height: 400px;
+    display: flex;
+    font-size: 18px;
+    font-weight: 600;
+    justify-content: center;
+    align-items: center;
   }
 </style>

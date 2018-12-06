@@ -12,8 +12,16 @@
           <Col span="19" class="friends_list_right">
             <Tabs :animated="false" @on-click="changeTab">
               <TabPane label="我的好友" name="1">
+                <div ref="searchDiv">
+                  <Row type="flex" align="middle">
+                    <Col span="3" style="text-align: center">姓名/昵称</Col>
+                    <Col span="7">
+                      <Input v-model.trim="searchName"/>
+                    </Col>
+                  </Row>
+                </div>
                 <div class="friends_list_lists_main" :style="{height: listRightH + 'px' }">
-                  <div class="friends_list_lists" v-for="(item,index) in friends" :key="index">
+                  <div class="friends_list_lists" v-for="(item,index) in filteredFriends" :key="index">
                     <Row>
                       <Col span="10">
                         <Avatar :src='"http://icampaign.com.cn/customers/Wxbot_r/temp/" + item.HeadImgUrl'></Avatar>
@@ -63,7 +71,8 @@
           friends:[],
           groups:[],
           isloading:false,
-          userNickName:''
+          userNickName:'',
+          searchName:''
         }
       },
       mounted(){
@@ -77,12 +86,19 @@
           clearInterval(this.timer); //关闭
         }
       },
+      computed:{
+        filteredFriends:function () {
+          return this.friends.filter((friend) =>{
+            return friend.RemarkName.match(this.searchName);
+          })
+        }
+      },
       methods:{
         getBgHeight(){
           let vm = this;
-          vm.bgH = document.documentElement.clientHeight -64 -24 * 2 -(vm.$refs.title.offsetHeight + 10) - 2 - 40;
+          vm.bgH = document.documentElement.clientHeight -64 -24 * 2 -(vm.$refs.title.offsetHeight + 10)  - 2 - 40;
           vm.listH = vm.bgH - 80;
-          vm.listRightH = vm.listH - 54;
+          vm.listRightH = vm.listH - 54 -(vm.$refs.searchDiv.offsetHeight);
         },
         getUserData(){
           let vm = this;

@@ -20,7 +20,7 @@
             <Icon custom="icon iconfont icon-bianji" color="#4fb115" @click="addLabel('edit',item.id)" v-if="btnLimit.update"/>&emsp;
             <Icon custom="icon iconfont icon-shanchu" color="#4fb115" @click="del(item.id,item.pid)" v-if="btnLimit.del"/>
           </Col>
-          <Col span="9" class="tag_icon">
+          <Col span="9" class="tag_icon" v-if="item.children.length != 0">
             <Icon type="ios-arrow-down" size="26" color="#a1a99b" v-show="item.isShow" @click="changeClass(index,item)"/>
             <Icon type="ios-arrow-up" size="26" color="#a1a99b" v-show="!item.isShow" @click="changeClass(index,item)"/>
           </Col>

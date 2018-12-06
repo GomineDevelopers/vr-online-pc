@@ -176,8 +176,8 @@
         },
         getBgHeight(){
           let vm = this;
-          vm.tableBgH = document.documentElement.clientHeight -64 -24 * 2 -(vm.$refs.title.$el.offsetHeight + 10) - 18;
-          vm.tableH = vm.tableBgH - (vm.$refs.buttonDiv.offsetHeight + 10 * 2) - (vm.$refs.pageDiv.offsetHeight + 10 * 2) - 20;
+          vm.tableBgH = document.documentElement.clientHeight -64 -24 * 2 -(vm.$refs.title.$el.offsetHeight + 10)-2;
+          vm.tableH = vm.tableBgH - (vm.$refs.buttonDiv.offsetHeight + 10 * 2) - (vm.$refs.pageDiv.offsetHeight + 10 * 2) - 40;
         },
         getUserData(){
           let vm = this;
