@@ -57,7 +57,7 @@
             </Col>
             <Col span="12">
               <span class="detail_title">姓名：</span>
-              <span class="detail_text" v-text="detailData.realname"></span>
+              <Input v-model.trim="detailData.realname" class="inputStyle"/>
             </Col>
           </Row>
           <Row class="detail_row">
@@ -660,6 +660,7 @@ export default {
               title: '编辑成功！'
             });
           }
+          vm.getData2();
         })
         .catch(function(error) {
           console.log(error);

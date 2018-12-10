@@ -2,7 +2,7 @@
   <div>
     <Row>
       <Col span="4" offset="1">
-        <DatePicker type="month" v-model="NewDate" placeholder="请选择月份" @on-change="changeNewDate"></DatePicker>
+        <DatePicker type="month" v-model="NewDate" placeholder="请选择月份" @on-change="changeNewDate" :clearable="false"></DatePicker>
       </Col>
     </Row>
     <ve-histogram :data="chartData" :extend="chartExtend" :legend-visible="false" v-if="chartData.rows.length > 0"></ve-histogram>
@@ -30,7 +30,7 @@
             columns: [],
             rows: []
           },
-          NewDate:'',
+          NewDate:this.$commonTools.formatDate5(new Date()),
           postDate:''
         }
       },
@@ -45,7 +45,7 @@
           let vm = this;
           vm.postDate = "";
           if(newDate == undefined){
-            vm.postDate = "";
+            vm.postDate = vm.$commonTools.formatDate5(new Date());
           }else{
             vm.postDate = newDate;
           }
@@ -59,7 +59,6 @@
           }else if(vm.tabType == '5'){
             url = 'admin/cases/get_cases';
           }
-
           vm.$http.get(vm.$commonTools.g_restUrl+ url, {
             params: {
               time:vm.postDate

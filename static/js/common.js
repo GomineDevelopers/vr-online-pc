@@ -51,6 +51,12 @@ commonTools.formatDate4 = function (d) {
   return year + '-' + month + '-' +  date1 ;
 }
 
+commonTools.formatDate5 = function (d) {
+  var year = String(d.getFullYear());
+  var month = String(d.getMonth() + 1 > 9 ? d.getMonth() + 1 : "0" + (d.getMonth() + 1));
+  return year + '-' + month;
+}
+
 commonTools.setBtnLimit = function (name) {
   var btnLimit = [];
   JSON.parse(window.sessionStorage.getItem("limits")).forEach(function (ele,index,arr) {
