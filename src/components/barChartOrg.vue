@@ -47,9 +47,9 @@
             url = 'admin/statistics/getinteractive';
           }else if(vm.tabType == '2'){
             url = 'admin/statistics/getinteractiveavg?type=avg';
-          }else if(vm.tabType == '3'){
+          }/*else if(vm.tabType == '3'){
             url = 'admin/statistics/getinteractiveavg?type=totalavg';
-          }
+          }*/
 
           vm.$http.get(vm.$commonTools.g_restUrl+ url, {
             params: {

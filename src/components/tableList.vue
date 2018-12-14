@@ -150,7 +150,7 @@
             {title:"医生姓名",key:"realname",width:100,align:"center"},
             {title:"所属医院",key:"hospital"},
             {title:"城市",key:"citys"},
-            {title:"就诊日期",key:"visit_time",align: "center",width:150,
+            {title:"就诊登记时间",key:"visit_time",align: "center",width:150,
               render:(h,params)=>{
                 let texts = '';
                 if(params.row.visit_time == null){
@@ -164,7 +164,7 @@
               }
             },
             {title:"分组",key:"group",width:90,align:"center"},
-            {title:"主述与病史",key:"illness"},
+            {title:"主述与既往史",key:"illness"},
             {title: "状态",key: "check",width:94,align:"center",
               render:(h,params)=>{
                 let texts = '';

@@ -89,9 +89,9 @@
             <TabPane label="人均互动" name="2">
               <bar-chart-org :tabType="typeOrg" v-if="typeOrg == 2"></bar-chart-org>
             </TabPane>
-            <TabPane label="总人均" name="3">
+            <!--<TabPane label="总人均" name="3">
               <bar-chart-org :tabType="typeOrg" v-if="typeOrg == 3"></bar-chart-org>
-            </TabPane>
+            </TabPane>-->
           </Tabs>
         </div>
       </div>

@@ -7,7 +7,7 @@
           <Col span="4"><Input v-model.trim="doctorName" clearable/></Col>
           <Col span="2" class="searchFont">所属城市</Col>
           <Col span="4"><Cascader :data="cities" v-model="citys" change-on-select></Cascader></Col>
-          <Col span="2" class="searchFont">就诊日期</Col>
+          <Col span="2" class="searchFont">就诊登记时间</Col>
           <Col span="4">
             <DatePicker type="daterange" placement="bottom-end" v-model="dateRange" format="yyyy-MM-dd"></DatePicker>
           </Col>
@@ -31,37 +31,37 @@
                     ref="list"></table-list>
       </div>
 
-      <Modal v-model="caseModal" title="病例详情" @on-ok="saveStatus">
+      <Modal v-model="caseModal" title="病例详情" @on-ok="saveStatus" width="550">
         <Row type="flex" align="middle" class="modalRow">
-          <Col span="3" class="titleFont">医生姓名</Col>
+          <Col span="4" class="titleFont">医生姓名</Col>
           <Col span="5"><span v-text="caseDetail.realname"></span></Col>
           <Col span="3" class="titleFont" offset="1">所属医院</Col>
-          <Col span="12"><span v-text="caseDetail.hospital"></span></Col>
+          <Col span="11"><span v-text="caseDetail.hospital"></span></Col>
         </Row>
         <Row type="flex" align="middle" class="modalRow">
-          <Col span="3" class="titleFont">上传日期</Col>
+          <Col span="4" class="titleFont">上传日期</Col>
           <Col span="5"><span v-text="$commonTools.formatDate(caseDetail.create_time)"></span></Col>
           <Col span="3" class="titleFont" offset="1">所在城市</Col>
-          <Col span="12"><span v-text="caseDetail.citys"></span></Col>
+          <Col span="11"><span v-text="caseDetail.citys"></span></Col>
         </Row>
         <Row type="flex" align="middle" class="modalRow">
-          <Col span="3" class="titleFont">就诊日期</Col>
+          <Col span="4" class="titleFont">就诊登记时间</Col>
           <Col span="5"><span v-text="$commonTools.formatDate(caseDetail.visit_time)"></span></Col>
-          <Col span="2" offset="1" class="titleFont">年龄</Col>
-          <Col span="3"><span v-text="caseDetail.age"></span></Col>
-          <Col span="2" class="titleFont">性别</Col>
-          <Col span="2"><span v-text="caseDetail.gender"></span></Col>
+          <Col span="3" offset="1" class="titleFont">患者年龄</Col>
+          <Col span="1"><span v-text="caseDetail.age"></span></Col>
+          <Col span="3" class="titleFont">患者性别</Col>
+          <Col span="1"><span v-text="caseDetail.gender"></span></Col>
           <Col span="2" class="titleFont">分组</Col>
-          <Col span="3"><span v-text="caseDetail.group"></span></Col>
+          <Col span="4"><span v-text="caseDetail.group"></span></Col>
         </Row>
         <Row class="modalRow">
-          <Col span="5" class="titleFont">主述与病史</Col>
+          <Col span="5" class="titleFont">主述与既往史</Col>
         </Row>
         <Row class="modalRow">
           <Col span="24" ><div class="introDiv" v-text="caseDetail.illness"></div></Col>
         </Row>
         <Row class="modalRow">
-          <Col span="5" class="titleFont">检查检验及诊断</Col>
+          <Col span="8" class="titleFont">辅助检查及初步诊断</Col>
         </Row>
         <Row class="modalRow">
           <Col span="24" ><div class="introDiv" v-text="caseDetail.diagnosis"></div></Col>

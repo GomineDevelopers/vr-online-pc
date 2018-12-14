@@ -268,7 +268,7 @@
               },
               {title:'所属医院',key:'hospital'},
               {title:'科室',key:'department'},
-              {title:'职称',key:'job'},
+              {title:'昵称',key:'nickname'},
               {title:'城市',key:'citys'}
             ],
             data1:[],
