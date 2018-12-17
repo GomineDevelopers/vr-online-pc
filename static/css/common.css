@@ -235,3 +235,6 @@
 .chat_main_left_bottom .ivu-input:focus{
   box-shadow:none;
 }
+
+/*表格在微课页出现横向滚动条*/
+.ivu-table-overflowX{ overflow-x: hidden;}

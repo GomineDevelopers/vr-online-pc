@@ -107,6 +107,7 @@
               },
               {title: '参与人数',key: 'people_number',align: 'center'},
               {title: 'VR',key: 'vr',align: 'center'},
+              {title: '成绩',key: 'mark',align: 'center'},
               {title: '操作',key: 'action',width: 150,align: 'center',
                 render: (h, params) => {
                   return h('div', [

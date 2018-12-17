@@ -2,7 +2,7 @@
   <div>
     <Row>
       <Col span="4" offset="1">
-        <DatePicker type="year" v-model="NewYear" placeholder="请选择年份" @on-change="changeNewYear"></DatePicker>
+        <DatePicker type="year" v-model="NewYear" placeholder="请选择年份" @on-change="changeNewYear" :options="options1"></DatePicker>
       </Col>
     </Row>
     <ve-histogram :data="chartData" :extend="chartExtend" :legend-visible="false" v-if="chartData.rows.length > 0"></ve-histogram>
@@ -30,7 +30,12 @@
             columns: [],
             rows: []
           },
-          NewYear:''
+          NewYear:'',
+          options1:{
+            disabledDate (year) {
+              return year.getFullYear() < 2018|| year.getFullYear() > 2027;
+            }
+          }
         }
       },
       mounted(){

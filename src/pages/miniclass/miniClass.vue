@@ -182,8 +182,8 @@
             tableBgH:'',
             tableH:'',
             columns: [
-              {title:'序号',type: 'index',width: 60,align: 'center'},
-              {title: '微课标题',key: 'lesson_title',align: 'center'},
+              {title:'序号',type: 'index',width: 60,align:'center'},
+              {title: '微课标题',key: 'lesson_title',align:'center'},
               {title: '时间',key: 'lesson_time',
                 render:(h,params)=>{
                   let texts = '';
@@ -193,7 +193,7 @@
                   },texts)
                 }
               },
-              {title: '参与人数',key: 'people_number',align: 'center'},
+              {title: '参与人数',key: 'people_number',align:'center'},
               {title: 'VR',key: 'vr',align: 'center'},
               {title: '操作',key: 'action',width: 150,align: 'center',
                 render: (h, params) => {
@@ -289,6 +289,27 @@
                 {title:'科室',key:'department'},
                 {title:'昵称',key:'nickname'},
                 {title:'城市',key:'citys'},
+                {title:'成绩',key:'mark',
+                  render:(h,params)=>{
+                  let _this = this;
+                    return h('div',[
+                      h('Input', {
+                        style: {
+                          width:'45px',
+                          display:params.row.mark != undefined ? 'inline':'none'
+                        },
+                        props:{
+                          value:params.row.mark
+                        },
+                        'on': {
+                          'on-blur':() => {
+                            _this.wk.data2[params.index].mark = event.target.value
+                          }
+                        }
+                      })
+                    ])
+                  }
+                },
                 {title:"操作",key: "action",align:"center",
                   render:(h, params) =>{
                     return h("div", [
@@ -563,7 +584,7 @@
               if(value.uid == 0){
                 vm.wk.matcherror.push(value.nickname);
               }else{
-                vm.wk.members.push(value.uid);
+                vm.wk.members.push(value.uid + "-"+ value.mark);
               }
             });
 
@@ -574,7 +595,6 @@
             }else {
               postData.group = "";
             }
-
 
             this.$http({
               method:"post",
@@ -754,6 +774,9 @@
             .then(function(response) {
               if(response.data.code == 200){
                 if(vm.handAdd == 1){
+                  response.data.list.forEach(function (ele,index,arr) {
+                    ele.mark = '0';
+                  });
                   vm.wk.docList.data_hand = response.data.list;
                 }else{
                   if(vm.wk.docList.selectedList_hand.length >0){
@@ -767,8 +790,6 @@
                   }
                   vm.wk.docList.data_hand = response.data.list;
                 }
-
-
                 vm.wk.docList.loading_hand = false;
               }
             })

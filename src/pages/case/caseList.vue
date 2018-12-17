@@ -55,7 +55,7 @@
           <Col span="4"><span v-text="caseDetail.group"></span></Col>
         </Row>
         <Row class="modalRow">
-          <Col span="5" class="titleFont">主述与既往史</Col>
+          <Col span="5" class="titleFont">主诉与既往史</Col>
         </Row>
         <Row class="modalRow">
           <Col span="24" ><div class="introDiv" v-text="caseDetail.illness"></div></Col>

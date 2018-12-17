@@ -5,8 +5,12 @@
       <Row type="flex" align="middle">
         <Col span="2" class="searchFont">医生姓名</Col>
         <Col span="4"><Input v-model.trim="doctorName" clearable/></Col>
-        <Col span="2" class="searchFont">所属城市</Col>
-        <Col span="4"><Cascader :data="cities" v-model="citys" change-on-select></Cascader></Col>
+        <!--<Col span="2" class="searchFont">所属城市</Col>
+        <Col span="4"><Cascader :data="cities" v-model="citys" change-on-select></Cascader></Col>-->
+        <Col span="2" class="searchFont">互动时间</Col>
+        <Col span="4">
+          <DatePicker type="date" placeholder="请选择" v-model="startTime" format="yyyy-MM-dd" @on-change="changeDate"></DatePicker>
+        </Col>
         <Col span="4" class="searchFont" offset="8">
           <Button type="success" @click="search">搜索</Button>
           <Button type="warning" @click="clear">重置</Button>
@@ -101,7 +105,7 @@
 <script>
   import PageTitle from '../../components/pageTitle'
   import TableList from '../../components/tableList'
-  import areaList from "../../../static/js/area2.js"
+  /*import areaList from "../../../static/js/area2.js"*/
     export default {
       name: "interaction",
       data(){
@@ -149,8 +153,9 @@
           },
           btnLimit_F : '',
           doctorName:'',
-          citys:[],
-          cities:areaList
+          /*citys:[],
+          cities:areaList*/
+          startTime:''
         }
       },
       components:{
@@ -212,18 +217,23 @@
           window.open(item.url);
         },
         exportRecord(){
-          window.open( this.$commonTools.g_restUrl+"admin/interactive/interactive_export?name="+this.doctorName+"&citys="+this.citys, "_blank");
+          window.open( this.$commonTools.g_restUrl+"admin/interactive/interactive_export?name="+this.doctorName+"&time="+this.startTime, "_blank");
         },
         search(){
           let postData = {};
           let vm = this;
           postData.name = vm.doctorName;
-          postData.citys = vm.citys;
+          postData.time = vm.startTime;
+          /*postData.citys = vm.citys;*/
           vm.$refs.list.getData(postData,'first');
         },
         clear(){
-          this.citys = [];
+          /*this.citys = [];*/
           this.doctorName = "";
+          this.startTime = "";
+        },
+        changeDate(e){
+          this.startTime = e;
         }
       }
     }

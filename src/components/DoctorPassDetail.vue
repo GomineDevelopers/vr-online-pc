@@ -269,7 +269,8 @@
               {title:'所属医院',key:'hospital'},
               {title:'科室',key:'department'},
               {title:'昵称',key:'nickname'},
-              {title:'城市',key:'citys'}
+              {title:'城市',key:'citys'},
+              {title:'成绩',key:'mark'}
             ],
             data1:[],
             data2:[],

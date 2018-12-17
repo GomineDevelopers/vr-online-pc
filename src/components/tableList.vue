@@ -148,8 +148,8 @@
           columns3:[
             {title:"序号",type:"index", width: 60, align: "center"},
             {title:"医生姓名",key:"realname",width:100,align:"center"},
-            {title:"所属医院",key:"hospital"},
-            {title:"城市",key:"citys"},
+            {title:"所属医院",key:"hospital",width:180},
+            {title:"城市",key:"citys",width:100},
             {title:"就诊登记时间",key:"visit_time",align: "center",width:150,
               render:(h,params)=>{
                 let texts = '';
@@ -164,7 +164,18 @@
               }
             },
             {title:"分组",key:"group",width:90,align:"center"},
-            {title:"主述与既往史",key:"illness"},
+            {title:"主诉与既往史",key:"illness",
+              render:(h,params)=>{
+                let texts = params.row.illness;
+                return h("div",{
+                  style: {
+                    'white-space': 'nowrap',
+                    overflow: 'hidden',
+                    'text-overflow': 'ellipsis'
+                  }
+                },texts)
+              }
+            },
             {title: "状态",key: "check",width:94,align:"center",
               render:(h,params)=>{
                 let texts = '';
