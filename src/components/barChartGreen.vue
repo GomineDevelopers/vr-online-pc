@@ -37,7 +37,8 @@
           vm.$http.get(vm.$commonTools.g_restUrl+ 'admin/statistics/getcitys', {
             params: {
               time:selectedDate,
-              province:selectedProvince
+              province:selectedProvince,
+              type:'endmonth'
             }
           })
             .then(function(response) {
